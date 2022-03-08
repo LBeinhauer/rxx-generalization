@@ -40,3 +40,39 @@ source(here("Loading_Estimates.R"))
 
 
 
+# fitting random-effects meta-analysis to estimates of reliability using Cronbach's alpha & McDonald's omega
+alpha.rma.fit_HH <- rel_rma(AlphaHH)
+omega.rma.fit_HH <- rel_rma(OmegaHH)
+Bonett.rma.fit_HH <- rel_rma(BonettHH)
+
+alpha.rma.fit_EM <- rel_rma(AlphaEM)
+omega.rma.fit_EM <- rel_rma(OmegaEM)
+Bonett.rma.fit_EM <- rel_rma(BonettEM)
+
+alpha.rma.fit_EX <- rel_rma(AlphaEX)
+omega.rma.fit_EX <- rel_rma(OmegaEX)
+Bonett.rma.fit_EX <- rel_rma(BonettEX)
+
+alpha.rma.fit_AG <- rel_rma(AlphaAG)
+omega.rma.fit_AG <- rel_rma(OmegaAG)
+Bonett.rma.fit_AG <- rel_rma(BonettAG)
+
+alpha.rma.fit_CO <- rel_rma(AlphaCO)
+omega.rma.fit_CO <- rel_rma(OmegaCO)
+Bonett.rma.fit_CO <- rel_rma(BonettCO)
+
+alpha.rma.fit_OX <- rel_rma(AlphaOX)
+omega.rma.fit_OX <- rel_rma(OmegaOX)
+Bonett.rma.fit_OX <- rel_rma(BonettOX)
+
+
+
+
+
+Reg_prep <- read.csv(here("Meta-Regression/meta_regression_dat.csv"))
+
+
+reg.alpha.rma.fit_OX <- rel_rma.reg(AlphaHH)
+
+
+

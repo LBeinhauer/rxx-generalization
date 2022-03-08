@@ -64,6 +64,10 @@ labs_in_data[16] <- "Ozdogru"
 labs_excl <- labs_in_data[!labs_in_data %in% labs_in_paper]
 pc_df <- pc_df[which(!pc_df$source %in% labs_excl),]
 
+pc_df$source[which(pc_df$source == "GonzÃ¡lez-Iraizoz")] <- "Gonzalez-Iraizoz"
+pc_df$source[which(pc_df$source == "Ã-zdoÄYru")] <- "Ozdogru"
+
+
 # include only participants in cheat condition (design was 2x2, cheat - no cheat x commandment - books)
 pc_df <- pc_df[which(pc_df$maz.cheat.cond == "cheat"),]
 
@@ -194,3 +198,92 @@ transformed_pc_hex_OX <- Bonett_transformation(pc_hex_OX_transform_prepped, "OX"
 
 
 
+
+
+
+## Moderator preparation
+
+pc_df <- pc_df %>% mutate(
+  language = as.factor(language),
+  compensation = as.factor(compensation),
+  major = as.factor(major)
+)
+
+# language
+
+lang <- sapply(as.matrix(unique(pc_df$lab.name)), FUN = function(x){
+  table(pc_df$language[which(pc_df$lab.name == x)])
+})
+
+lang_t <- t(lang) # Özdogru 2 languages (8 English, 357 Turkish)
+
+lang_lab <- apply(lang_t, MARGIN = 1, FUN = function(x){
+  names(x)[which(x == max(x))]
+})
+
+table(lang_lab)
+
+lang_lab_r <- ifelse(
+  lang_lab == "Dutch", "Dutch", ifelse(
+    lang_lab == "English", "English", ifelse(
+      lang_lab == "German", "German", "Other"
+    )
+  ))
+
+table(lang_lab_r)
+
+# compensation
+
+comp <- sapply(as.matrix(unique(pc_df$lab.name)), FUN = function(x){
+  table(pc_df$compensation[which(pc_df$lab.name == x)])
+})
+
+comp_t <- t(comp) # only McCarthy 2 (1 Course Credit, 317 Entry into drawing), 
+# Laine & Ferreira-Santos report no compensation (not none!)
+
+comp_lab <- apply(comp_t, MARGIN = 1, FUN = function(x){
+  ifelse(length(names(x)[which(x == max(x))]) == 1 , names(x)[which(x == max(x))], "Other")
+})
+
+table(comp_lab)
+
+comp_lab_r <- ifelse(comp_lab == "course credit", "Course Credit", "Other")
+
+table(comp_lab_r)
+
+# gender
+
+sex <- sapply(as.matrix(unique(pc_df$lab.name)), FUN = function(x){
+  gen <- pc_df$gender[which(pc_df$lab.name == x)]
+  gen_01 <- ifelse(gen == "female", 1, 0)
+  mean(gen_01, na.rm = TRUE)
+})
+
+# age
+
+mean_age <- sapply(as.matrix(unique(pc_df$lab.name)), FUN = function(x){
+  age <- pc_df$age[which(pc_df$lab.name == x)]
+  mean(age, na.rm = TRUE)
+})  
+
+sd_age <- sapply(as.matrix(unique(pc_df$lab.name)), FUN = function(x){
+  age <- pc_df$age[which(pc_df$lab.name == x)]
+  sd(age, na.rm = TRUE)
+})  
+
+# major
+
+# maj <- sapply(as.matrix(unique(pc_df$lab.name)), FUN = function(x){
+#   table(pc_df$major[which(pc_df$lab.name == x)])
+# })
+
+
+
+Reg_prep <- data.frame(lang = lang_lab_r,
+                       comp = comp_lab_r,
+                       sex = sex,
+#                      major = maj,
+                       mean_age = mean_age,
+                       source = labs_in_data[labs_in_data %in% labs_in_paper])
+
+write.csv(Reg_prep, here("Meta-Regression/meta_regression_dat.csv"), row.names = FALSE)

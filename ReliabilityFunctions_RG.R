@@ -33,7 +33,8 @@ rel_extractor <- function(data, item.vec, scale_info){
   })
   
   df <- data.frame(reliability = rel.est,
-                   StandardError = ase.est)
+                   StandardError = ase.est,
+                   source = unique(data$source))
   
   write.csv(df, paste0(here("Reliability Estimates/"), "/", "Alpha" ,scale_info, ".csv"), row.names = FALSE)
   
@@ -65,7 +66,8 @@ omega_extractor <- function(data, item.vec, scale_info){
   })
   
   df <- data.frame(reliability = rel.est,
-                   StandardError = ose.est)
+                   StandardError = ose.est,
+                   source = unique(data$source))
   
   write.csv(df, paste0(here("Reliability Estimates/"), "/", "Omega" ,scale_info, ".csv"), row.names = FALSE)
   
@@ -218,7 +220,8 @@ Bonett_prep <- function(df_rel, df_rma_prep, J){
   df_rma_prep <- df_rma_prep[-which(df_rma_prep$source == "Total"),]
   return(data.frame(reliability = df_rel$reliability,
                     n = df_rma_prep$n_1 + df_rma_prep$n_0,
-                    j = rep(J, length(df_rel$reliability))))
+                    j = rep(J, length(df_rel$reliability)),
+                    source = df_rma_prep$source))
 }
 
 Bonett_transformation <- function(df_Bonett_prepped, scale_info){
@@ -230,13 +233,24 @@ Bonett_transformation <- function(df_Bonett_prepped, scale_info){
   SE_coeff_t <- sqrt((2 * j)/((j - 1) * (n - 2)))
   
   df <- data.frame(reliability = coeff_t,
-                   StandardError = SE_coeff_t)
+                   StandardError = SE_coeff_t,
+                   source = unique(df_Bonett_prepped$source))
   
   write.csv(df, paste0(here("Reliability Estimates/"), "/", "Bonett" ,scale_info, ".csv"), row.names = FALSE)
   
   return(df)
 }
 
+rel_rma <- function(df){
+  rma(measure = "GEN", yi = df$reliability, sei = df$StandardError)
+}
 
 
 
+
+
+rel_rma.reg <- function(df){
+  rma(yi = reliability, sei = StandardError,
+      mods = ~ lang + comp + sex + mean_age,
+      data = df)
+}
