@@ -35,6 +35,8 @@ apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
 source(here("ReliabilityFunctions_RG.R"))
 
 # only run if you wish to recompute the reliability estimates!
+
+# currently does not work! Produces errors, while running script directly does not (unclear why)
 #source(here("Generalization_Initialization.R"))
 source(here("Loading_Estimates.R"))
 
@@ -121,7 +123,30 @@ Reg_prep <- read.csv(here("Meta-Regression/meta_regression_dat.csv"))
 
 
 
-reg.alpha.rma.fit_HH <- rel_rma.reg(AlphaHH)
+reg.alpha.rma.fit_HH <- rel_rma.reg(merge(AlphaHH, Reg_prep, by = "source"))
+reg.omega.rma.fit_HH <- rel_rma.reg(merge(OmegaHH, Reg_prep, by = "source"))
+reg.Bonett.rma.fit_HH <- rel_rma.reg(merge(BonettHH, Reg_prep, by = "source"))
+
+reg.alpha.rma.fit_EM <- rel_rma.reg(merge(AlphaEM, Reg_prep, by = "source"))
+reg.omega.rma.fit_EM <- rel_rma.reg(merge(OmegaEM, Reg_prep, by = "source"))
+reg.Bonett.rma.fit_EM <- rel_rma.reg(merge(BonettEM, Reg_prep, by = "source"))
+
+reg.alpha.rma.fit_EX <- rel_rma.reg(merge(AlphaEX, Reg_prep, by = "source"))
+reg.omega.rma.fit_EX <- rel_rma.reg(merge(OmegaEX, Reg_prep, by = "source"))
+reg.Bonett.rma.fit_EX <- rel_rma.reg(merge(BonettEX, Reg_prep, by = "source"))
+
+reg.alpha.rma.fit_AG <- rel_rma.reg(merge(AlphaAG, Reg_prep, by = "source"))
+reg.omega.rma.fit_AG <- rel_rma.reg(merge(OmegaAG, Reg_prep, by = "source"))
+reg.Bonett.rma.fit_AG <- rel_rma.reg(merge(BonettAG, Reg_prep, by = "source"))
+
+reg.alpha.rma.fit_CO <- rel_rma.reg(merge(AlphaCO, Reg_prep, by = "source"))
+reg.omega.rma.fit_CO <- rel_rma.reg(merge(OmegaCO, Reg_prep, by = "source"))
+reg.Bonett.rma.fit_CO <- rel_rma.reg(merge(BonettCO, Reg_prep, by = "source"))
+
+reg.alpha.rma.fit_OX <- rel_rma.reg(merge(AlphaOX, Reg_prep, by = "source"))
+reg.omega.rma.fit_OX <- rel_rma.reg(merge(OmegaOX, Reg_prep, by = "source"))
+reg.Bonett.rma.fit_OX <- rel_rma.reg(merge(BonettOX, Reg_prep, by = "source"))
+
 
 
 

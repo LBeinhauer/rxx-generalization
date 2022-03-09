@@ -52,20 +52,23 @@ pc_df <- as.data.frame(fread(here("Data/RRR10/raw_data_corrected_MAA.csv")))
 pc_df <- pc_df[which(pc_df$inclusion == "inclusion both RRR" | pc_df$inclusion == "inclusion Mazar only"),] %>%
   mutate(source = lab.name)
 
+
+pc_df$source[which(pc_df$source == "Gonz√°lez-Iraizoz")] <- "Gonzalez-Iraizoz"
+pc_df$source[which(pc_df$source == "√-zdoƒYru")] <- "Ozdogru"
+
+
 # identify relevant labs for analsysis
 labs_in_paper <- c("Laine", "klein Selle & Rozmann", "Aczel", "Ferreira-Santos", "Meijer", "Loschelder", "Wick", "Suchotzki", 
                    "Sutan", "Vanpaemel", "Verschuere", "Wiggins", "Gonzalez-Iraizoz", "Koppel", "Birt", "McCarthy", "Evans", 
                    "Holzmeister", "Ozdogru")
 labs_in_data <- unique(pc_df$source)
-labs_in_data[8] <- "Gonzalez-Iraizoz"
-labs_in_data[16] <- "Ozdogru"
+# labs_in_data[8] <- "Gonzalez-Iraizoz"
+# labs_in_data[16] <- "Ozdogru"
 
 # remove labs from data, which we do not need for analysis
 labs_excl <- labs_in_data[!labs_in_data %in% labs_in_paper]
 pc_df <- pc_df[which(!pc_df$source %in% labs_excl),]
 
-pc_df$source[which(pc_df$source == "Gonz√°lez-Iraizoz")] <- "Gonzalez-Iraizoz"
-pc_df$source[which(pc_df$source == "√-zdoƒYru")] <- "Ozdogru"
 
 
 # include only participants in cheat condition (design was 2x2, cheat - no cheat x commandment - books)
@@ -74,7 +77,7 @@ pc_df <- pc_df[which(pc_df$maz.cheat.cond == "cheat"),]
 names(pc_df)
 
 # retain only those columns, which are needed for subsequent analysis.
-pc_df <- pc_df[,c(which(names(pc_df) %in% c("lab.name", "inclusion", "maz.prime.cond", "maz.cheat.cond", "source",
+pc_df <- pc_df[,c(which(names(pc_df) %in% c("inclusion", "maz.prime.cond", "maz.cheat.cond", "source",
                                             "compensation", "language", "major", "gender", "age")),
                   grep("^hex", names(pc_df)))]
 
@@ -211,8 +214,8 @@ pc_df <- pc_df %>% mutate(
 
 # language
 
-lang <- sapply(as.matrix(unique(pc_df$lab.name)), FUN = function(x){
-  table(pc_df$language[which(pc_df$lab.name == x)])
+lang <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  table(pc_df$language[which(pc_df$source == x)])
 })
 
 lang_t <- t(lang) # ÷zdogru 2 languages (8 English, 357 Turkish)
@@ -234,8 +237,8 @@ table(lang_lab_r)
 
 # compensation
 
-comp <- sapply(as.matrix(unique(pc_df$lab.name)), FUN = function(x){
-  table(pc_df$compensation[which(pc_df$lab.name == x)])
+comp <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  table(pc_df$compensation[which(pc_df$source == x)])
 })
 
 comp_t <- t(comp) # only McCarthy 2 (1 Course Credit, 317 Entry into drawing), 
@@ -253,28 +256,28 @@ table(comp_lab_r)
 
 # gender
 
-sex <- sapply(as.matrix(unique(pc_df$lab.name)), FUN = function(x){
-  gen <- pc_df$gender[which(pc_df$lab.name == x)]
+sex <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  gen <- pc_df$gender[which(pc_df$source == x)]
   gen_01 <- ifelse(gen == "female", 1, 0)
   mean(gen_01, na.rm = TRUE)
 })
 
 # age
 
-mean_age <- sapply(as.matrix(unique(pc_df$lab.name)), FUN = function(x){
-  age <- pc_df$age[which(pc_df$lab.name == x)]
+mean_age <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  age <- pc_df$age[which(pc_df$source == x)]
   mean(age, na.rm = TRUE)
 })  
 
-sd_age <- sapply(as.matrix(unique(pc_df$lab.name)), FUN = function(x){
-  age <- pc_df$age[which(pc_df$lab.name == x)]
+sd_age <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  age <- pc_df$age[which(pc_df$source == x)]
   sd(age, na.rm = TRUE)
 })  
 
 # major
 
-# maj <- sapply(as.matrix(unique(pc_df$lab.name)), FUN = function(x){
-#   table(pc_df$major[which(pc_df$lab.name == x)])
+# maj <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+#   table(pc_df$major[which(pc_df$source == x)])
 # })
 
 
