@@ -16,8 +16,8 @@ If you aim to reproduce the results from the paper, please perform the following
 
 1. Start the data preparation and cleaning process, by executing [Generalization_Initialization.R](Generalization_Initialization.R).
    - This will clean the data, according to the procedure in XXX.
-   - Subsequently, reliability will be estimated for each replication using Cronbach's Alpha, McDonald's Omega and a Bonett-Transformation of Cronbach's Alpha will be performed and stored in [Reliability Estimates](Reliability Estimates).
-   - Additionally, aggregates of suspected moderators for a meta-regression will be collected for each replication and stored in [Meta-Regression](Meta-Regression).
+   - Subsequently, reliability will be estimated for each replication using Cronbach's Alpha, McDonald's Omega and a Bonett-Transformation of Cronbach's Alpha will be performed and stored in [Reliability Estimates].
+   - Additionally, aggregates of suspected moderators for a meta-regression will be collected for each replication and stored in [Meta-Regression].
    - Please note, that Data will not be shared, until approval is obtained from the original authors.
 2. Perform the Reliability Generalization using [Generalization_Meta-Analysis.R](Generalization_Meta-Analysis.R).
    - This will generate meta-analytic estimates of reliability and additional heterogeneity of reliability between samples.
