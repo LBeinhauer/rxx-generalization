@@ -254,3 +254,73 @@ rel_rma.reg <- function(df){
       mods = ~ lang + comp + sex + mean_age,
       data = df)
 }
+
+
+
+
+my_forest_plot <- function(rma.fit, rma.data, main.title = "Forest Plot", 
+                           x.lab = "Estimate", ci.lvl = .975, CI.display = FALSE){
+  
+  # Calculate lower and upper limits of confidence levels, for each replication's estimate
+  cil <- rma.fit$yi[1:length(rma.fit$yi)] - qnorm(ci.lvl)*sqrt(rma.fit$vi[1:length(rma.fit$vi)])
+  ciu <- rma.fit$yi[1:length(rma.fit$yi)] + qnorm(ci.lvl)*sqrt(rma.fit$vi[1:length(rma.fit$vi)])
+  
+  
+  
+  p <- ggplot() + # initialize ggplot
+    
+    # plot point estimates
+    geom_point(aes(x = rma.fit$yi, y = c(5:(length(rma.fit$yi)+4))), shape = 15) + 
+    
+    # vertical line at x = 0
+    # geom_vline(xintercept = 0, linetype = "dashed") +
+    
+    # add horizontal line for CI of each replication's estimate
+    geom_segment(aes(x = cil, y = c(5:(length(rma.fit$yi)+4)), xend = ciu, yend = c(5:(length(rma.fit$yi)+4)))) +
+    
+    # ggplot theme
+    theme_minimal() +
+    
+    # plot meta analytic point estimate
+    geom_point(aes(x = rma.fit$b[1], y = 1), shape = 18) +
+    
+    #add CI-line for meta-analytic point estimate
+    geom_segment(aes(x = rma.fit$b[1] - qnorm(ci.lvl)*rma.fit$se, y = 1, 
+                     xend = rma.fit$b[1] + qnorm(ci.lvl)*rma.fit$se, yend = 1)) +
+    
+    # add vertical upper & lower-limit "fence"-lines, for each replication's estimate
+    geom_segment(aes(x = cil, xend = cil, y = (c(5:(length(rma.fit$yi)+4))+.3), yend = (c(5:(length(rma.fit$yi)+4))-.3) )) +
+    geom_segment(aes(x = ciu, xend = ciu, y = (c(5:(length(rma.fit$yi)+4))+.3), yend = (c(5:(length(rma.fit$yi)+4))-.3) )) +
+    
+    # add vertical upper- & lower-limit "fence lines, for meta-analytic point estimate
+    geom_segment(aes(x = rma.fit$b[1] - qnorm(ci.lvl)*rma.fit$se, y = (1+.3), 
+                     xend = rma.fit$b[1] - qnorm(ci.lvl)*rma.fit$se, yend = (1-.3))) +
+    geom_segment(aes(x = rma.fit$b[1] + qnorm(ci.lvl)*rma.fit$se, y = (1+.3), 
+                     xend = rma.fit$b[1] + qnorm(ci.lvl)*rma.fit$se, yend = (1-.3))) +
+    
+    
+    
+    
+    # labs & titles
+    xlab(x.lab) +
+    ylab("Lab") +
+    ggtitle(main.title)
+  
+  if(CI.display){
+    p <- p + 
+      scale_y_continuous(breaks = c(1, (5:(length(rma.fit$yi)+4))), 
+                         labels = c("RE Model", unique(as.character(rma.data$source))),
+                         
+                         sec.axis = dup_axis(breaks = c(1, (5:(length(rma.fit$yi)+4))),
+                                             labels = c(paste0("[", round(rma.fit$b[1] - qnorm(ci.lvl)*rma.fit$se, 2), ";", round(rma.fit$b[1] + qnorm(ci.lvl)*rma.fit$se, 2), "]"), 
+                                                        paste0("[", round(cil, 2), ";", round(ciu, 2), "]")),
+                                             name = ""))
+    # p <- p + geom_text(aes(y = c(5:(length(rma.fit$yi)+4)), x = (max(ciu) + abs(max(ciu))*.05),
+    #               label = paste0("[", round(cil, 2), ";", round(ciu, 2), "]")))
+  }else{
+    p <- p +     # adjust labels on y-axis, to display lab-abreviations
+      scale_y_continuous(breaks = c(1, (5:(length(rma.fit$yi)+4))), labels = c("RE Model", unique(as.character(rma.data$source)))) 
+  }
+  
+  print(p)
+}

@@ -67,12 +67,61 @@ Bonett.rma.fit_OX <- rel_rma(BonettOX)
 
 
 
+my_forest_plot(alpha.rma.fit_HH, AlphaHH, main.title = "Forest Plot - HEXACO Honesty-Humility",
+               x.lab = "Cronbach's Alpha", CI.display = TRUE)
+my_forest_plot(omega.rma.fit_HH, OmegaHH, main.title = "Forest Plot - HEXACO Honesty-Humility",
+               x.lab = "McDonald's Omega", CI.display = TRUE)
+my_forest_plot(Bonett.rma.fit_HH, BonettHH, main.title = "Forest Plot - HEXACO Honesty-Humility",
+               x.lab = "Cronbach's Alpha Bonett-transformed", CI.display = TRUE)
+
+my_forest_plot(alpha.rma.fit_EM, AlphaEM, main.title = "Forest Plot - HEXACO Emotionality",
+               x.lab = "Cronbach's Alpha", CI.display = TRUE)
+my_forest_plot(omega.rma.fit_EM, OmegaEM, main.title = "Forest Plot - HEXACO Emotionality",
+               x.lab = "McDonald's Omega", CI.display = TRUE)
+my_forest_plot(Bonett.rma.fit_EM, BonettEM, main.title = "Forest Plot - HEXACO Emotionality",
+               x.lab = "Cronbach's Alpha Bonett-transformed", CI.display = TRUE)
+
+my_forest_plot(alpha.rma.fit_EX, AlphaEX, main.title = "Forest Plot - HEXACO Extraversion",
+               x.lab = "Cronbach's Alpha", CI.display = TRUE)
+my_forest_plot(omega.rma.fit_EX, OmegaEX, main.title = "Forest Plot - HEXACO Extraversion",
+               x.lab = "McDonald's Omega", CI.display = TRUE)
+my_forest_plot(Bonett.rma.fit_EX, BonettEX, main.title = "Forest Plot - HEXACO Extraversion",
+               x.lab = "Cronbach's Alpha Bonett-transformed", CI.display = TRUE)
+
+my_forest_plot(alpha.rma.fit_AG, AlphaAG, main.title = "Forest Plot - HEXACO Agreeableness",
+               x.lab = "Cronbach's Alpha", CI.display = TRUE)
+my_forest_plot(omega.rma.fit_AG, OmegaAG, main.title = "Forest Plot - HEXACO Agreeableness",
+               x.lab = "McDonald's Omega", CI.display = TRUE)
+my_forest_plot(Bonett.rma.fit_AG, BonettAG, main.title = "Forest Plot - HEXACO Agreeableness",
+               x.lab = "Cronbach's Alpha Bonett-transformed", CI.display = TRUE)
+
+my_forest_plot(alpha.rma.fit_CO, AlphaCO, main.title = "Forest Plot - HEXACO Conscientiousness",
+               x.lab = "Cronbach's Alpha", CI.display = TRUE)
+my_forest_plot(omega.rma.fit_CO, OmegaCO, main.title = "Forest Plot - HEXACO Conscientiousness",
+               x.lab = "McDonald's Omega", CI.display = TRUE)
+my_forest_plot(Bonett.rma.fit_CO, BonettCO, main.title = "Forest Plot - HEXACO Conscientiousness",
+               x.lab = "Cronbach's Alpha Bonett-transformed", CI.display = TRUE)
+
+my_forest_plot(alpha.rma.fit_OX, AlphaOX, main.title = "Forest Plot - HEXACO Openness to Experience",
+               x.lab = "Cronbach's Alpha", CI.display = TRUE)
+my_forest_plot(omega.rma.fit_OX, OmegaOX, main.title = "Forest Plot - HEXACO Openness to Experience",
+               x.lab = "McDonald's Omega", CI.display = TRUE)
+my_forest_plot(Bonett.rma.fit_OX, BonettOX, main.title = "Forest Plot - HEXACO Openness to Experience",
+               x.lab = "Cronbach's Alpha Bonett-transformed", CI.display = TRUE)
+
+
+
+
+
+
+
 
 
 Reg_prep <- read.csv(here("Meta-Regression/meta_regression_dat.csv"))
 
 
-reg.alpha.rma.fit_OX <- rel_rma.reg(AlphaHH)
+
+reg.alpha.rma.fit_HH <- rel_rma.reg(AlphaHH)
 
 
 
