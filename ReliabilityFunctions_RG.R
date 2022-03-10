@@ -263,6 +263,14 @@ rel_rma.reg_bf <- function(df){
 }
 
 
+
+nameprep_hex <- function(items){
+  items_hex_recode <- c(30, 12, 60, 42, 24, 28, 53, 35, 41, 59, 28, 52, 10, 46, 9, 15, 57, 21, 26, 32, 
+                        14, 20, 44, 56, 1, 31, 49, 19, 55, 48)
+
+  ifelse(items %in% items_hex_recode, paste0("hex", items, "_R"), paste0("hex", items))
+}
+
 my_forest_plot <- function(rma.fit, rma.data, main.title = "Forest Plot", 
                            x.lab = "Estimate", ci.lvl = .975, CI.display = FALSE){
   

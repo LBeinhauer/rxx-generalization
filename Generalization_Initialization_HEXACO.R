@@ -308,3 +308,211 @@ Reg_prep <- data.frame(lang = lang_lab_r,
                        source = labs_in_data[labs_in_data %in% labs_in_paper])
 
 write.csv(Reg_prep, here("Meta-Regression/meta_regression_dat_HEXACO.csv"), row.names = FALSE)
+
+
+
+
+
+
+
+
+
+
+### Analysing the facets ###
+
+
+## HH
+
+hh_facet_items <- list(
+  items_hex_HH_Sincerity <- c(6, 30, 54),
+  items_hex_HH_Fairness <- c(12, 36, 60),
+  items_hex_HH_GreedAvoidance <- c(18, 42),
+  items_hex_HH_Modesty <- c(24, 48)
+)
+
+hh_facet_items_names <- lapply(hh_facet_items, nameprep_hex)
+
+hh_facet_means <- sapply(hh_facet_items_names, FUN = function(x){
+  rowMeans(pc_df[,x])
+})%>%
+  as.data.frame() %>%
+  rename("Sincerity" = "V1", "Fairness" = "V2", "GreedAvoidance" = "V3", "Modesty" = "V4")
+
+
+## EM
+
+em_facet_items <- list(
+  items_hex_EM_Fearfulness <- c(5, 29, 53),
+  items_hex_EM_Anxiety <- c(11, 35),
+  items_hex_EM_Dependence <- c(17, 41),
+  items_hex_EM_Sentimentality <- c(23, 47, 59)
+)
+
+em_facet_items_names <- lapply(em_facet_items, nameprep_hex)
+
+em_facet_means <- sapply(em_facet_items_names, FUN = function(x){
+  rowMeans(pc_df[,x])
+})%>%
+  as.data.frame() %>%
+  rename("Fearfulness" = "V1", "Anxiety" = "V2", "Dependence" = "V3", "Sentimentality" = "V4")
+
+
+## EX
+
+ex_facet_items <- list(
+  items_hex_EX_SocialSelfEsteem <- c(4, 28, 52),
+  items_hex_EX_SocialBoldness <- c(10, 34, 58),
+  items_hex_EX_Sociability <- c(16, 40),
+  items_hex_EX_Liveliness <- c(22, 46)
+)
+
+ex_facet_items_names <- lapply(ex_facet_items, nameprep_hex)
+
+ex_facet_means <- sapply(ex_facet_items_names, FUN = function(x){
+  rowMeans(pc_df[,x])
+})%>%
+  as.data.frame() %>%
+  rename("SocialSelfEsteem" = "V1", "SocialBoldness" = "V2", "Sociability" = "V3", "Liveliness" = "V4")
+
+
+## Agreeableness
+
+ag_facet_items <- list(
+  items_hex_AG_Forgiveness <- c(3, 27),
+  items_hex_AG_Gentleness <- c(9, 33, 51),
+  items_hex_AG_Flexibility <- c(15, 39, 57),
+  items_hex_AG_Patience <- c(21, 45)
+  
+)
+
+ag_facet_items_names <- lapply(ag_facet_items, nameprep_hex)
+
+ag_facet_means <- sapply(ag_facet_items_names, FUN = function(x){
+  rowMeans(pc_df[,x])
+})%>%
+  as.data.frame() %>%
+  rename("Forgiveness" = "V1", "Gentleness" = "V2", "Flexibility" = "V3", "Patience" = "V4")
+
+
+## Conscientiousness
+
+co_facet_items <- list(
+  items_hex_CO_Organization <- c(2, 26),
+  items_hex_CO_Diligence <- c(8, 32),
+  items_hex_CO_Perfectionism <- c(14, 38, 50),
+  items_hex_CO_Prudence <- c(20, 44, 46)
+)
+
+co_facet_items_names <- lapply(co_facet_items, nameprep_hex)
+
+co_facet_means <- sapply(co_facet_items_names, FUN = function(x){
+  rowMeans(pc_df[,x])
+})%>%
+  as.data.frame() %>%
+  rename("Organization" = "V1", "Diligence" = "V2", "Perfectionism" = "V3", "Prudence" = "V4")
+
+
+## Openness to Experience
+
+ox_facet_items <- list(
+  items_hex_OX_AestheticApprecation <- c(1, 25),
+  items_hex_OX_Inquisitveness <- c(7, 31),
+  items_hex_OX_Creativity <- c(13, 37, 49),
+  items_hex_OX_Unconventionality <- c(19, 43, 55)
+)
+
+ox_facet_items_names <- lapply(ox_facet_items, nameprep_hex)
+
+ox_facet_means <- sapply(ox_facet_items_names, FUN = function(x){
+  rowMeans(pc_df[,x])
+})%>%
+  as.data.frame() %>%
+  rename("AestheticAppreciation" = "V1", "Inquisitiveness" = "V2", "Creativity" = "V3", "Unconventionality" = "V4")
+
+
+
+all_facet_means <- cbind(hh_facet_means, em_facet_means, ex_facet_means, ag_facet_means, co_facet_means, ox_facet_means)
+
+facet_df <- data.frame(all_facet_means, 
+                       source = pc_df$source)
+
+
+
+
+
+# Honesty Humility
+est_pc_hex_facets_HH <- rel_extractor(facet_df, names(hh_facet_means), "Hex_facets_HH") # generate Cronbach's alpha reliability estimates 
+omega_pc_hex_facets_HH <- omega_extractor(facet_df[which(rowSums(is.na(facet_df[,names(hh_facet_means)])) 
+                                                         < length(names(hh_facet_means))),], names(hh_facet_means), "Hex_facets_HH") # generate McDonald's omega reliability estimates
+
+pc_hex_facets_HH_alpha_transform_prepped <- Bonett_prep(est_pc_hex_facets_HH, rma_prep_pc, length(names(hh_facet_means))) # prepare alpha transformation
+transformed_pc_alpha_hex_HH <- Bonett_transformation(pc_hex_facets_HH_alpha_transform_prepped, "AlphaHex_facets_HH")  # Bonett-transformation of alpha-coefficient
+
+pc_hex_facets_HH_omega_transform_prepped <- Bonett_prep(omega_pc_hex_facets_HH, rma_prep_pc, length(names(hh_facet_means))) # prepare alpha transformation
+transformed_pc_omega_hex_facets_HH <- Bonett_transformation(pc_hex_facets_HH_omega_transform_prepped, "OmegaHex_facets_HH")  # Bonett-transformation of alpha-coefficient
+
+
+# Emotionality
+est_pc_hex_facets_EM <- rel_extractor(facet_df, names(em_facet_means), "Hex_facets_EM") # generate Cronbach's alpha reliability estimates 
+omega_pc_hex_facets_EM <- omega_extractor(facet_df[which(rowSums(is.na(facet_df[,names(em_facet_means)])) # generate McDonald's omega reliability estimates
+                                               < length(names(em_facet_means))),], names(em_facet_means), "Hex_facets_EM")
+
+pc_hex_facets_EM_alpha_transform_prepped <- Bonett_prep(est_pc_hex_facets_EM, rma_prep_pc, length(names(em_facet_means))) # prepare alpha transformation
+transformed_pc_alpha_hex_facets_EM <- Bonett_transformation(pc_hex_facets_EM_alpha_transform_prepped, "AlphaHex_facets_EM")  # Bonett-transformation of alpha-coefficient
+
+pc_hex_facets_EM_omega_transform_prepped <- Bonett_prep(omega_pc_hex_facets_EM, rma_prep_pc, length(names(em_facet_means))) # prepare alpha transformation
+transformed_pc_omega_hex_facets_EM <- Bonett_transformation(pc_hex_facets_EM_omega_transform_prepped, "OmegaHex_facets_EM")  # Bonett-transformation of alpha-coefficient
+
+
+# Extraversion
+est_pc_hex_facets_EX <- rel_extractor(facet_df, names(ex_facet_means), "Hex_facets_EX") # generate Cronbach's alpha reliability estimates 
+omega_pc_hex_facets_EX <- omega_extractor(facet_df[which(rowSums(is.na(facet_df[,names(ex_facet_means)])) # generate McDonald's omega reliability estimates
+                                               < length(names(ex_facet_means))),], names(ex_facet_means), "Hex_facets_EX")
+
+pc_hex_facets_EX_alpha_transform_prepped <- Bonett_prep(est_pc_hex_facets_EX, rma_prep_pc, length(names(ex_facet_means))) # prepare alpha transformation
+transformed_pc_alpha_hex_facets_EX <- Bonett_transformation(pc_hex_facets_EX_alpha_transform_prepped, "AlphaHex_facets_EX")  # Bonett-transformation of alpha-coefficient
+
+pc_hex_facets_EX_omega_transform_prepped <- Bonett_prep(omega_pc_hex_facets_EX, rma_prep_pc, length(names(ex_facet_means))) # prepare alpha transformation
+transformed_pc_omega_hex_facets_EX <- Bonett_transformation(pc_hex_facets_EX_omega_transform_prepped, "OmegaHex_facets_EX")  # Bonett-transformation of alpha-coefficient
+
+
+# Agreeableness
+est_pc_hex_facets_AG <- rel_extractor(facet_df, names(ag_facet_means), "Hex_facets_AG") # generate Cronbach's alpha reliability estimates 
+omega_pc_hex_facets_AG <- omega_extractor(facet_df[which(rowSums(is.na(facet_df[,names(ag_facet_means)])) # generate McDonald's omega reliability estimates
+                                               < length(names(ag_facet_means))),], names(ag_facet_means), "Hex_facets_AG")
+
+pc_hex_facets_AG_alpha_transform_prepped <- Bonett_prep(est_pc_hex_facets_AG, rma_prep_pc, length(names(ag_facet_means))) # prepare alpha transformation
+transformed_pc_alpha_facets_hex_AG <- Bonett_transformation(pc_hex_facets_AG_alpha_transform_prepped, "AlphaHex_facets_AG")  # Bonett-transformation of alpha-coefficient
+
+pc_hex_facets_AG_omega_transform_prepped <- Bonett_prep(omega_pc_hex_facets_AG, rma_prep_pc, length(names(ag_facet_means))) # prepare alpha transformation
+transformed_pc_omega_facets_hex_AG <- Bonett_transformation(pc_hex_facets_AG_omega_transform_prepped, "OmegaHex_facets_AG")  # Bonett-transformation of alpha-coefficient
+
+
+# Conscientiousness
+est_pc_hex_facets_CO <- rel_extractor(facet_df, names(co_facet_means), "Hex_facets_CO") # generate Cronbach's alpha reliability estimates 
+omega_pc_hex_facets_CO <- omega_extractor(facet_df[which(rowSums(is.na(facet_df[,names(co_facet_means)])) # generate McDonald's omega reliability estimates
+                                               < length(names(co_facet_means))),], names(co_facet_means), "Hex_facets_CO")
+
+pc_hex_facets_CO_alpha_transform_prepped <- Bonett_prep(est_pc_hex_facets_CO, rma_prep_pc, length(names(co_facet_means))) # prepare alpha transformation
+transformed_pc_alpha_hex_facets_CO <- Bonett_transformation(pc_hex_facets_CO_alpha_transform_prepped, "AlphaHex_facets_CO")  # Bonett-transformation of alpha-coefficient
+
+pc_hex_facets_CO_omega_transform_prepped <- Bonett_prep(omega_pc_hex_facets_CO, rma_prep_pc, length(names(co_facet_means))) # prepare alpha transformation
+transformed_pc_omega_hex_facets_CO <- Bonett_transformation(pc_hex_facets_CO_omega_transform_prepped, "OmegaHex_facets_CO")  # Bonett-transformation of alpha-coefficient
+
+
+# Openness to Experiences
+est_pc_hex_facets_OX <- rel_extractor(facet_df, names(ox_facet_means), "Hex_facets_OX") # generate Cronbach's alpha reliability estimates 
+omega_pc_hex_facets_OX <- omega_extractor(facet_df[which(rowSums(is.na(facet_df[,names(ox_facet_means)])) # generate McDonald's omega reliability estimates
+                                               < length(names(ox_facet_means)) ),], names(ox_facet_means), "Hex_facets_OX")
+
+pc_hex_facets_OX_alpha_transform_prepped <- Bonett_prep(est_pc_hex_facets_OX, rma_prep_pc, length(names(ox_facet_means))) # prepare alpha transformation
+transformed_pc_alpha_hex_facets_OX <- Bonett_transformation(pc_hex_facets_OX_alpha_transform_prepped, "AlphaHex_facets_OX")  # Bonett-transformation of alpha-coefficient
+
+pc_hex_facets_OX_omega_transform_prepped <- Bonett_prep(omega_pc_hex_facets_OX, rma_prep_pc, length(names(ox_facet_means))) # prepare alpha transformation
+transformed_pc_omega_hex_facets_OX <- Bonett_transformation(pc_hex_facets_OX_omega_transform_prepped, "OmegaHex_facets_OX")  # Bonett-transformation of alpha-coefficient
+
+
+
+
+
+
