@@ -307,4 +307,4 @@ Reg_prep <- data.frame(lang = lang_lab_r,
                        mean_age = mean_age,
                        source = labs_in_data[labs_in_data %in% labs_in_paper])
 
-write.csv(Reg_prep, here("Meta-Regression/meta_regression_dat.csv"), row.names = FALSE)
+write.csv(Reg_prep, here("Meta-Regression/meta_regression_dat_HEXACO.csv"), row.names = FALSE)

@@ -249,13 +249,18 @@ rel_rma <- function(df){
 
 
 
-rel_rma.reg <- function(df){
+rel_rma.reg_hex <- function(df){
   rma(yi = reliability, sei = StandardError,
       mods = ~ lang + comp + sex + mean_age,
       data = df)
 }
 
 
+rel_rma.reg_bf <- function(df){
+  rma(yi = reliability, sei = StandardError,
+      mods = ~ lang,
+      data = df)
+}
 
 
 my_forest_plot <- function(rma.fit, rma.data, main.title = "Forest Plot", 

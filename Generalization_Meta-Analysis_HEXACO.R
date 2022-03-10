@@ -45,7 +45,7 @@ source(here("Loading_Estimates_HEXACO.R"))
 # fitting random-effects meta-analysis to estimates of reliability using Cronbach's alpha & McDonald's omega
 alpha.rma.fit_HH <- rel_rma(AlphaHex_HH)
 omega.rma.fit_HH <- rel_rma(OmegaHex_HH)
-Bonett_alpha.rma.fit_HH <- rel_rma(BonettHH)
+Bonett_alpha.rma.fit_HH <- rel_rma(BonettAlphaHex_HH)
 Bonett_omega.rma.fit_HH <- rel_rma(BonettOmegaHex_HH)
 
 alpha.rma.fit_EM <- rel_rma(AlphaHex_EM)
@@ -137,39 +137,39 @@ my_forest_plot(Bonett_omega.rma.fit_OX, BonettOmegaHex_OX, main.title = "Forest 
 
 
 
-Reg_prep <- read.csv(here("Meta-Regression/meta_regression_dat.csv"))
+Reg_prep <- read.csv(here("Meta-Regression/meta_regression_dat_HEXACO.csv"))
 
 
 
-reg.alpha.rma.fit_HH <- rel_rma.reg(merge(AlphaHex_HH, Reg_prep, by = "source"))
-reg.omega.rma.fit_HH <- rel_rma.reg(merge(OmegaHex_HH, Reg_prep, by = "source"))
-reg.Bonett_alpha.rma.fit_HH <- rel_rma.reg(merge(BonettAlphaHex_HH, Reg_prep, by = "source"))
-reg.Bonett_omega.rma.fit_HH <- rel_rma.reg(merge(BonettOmegaHex_HH, Reg_prep, by = "source"))
+reg.alpha.rma.fit_HH <- rel_rma.reg_hex(merge(AlphaHex_HH, Reg_prep, by = "source"))
+reg.omega.rma.fit_HH <- rel_rma.reg_hex(merge(OmegaHex_HH, Reg_prep, by = "source"))
+reg.Bonett_alpha.rma.fit_HH <- rel_rma.reg_hex(merge(BonettAlphaHex_HH, Reg_prep, by = "source"))
+reg.Bonett_omega.rma.fit_HH <- rel_rma.reg_hex(merge(BonettOmegaHex_HH, Reg_prep, by = "source"))
 
-reg.alpha.rma.fit_EM <- rel_rma.reg(merge(AlphaHex_EM, Reg_prep, by = "source"))
-reg.omega.rma.fit_EM <- rel_rma.reg(merge(OmegaHex_EM, Reg_prep, by = "source"))
-reg.Bonett_alpha.rma.fit_EM <- rel_rma.reg(merge(BonettAlphaHex_EM, Reg_prep, by = "source"))
-reg.Bonett_omega.rma.fit_EM <- rel_rma.reg(merge(BonettOmegaHex_EM, Reg_prep, by = "source"))
+reg.alpha.rma.fit_EM <- rel_rma.reg_hex(merge(AlphaHex_EM, Reg_prep, by = "source"))
+reg.omega.rma.fit_EM <- rel_rma.reg_hex(merge(OmegaHex_EM, Reg_prep, by = "source"))
+reg.Bonett_alpha.rma.fit_EM <- rel_rma.reg_hex(merge(BonettAlphaHex_EM, Reg_prep, by = "source"))
+reg.Bonett_omega.rma.fit_EM <- rel_rma.reg_hex(merge(BonettOmegaHex_EM, Reg_prep, by = "source"))
 
-reg.alpha.rma.fit_EX <- rel_rma.reg(merge(AlphaHex_EX, Reg_prep, by = "source"))
-reg.omega.rma.fit_EX <- rel_rma.reg(merge(OmegaHex_EX, Reg_prep, by = "source"))
-reg.Bonett_alpha.rma.fit_EX <- rel_rma.reg(merge(BonettAlphaHex_EX, Reg_prep, by = "source"))
-reg.Bonett_omega.rma.fit_EX <- rel_rma.reg(merge(BonettOmegaHex_EX, Reg_prep, by = "source"))
+reg.alpha.rma.fit_EX <- rel_rma.reg_hex(merge(AlphaHex_EX, Reg_prep, by = "source"))
+reg.omega.rma.fit_EX <- rel_rma.reg_hex(merge(OmegaHex_EX, Reg_prep, by = "source"))
+reg.Bonett_alpha.rma.fit_EX <- rel_rma.reg_hex(merge(BonettAlphaHex_EX, Reg_prep, by = "source"))
+reg.Bonett_omega.rma.fit_EX <- rel_rma.reg_hex(merge(BonettOmegaHex_EX, Reg_prep, by = "source"))
 
-reg.alpha.rma.fit_AG <- rel_rma.reg(merge(AlphaHex_AG, Reg_prep, by = "source"))
-reg.omega.rma.fit_AG <- rel_rma.reg(merge(OmegaHex_AG, Reg_prep, by = "source"))
-reg.Bonett_alpha.rma.fit_AG <- rel_rma.reg(merge(BonettAlphaHex_AG, Reg_prep, by = "source"))
-reg.Bonett_omega.rma.fit_AG <- rel_rma.reg(merge(BonettOmegaHex_AG, Reg_prep, by = "source"))
+reg.alpha.rma.fit_AG <- rel_rma.reg_hex(merge(AlphaHex_AG, Reg_prep, by = "source"))
+reg.omega.rma.fit_AG <- rel_rma.reg_hex(merge(OmegaHex_AG, Reg_prep, by = "source"))
+reg.Bonett_alpha.rma.fit_AG <- rel_rma.reg_hex(merge(BonettAlphaHex_AG, Reg_prep, by = "source"))
+reg.Bonett_omega.rma.fit_AG <- rel_rma.reg_hex(merge(BonettOmegaHex_AG, Reg_prep, by = "source"))
 
-reg.alpha.rma.fit_CO <- rel_rma.reg(merge(AlphaHex_CO, Reg_prep, by = "source"))
-reg.omega.rma.fit_CO <- rel_rma.reg(merge(OmegaHex_CO, Reg_prep, by = "source"))
-reg.Bonett_alpha.rma.fit_CO <- rel_rma.reg(merge(BonettAlphaHex_CO, Reg_prep, by = "source"))
-reg.Bonett_omega.rma.fit_CO <- rel_rma.reg(merge(BonettOmegaHex_CO, Reg_prep, by = "source"))
+reg.alpha.rma.fit_CO <- rel_rma.reg_hex(merge(AlphaHex_CO, Reg_prep, by = "source"))
+reg.omega.rma.fit_CO <- rel_rma.reg_hex(merge(OmegaHex_CO, Reg_prep, by = "source"))
+reg.Bonett_alpha.rma.fit_CO <- rel_rma.reg_hex(merge(BonettAlphaHex_CO, Reg_prep, by = "source"))
+reg.Bonett_omega.rma.fit_CO <- rel_rma.reg_hex(merge(BonettOmegaHex_CO, Reg_prep, by = "source"))
 
-reg.alpha.rma.fit_OX <- rel_rma.reg(merge(AlphaHex_OX, Reg_prep, by = "source"))
-reg.omega.rma.fit_OX <- rel_rma.reg(merge(OmegaHex_OX, Reg_prep, by = "source"))
-reg.Bonett_alpha.rma.fit_OX <- rel_rma.reg(merge(BonettAlphaHex_OX, Reg_prep, by = "source"))
-reg.Bonett_omega.rma.fit_OX <- rel_rma.reg(merge(BonettOmegaHex_OX, Reg_prep, by = "source"))
+reg.alpha.rma.fit_OX <- rel_rma.reg_hex(merge(AlphaHex_OX, Reg_prep, by = "source"))
+reg.omega.rma.fit_OX <- rel_rma.reg_hex(merge(OmegaHex_OX, Reg_prep, by = "source"))
+reg.Bonett_alpha.rma.fit_OX <- rel_rma.reg_hex(merge(BonettAlphaHex_OX, Reg_prep, by = "source"))
+reg.Bonett_omega.rma.fit_OX <- rel_rma.reg_hex(merge(BonettOmegaHex_OX, Reg_prep, by = "source"))
 
 
 
