@@ -1,4 +1,4 @@
-### Reliability Generalization HEXACO | Big Five TIPI ###
+### Reliability Generalization HEXACO ###
 
 ## 08/03/2022
 
@@ -142,60 +142,60 @@ rma_prep_pc <- rma_prep_function(pc_df %>%                            # generate
 
 
 # Honesty Humility
-est_pc_hex_HH <- rel_extractor(pc_df, pc_hex_items_HH, "HH") # generate Cronbach's alpha reliability estimates 
+est_pc_hex_HH <- rel_extractor(pc_df, pc_hex_items_HH, "Hex-HH") # generate Cronbach's alpha reliability estimates 
 omega_pc_hex_HH <- omega_extractor(pc_df[which(rowSums(is.na(pc_df[,pc_hex_items_HH])) < length(pc_hex_items_HH) &
-                                                 pc_df$source != unique(pc_df$source)[15]),], pc_hex_items_HH, "HH") # generate McDonald's omega reliability estimates
+                                                 pc_df$source != unique(pc_df$source)[15]),], pc_hex_items_HH, "Hex-HH") # generate McDonald's omega reliability estimates
 # with lab 15 (Sutan) does not converge
 
 pc_hex_HH_transform_prepped <- Bonett_prep(est_pc_hex_HH, rma_prep_pc, length(pc_hex_items_HH)) # prepare alpha transformation
-transformed_pc_hex_HH <- Bonett_transformation(pc_hex_HH_transform_prepped, "HH")  # Bonett-transformation of alpha-coefficient
+transformed_pc_hex_HH <- Bonett_transformation(pc_hex_HH_transform_prepped, "Hex-HH")  # Bonett-transformation of alpha-coefficient
 
 
 # Emotionality
-est_pc_hex_EM <- rel_extractor(pc_df, pc_hex_items_EM, "EM") # generate Cronbach's alpha reliability estimates 
+est_pc_hex_EM <- rel_extractor(pc_df, pc_hex_items_EM, "Hex-EM") # generate Cronbach's alpha reliability estimates 
 omega_pc_hex_EM <- omega_extractor(pc_df[which(rowSums(is.na(pc_df[,pc_hex_items_EM])) # generate McDonald's omega reliability estimates
-                                               < length(pc_hex_items_EM)),], pc_hex_items_EM, "EM")
+                                               < length(pc_hex_items_EM)),], pc_hex_items_EM, "Hex-EM")
 
 pc_hex_EM_transform_prepped <- Bonett_prep(est_pc_hex_EM, rma_prep_pc, length(pc_hex_items_EM)) # prepare alpha transformation
-transformed_pc_hex_EM <- Bonett_transformation(pc_hex_EM_transform_prepped, "EM")  # Bonett-transformation of alpha-coefficient
+transformed_pc_hex_EM <- Bonett_transformation(pc_hex_EM_transform_prepped, "Hex-EM")  # Bonett-transformation of alpha-coefficient
 
 
 # Extraversion
-est_pc_hex_EX <- rel_extractor(pc_df, pc_hex_items_EX, "EX") # generate Cronbach's alpha reliability estimates 
+est_pc_hex_EX <- rel_extractor(pc_df, pc_hex_items_EX, "Hex-EX") # generate Cronbach's alpha reliability estimates 
 omega_pc_hex_EX <- omega_extractor(pc_df[which(rowSums(is.na(pc_df[,pc_hex_items_EX])) # generate McDonald's omega reliability estimates
-                                               < length(pc_hex_items_EX)),], pc_hex_items_EX, "EX")
+                                               < length(pc_hex_items_EX)),], pc_hex_items_EX, "Hex-EX")
 
 pc_hex_EX_transform_prepped <- Bonett_prep(est_pc_hex_EX, rma_prep_pc, length(pc_hex_items_EX)) # prepare alpha transformation
-transformed_pc_hex_EX <- Bonett_transformation(pc_hex_EX_transform_prepped, "EX")  # Bonett-transformation of alpha-coefficient
+transformed_pc_hex_EX <- Bonett_transformation(pc_hex_EX_transform_prepped, "Hex-EX")  # Bonett-transformation of alpha-coefficient
 
 
 # Agreeableness
-est_pc_hex_AG <- rel_extractor(pc_df, pc_hex_items_AG, "AG") # generate Cronbach's alpha reliability estimates 
+est_pc_hex_AG <- rel_extractor(pc_df, pc_hex_items_AG, "Hex-AG") # generate Cronbach's alpha reliability estimates 
 omega_pc_hex_AG <- omega_extractor(pc_df[which(rowSums(is.na(pc_df[,pc_hex_items_AG])) # generate McDonald's omega reliability estimates
-                                               < length(pc_hex_items_AG)),], pc_hex_items_AG, "AG")
+                                               < length(pc_hex_items_AG)),], pc_hex_items_AG, "Hex-AG")
 
 pc_hex_AG_transform_prepped <- Bonett_prep(est_pc_hex_AG, rma_prep_pc, length(pc_hex_items_AG)) # prepare alpha transformation
-transformed_pc_hex_AG <- Bonett_transformation(pc_hex_AG_transform_prepped, "AG")  # Bonett-transformation of alpha-coefficient
+transformed_pc_hex_AG <- Bonett_transformation(pc_hex_AG_transform_prepped, "Hex-AG")  # Bonett-transformation of alpha-coefficient
 
 
 # Conscientiousness
-est_pc_hex_CO <- rel_extractor(pc_df, pc_hex_items_CO, "CO") # generate Cronbach's alpha reliability estimates 
+est_pc_hex_CO <- rel_extractor(pc_df, pc_hex_items_CO, "Hex-CO") # generate Cronbach's alpha reliability estimates 
 omega_pc_hex_CO <- omega_extractor(pc_df[which(rowSums(is.na(pc_df[,pc_hex_items_CO])) # generate McDonald's omega reliability estimates
-                                               < length(pc_hex_items_CO)),], pc_hex_items_CO, "CO")
+                                               < length(pc_hex_items_CO)),], pc_hex_items_CO, "Hex-CO")
 
 pc_hex_CO_transform_prepped <- Bonett_prep(est_pc_hex_CO, rma_prep_pc, length(pc_hex_items_CO)) # prepare alpha transformation
-transformed_pc_hex_CO <- Bonett_transformation(pc_hex_CO_transform_prepped, "CO")  # Bonett-transformation of alpha-coefficient
+transformed_pc_hex_CO <- Bonett_transformation(pc_hex_CO_transform_prepped, "Hex-CO")  # Bonett-transformation of alpha-coefficient
 
 
 # Openness to Experiences
-est_pc_hex_OX <- rel_extractor(pc_df, pc_hex_items_OX, "OX") # generate Cronbach's alpha reliability estimates 
+est_pc_hex_OX <- rel_extractor(pc_df, pc_hex_items_OX, "Hex-OX") # generate Cronbach's alpha reliability estimates 
 # lab 3 does not converge (Evans), cov-mat is singular, no inverse
 omega_pc_hex_OX <- omega_extractor(pc_df[which(rowSums(is.na(pc_df[,pc_hex_items_OX])) # generate McDonald's omega reliability estimates
                                                < length(pc_hex_items_OX) &
-                                                 !pc_df$source %in% unique(pc_df$source)[3]),], pc_hex_items_OX, "OX")
+                                                 !pc_df$source %in% unique(pc_df$source)[3]),], pc_hex_items_OX, "Hex-OX")
 
 pc_hex_OX_transform_prepped <- Bonett_prep(est_pc_hex_OX, rma_prep_pc, length(pc_hex_items_OX)) # prepare alpha transformation
-transformed_pc_hex_OX <- Bonett_transformation(pc_hex_OX_transform_prepped, "OX")  # Bonett-transformation of alpha-coefficient
+transformed_pc_hex_OX <- Bonett_transformation(pc_hex_OX_transform_prepped, "Hex-OX")  # Bonett-transformation of alpha-coefficient
 
 
 
