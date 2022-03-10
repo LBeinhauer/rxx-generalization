@@ -217,7 +217,7 @@ rma_effect3 <- function(dataframe, measure = "SMD"){
 
 
 Bonett_prep <- function(df_rel, df_rma_prep, J){
-  df_rma_prep <- df_rma_prep[-which(df_rma_prep$source == "Total"),]
+  df_rma_prep <- df_rma_prep[which(df_rma_prep$source %in% df_rel$source),]
   return(data.frame(reliability = df_rel$reliability,
                     n = df_rma_prep$n_1 + df_rma_prep$n_0,
                     j = rep(J, length(df_rel$reliability)),
