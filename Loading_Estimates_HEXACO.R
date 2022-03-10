@@ -1,4 +1,4 @@
-### Reliability Generalization HEXACO | Big Five TIPI ###
+### Reliability Generalization HEXACO ###
 
 ## 08/03/2022
 
@@ -6,7 +6,7 @@
 
 
 ###################################################################################################
-# This script is used to load the reliability estimates generated previously,                     #
+# This script is used to load the HEXACO reliability estimates generated previously,              #
 ###################################################################################################
 
 
@@ -34,12 +34,14 @@ apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
 
 full_paths <- list.files(here("Reliability Estimates"), full.name = TRUE)
 
+relevant_paths <- full_paths[grep("Hex", full_paths)]
 
-for(i in 1:length(full_paths)){
-  fp <- full_paths[i]
+
+for(i in 1:length(relevant_paths)){
+  fp <- relevant_paths[i]
   name <- substr(fp, (regexpr("Estimates", fp)[1] + 10), (nchar(fp) - 4))
   assign(name, read.csv(fp))
 }
 
 
-rm(full_paths, fp, i, name)
+rm(full_paths, relevant_paths, fp, i, name)
