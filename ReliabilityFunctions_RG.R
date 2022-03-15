@@ -251,7 +251,7 @@ rel_rma <- function(df){
 
 rel_rma.reg_hex <- function(df){
   rma(yi = reliability, sei = StandardError,
-      mods = ~ lang + comp + sex + mean_age,
+      mods = ~ lang + comp + sex + mean_age + cond,
       data = df)
 }
 

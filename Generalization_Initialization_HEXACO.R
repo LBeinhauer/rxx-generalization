@@ -72,7 +72,7 @@ pc_df <- pc_df[which(!pc_df$source %in% labs_excl),]
 
 
 # include only participants in cheat condition (design was 2x2, cheat - no cheat x commandment - books)
-pc_df <- pc_df[which(pc_df$maz.cheat.cond == "cheat"),]
+# pc_df <- pc_df[which(pc_df$maz.cheat.cond == "cheat"),]
 
 names(pc_df)
 
@@ -82,7 +82,7 @@ pc_df <- pc_df[,c(which(names(pc_df) %in% c("inclusion", "maz.prime.cond", "maz.
                   grep("^hex", names(pc_df)))]
 
 
-
+pc_df <- mutate(pc_df, source = paste0(source, "_", maz.cheat.cond))
 
 
 
@@ -144,7 +144,7 @@ rma_prep_pc <- rma_prep_function(pc_df %>%                            # generate
 # Honesty Humility
 est_pc_hex_HH <- rel_extractor(pc_df, pc_hex_items_HH, "Hex_HH") # generate Cronbach's alpha reliability estimates 
 omega_pc_hex_HH <- omega_extractor(pc_df[which(rowSums(is.na(pc_df[,pc_hex_items_HH])) < length(pc_hex_items_HH) &
-                                                 pc_df$source != unique(pc_df$source)[15]),], pc_hex_items_HH, "Hex_HH") # generate McDonald's omega reliability estimates
+                                                 pc_df$source != unique(pc_df$source)[29]),], pc_hex_items_HH, "Hex_HH") # generate McDonald's omega reliability estimates
 # with lab 15 (Sutan) does not converge
 
 pc_hex_HH_alpha_transform_prepped <- Bonett_prep(est_pc_hex_HH, rma_prep_pc, length(pc_hex_items_HH)) # prepare alpha transformation
@@ -206,8 +206,7 @@ transformed_pc_omega_hex_CO <- Bonett_transformation(pc_hex_CO_omega_transform_p
 est_pc_hex_OX <- rel_extractor(pc_df, pc_hex_items_OX, "Hex_OX") # generate Cronbach's alpha reliability estimates 
 # lab 3 does not converge (Evans), cov-mat is singular, no inverse
 omega_pc_hex_OX <- omega_extractor(pc_df[which(rowSums(is.na(pc_df[,pc_hex_items_OX])) # generate McDonald's omega reliability estimates
-                                               < length(pc_hex_items_OX) &
-                                                 !pc_df$source %in% unique(pc_df$source)[3]),], pc_hex_items_OX, "Hex_OX")
+                                               < length(pc_hex_items_OX)),], pc_hex_items_OX, "Hex_OX")
 
 pc_hex_OX_alpha_transform_prepped <- Bonett_prep(est_pc_hex_OX, rma_prep_pc, length(pc_hex_items_OX)) # prepare alpha transformation
 transformed_pc_alpha_hex_OX <- Bonett_transformation(pc_hex_OX_alpha_transform_prepped, "AlphaHex_OX")  # Bonett-transformation of alpha-coefficient
@@ -300,12 +299,22 @@ sd_age <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
 
 
 
+cond <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  ifelse(grepl("no cheat", x), "no cheat", "cheat")
+})
+
+
+
+
+
+
 Reg_prep <- data.frame(lang = lang_lab_r,
                        comp = comp_lab_r,
                        sex = sex,
 #                      major = maj,
                        mean_age = mean_age,
-                       source = labs_in_data[labs_in_data %in% labs_in_paper])
+                       cond = cond,
+                       source = unique(pc_df$source))
 
 write.csv(Reg_prep, here("Meta-Regression/meta_regression_dat_HEXACO.csv"), row.names = FALSE)
 
