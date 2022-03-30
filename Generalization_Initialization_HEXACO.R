@@ -514,5 +514,53 @@ transformed_pc_omega_hex_facets_OX <- Bonett_transformation(pc_hex_facets_OX_ome
 
 
 
+##### All Samples Combined Analysis #####
+
+
+est_pc_hex_items_full_HH <- psych::alpha(pc_df[,names_items_hex_HH])
+est_pc_hex_items_full_EM <- psych::alpha(pc_df[,names_items_hex_EM])
+est_pc_hex_items_full_EX <- psych::alpha(pc_df[,names_items_hex_EX])
+est_pc_hex_items_full_AG <- psych::alpha(pc_df[,names_items_hex_AG])
+est_pc_hex_items_full_CO <- psych::alpha(pc_df[,names_items_hex_CO])
+est_pc_hex_items_full_OX <- psych::alpha(pc_df[,names_items_hex_OX])
+
+
+
+omega_pc_hex_items_full_HH <- coefficientalpha::omega(pc_df[which(rowSums(is.na(pc_df[,names_items_hex_HH])) < length(names_items_hex_HH)),
+                                                            names_items_hex_HH], se = T, varphi = 0, test = F)
+omega_pc_hex_items_full_EM <- coefficientalpha::omega(pc_df[which(rowSums(is.na(pc_df[,names_items_hex_EM])) < length(names_items_hex_EM)),
+                                                            names_items_hex_EM], se = T, varphi = 0, test = F)
+omega_pc_hex_items_full_EX <- coefficientalpha::omega(pc_df[which(rowSums(is.na(pc_df[,names_items_hex_EX])) < length(names_items_hex_EX)),
+                                                            names_items_hex_EX], se = T, varphi = 0, test = F)
+omega_pc_hex_items_full_AG <- coefficientalpha::omega(pc_df[which(rowSums(is.na(pc_df[,names_items_hex_AG])) < length(names_items_hex_AG)),
+                                                            names_items_hex_AG], se = T, varphi = 0, test = F)
+omega_pc_hex_items_full_CO <- coefficientalpha::omega(pc_df[which(rowSums(is.na(pc_df[,names_items_hex_CO])) < length(names_items_hex_CO)),
+                                                            names_items_hex_CO], se = T, varphi = 0, test = F)
+omega_pc_hex_items_full_OX <- coefficientalpha::omega(pc_df[which(rowSums(is.na(pc_df[,names_items_hex_OX])) < length(names_items_hex_OX)),
+                                                            names_items_hex_OX], se = T, varphi = 0, test = F)
+
+
+
+est_pc_hex_facets_full_HH <- psych::alpha(facet_df[,names(hh_facet_means)])
+est_pc_hex_facets_full_EM <- psych::alpha(facet_df[,names(em_facet_means)])
+est_pc_hex_facets_full_EX <- psych::alpha(facet_df[,names(ex_facet_means)])
+est_pc_hex_facets_full_AG <- psych::alpha(facet_df[,names(ag_facet_means)])
+est_pc_hex_facets_full_CO <- psych::alpha(facet_df[,names(co_facet_means)])
+est_pc_hex_facets_full_OX <- psych::alpha(facet_df[,names(ox_facet_means)])
+
+
+
+omega_pc_hex_facets_full_HH <- coefficientalpha::omega(facet_df[which(rowSums(is.na(facet_df[,names(hh_facet_means)])) < length(names(hh_facet_means))),
+                                                                names(hh_facet_means)], se = T, varphi = 0, test = F)
+omega_pc_hex_facets_full_EM <- coefficientalpha::omega(facet_df[which(rowSums(is.na(facet_df[,names(em_facet_means)])) < length(names(em_facet_means))),
+                                                                names(em_facet_means)], se = T, varphi = 0, test = F)
+omega_pc_hex_facets_full_EX <- coefficientalpha::omega(facet_df[which(rowSums(is.na(facet_df[,names(ex_facet_means)])) < length(names(ex_facet_means))),
+                                                                names(ex_facet_means)], se = T, varphi = 0, test = F)
+omega_pc_hex_facets_full_AG <- coefficientalpha::omega(facet_df[which(rowSums(is.na(facet_df[,names(ag_facet_means)])) < length(names(ag_facet_means))),
+                                                                names(ag_facet_means)], se = T, varphi = 0, test = F)
+omega_pc_hex_facets_full_CO <- coefficientalpha::omega(facet_df[which(rowSums(is.na(facet_df[,names(co_facet_means)])) < length(names(co_facet_means))),
+                                                                names(co_facet_means)], se = T, varphi = 0, test = F)
+omega_pc_hex_facets_full_OX <- coefficientalpha::omega(facet_df[which(rowSums(is.na(facet_df[,names(ox_facet_means)])) < length(names(ox_facet_means))),
+                                                                names(ox_facet_means)], se = T, varphi = 0, test = F)
 
 
