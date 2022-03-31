@@ -222,140 +222,6 @@ transformed_pc_omega_hex_OX <- Bonett_transformation(pc_hex_OX_omega_transform_p
 
 
 
-## Moderator preparation
-
-pc_df <- pc_df %>% mutate(
-  language = as.factor(language),
-  compensation = as.factor(compensation),
-  major = as.factor(major)
-)
-
-# language
-
-lang <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
-  table(pc_df$language[which(pc_df$source == x)])
-})
-
-lang_t <- t(lang) # Özdogru 2 languages (8 English, 357 Turkish)
-
-lang_lab <- apply(lang_t, MARGIN = 1, FUN = function(x){
-  names(x)[which(x == max(x))]
-})
-
-table(lang_lab)
-
-lang_lab_r <- ifelse(
-  lang_lab == "Dutch", "Dutch", ifelse(
-    lang_lab == "English", "English", ifelse(
-      lang_lab == "German", "German", "Other"
-    )
-  ))
-
-table(lang_lab_r)
-
-# compensation
-
-comp <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
-  table(pc_df$compensation[which(pc_df$source == x)])
-})
-
-comp_t <- t(comp) # only McCarthy 2 (1 Course Credit, 317 Entry into drawing), 
-# Laine & Ferreira-Santos report no compensation (not none!)
-
-comp_lab <- apply(comp_t, MARGIN = 1, FUN = function(x){
-  ifelse(length(names(x)[which(x == max(x))]) == 1 , names(x)[which(x == max(x))], "Other")
-})
-
-table(comp_lab)
-
-comp_lab_r <- ifelse(comp_lab == "course credit", "Course Credit", "Other")
-
-table(comp_lab_r)
-
-# gender
-
-sex <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
-  gen <- pc_df$gender[which(pc_df$source == x)]
-  gen_01 <- ifelse(gen == "female", 1, 0)
-  mean(gen_01, na.rm = TRUE)
-})
-
-# age
-
-mean_age <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
-  age <- pc_df$age[which(pc_df$source == x)]
-  mean(age, na.rm = TRUE)
-})  
-
-sd_age <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
-  age <- pc_df$age[which(pc_df$source == x)]
-  sd(age, na.rm = TRUE)
-})  
-
-# major
-
-# maj <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
-#   table(pc_df$major[which(pc_df$source == x)])
-# })
-
-
-
-## Score Variance
-
-var_hh <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
-  scores <- pc_df[which(pc_df$source == x),names_items_hex_HH]
-  mean_scores <- rowMeans(scores)
-  var <- var(mean_scores, na.rm = T)
-})
-
-var_em <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
-  scores <- pc_df[which(pc_df$source == x),names_items_hex_EM]
-  mean_scores <- rowMeans(scores)
-  var <- var(mean_scores, na.rm = T)
-})
-
-var_ex <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
-  scores <- pc_df[which(pc_df$source == x),names_items_hex_EX]
-  mean_scores <- rowMeans(scores)
-  var <- var(mean_scores, na.rm = T)
-})
-
-var_ag <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
-  scores <- pc_df[which(pc_df$source == x),names_items_hex_AG]
-  mean_scores <- rowMeans(scores)
-  var <- var(mean_scores, na.rm = T)
-})
-
-var_co <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
-  scores <- pc_df[which(pc_df$source == x),names_items_hex_CO]
-  mean_scores <- rowMeans(scores)
-  var <- var(mean_scores, na.rm = T)
-})
-
-var_ox <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
-  scores <- pc_df[which(pc_df$source == x),names_items_hex_OX]
-  mean_scores <- rowMeans(scores)
-  var <- var(mean_scores, na.rm = T)
-})
-
-Reg_prep <- data.frame(lang = lang_lab_r,
-                       comp = comp_lab_r,
-                       sex = sex,
-#                       major = maj,
-                       mean_age = mean_age,
-                       source = labs_in_data[labs_in_data %in% labs_in_paper],
-                       var_hh = var_hh,
-                       var_em = var_em,
-                       var_ex = var_ex,
-                       var_ag = var_ag,
-                       var_co = var_co,
-                       var_ox = var_ox)
-
-write.csv(Reg_prep, here("Meta-Regression/meta_regression_dat_HEXACO.csv"), row.names = FALSE)
-
-
-
-
 
 
 
@@ -479,6 +345,205 @@ all_facet_means <- cbind(hh_facet_means, em_facet_means, ex_facet_means, ag_face
 
 facet_df <- data.frame(all_facet_means, 
                        source = pc_df$source)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Moderator preparation
+
+pc_df <- pc_df %>% mutate(
+  language = as.factor(language),
+  compensation = as.factor(compensation),
+  major = as.factor(major)
+)
+
+# language
+
+lang <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  table(pc_df$language[which(pc_df$source == x)])
+})
+
+lang_t <- t(lang) # Özdogru 2 languages (8 English, 357 Turkish)
+
+lang_lab <- apply(lang_t, MARGIN = 1, FUN = function(x){
+  names(x)[which(x == max(x))]
+})
+
+table(lang_lab)
+
+lang_lab_r <- ifelse(
+  lang_lab == "Dutch", "Dutch", ifelse(
+    lang_lab == "English", "English", ifelse(
+      lang_lab == "German", "German", "Other"
+    )
+  ))
+
+table(lang_lab_r)
+
+# compensation
+
+comp <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  table(pc_df$compensation[which(pc_df$source == x)])
+})
+
+comp_t <- t(comp) # only McCarthy 2 (1 Course Credit, 317 Entry into drawing), 
+# Laine & Ferreira-Santos report no compensation (not none!)
+
+comp_lab <- apply(comp_t, MARGIN = 1, FUN = function(x){
+  ifelse(length(names(x)[which(x == max(x))]) == 1 , names(x)[which(x == max(x))], "Other")
+})
+
+table(comp_lab)
+
+comp_lab_r <- ifelse(comp_lab == "course credit", "Course Credit", "Other")
+
+table(comp_lab_r)
+
+# gender
+
+sex <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  gen <- pc_df$gender[which(pc_df$source == x)]
+  gen_01 <- ifelse(gen == "female", 1, 0)
+  mean(gen_01, na.rm = TRUE)
+})
+
+# age
+
+mean_age <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  age <- pc_df$age[which(pc_df$source == x)]
+  mean(age, na.rm = TRUE)
+})  
+
+sd_age <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  age <- pc_df$age[which(pc_df$source == x)]
+  sd(age, na.rm = TRUE)
+})  
+
+# major
+
+# maj <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+#   table(pc_df$major[which(pc_df$source == x)])
+# })
+
+
+
+## Score Variance
+
+var_hh <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  scores <- pc_df[which(pc_df$source == x),names_items_hex_HH]
+  mean_scores <- rowMeans(scores)
+  var <- var(mean_scores, na.rm = T)
+})
+
+var_em <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  scores <- pc_df[which(pc_df$source == x),names_items_hex_EM]
+  mean_scores <- rowMeans(scores)
+  var <- var(mean_scores, na.rm = T)
+})
+
+var_ex <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  scores <- pc_df[which(pc_df$source == x),names_items_hex_EX]
+  mean_scores <- rowMeans(scores)
+  var <- var(mean_scores, na.rm = T)
+})
+
+var_ag <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  scores <- pc_df[which(pc_df$source == x),names_items_hex_AG]
+  mean_scores <- rowMeans(scores)
+  var <- var(mean_scores, na.rm = T)
+})
+
+var_co <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  scores <- pc_df[which(pc_df$source == x),names_items_hex_CO]
+  mean_scores <- rowMeans(scores)
+  var <- var(mean_scores, na.rm = T)
+})
+
+var_ox <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  scores <- pc_df[which(pc_df$source == x),names_items_hex_OX]
+  mean_scores <- rowMeans(scores)
+  var <- var(mean_scores, na.rm = T)
+})
+
+
+
+var_facets_hh <- sapply(as.matrix(unique(facet_df$source)), FUN = function(x){
+  scores <- facet_df[which(facet_df$source == x), names(hh_facet_means)]
+  mean_scores <- rowMeans(scores)
+  var <- var(mean_scores, na.rm = T)
+})
+
+var_facets_em <- sapply(as.matrix(unique(facet_df$source)), FUN = function(x){
+  scores <- facet_df[which(facet_df$source == x), names(em_facet_means)]
+  mean_scores <- rowMeans(scores)
+  var <- var(mean_scores, na.rm = T)
+})
+
+var_facets_ex <- sapply(as.matrix(unique(facet_df$source)), FUN = function(x){
+  scores <- facet_df[which(facet_df$source == x), names(ex_facet_means)]
+  mean_scores <- rowMeans(scores)
+  var <- var(mean_scores, na.rm = T)
+})
+
+var_facets_ag <- sapply(as.matrix(unique(facet_df$source)), FUN = function(x){
+  scores <- facet_df[which(facet_df$source == x), names(ag_facet_means)]
+  mean_scores <- rowMeans(scores)
+  var <- var(mean_scores, na.rm = T)
+})
+
+var_facets_co <- sapply(as.matrix(unique(facet_df$source)), FUN = function(x){
+  scores <- facet_df[which(facet_df$source == x), names(co_facet_means)]
+  mean_scores <- rowMeans(scores)
+  var <- var(mean_scores, na.rm = T)
+})
+
+var_facets_ox <- sapply(as.matrix(unique(facet_df$source)), FUN = function(x){
+  scores <- facet_df[which(facet_df$source == x), names(ox_facet_means)]
+  mean_scores <- rowMeans(scores)
+  var <- var(mean_scores, na.rm = T)
+})
+
+
+
+Reg_prep <- data.frame(lang = lang_lab_r,
+                       comp = comp_lab_r,
+                       sex = sex,
+                       #                       major = maj,
+                       mean_age = mean_age,
+                       source = labs_in_data[labs_in_data %in% labs_in_paper],
+                       var_hh = var_hh,
+                       var_em = var_em,
+                       var_ex = var_ex,
+                       var_ag = var_ag,
+                       var_co = var_co,
+                       var_ox = var_ox,
+                       var_facets_hh = var_facets_hh,
+                       var_facets_em = var_facets_em,
+                       var_facets_ex = var_facets_ex,
+                       var_facets_ag = var_facets_ag,
+                       var_facets_co = var_facets_co,
+                       var_facets_ox = var_facets_ox)
+
+write.csv(Reg_prep, here("Meta-Regression/meta_regression_dat_HEXACO.csv"), row.names = FALSE)
+
+
+
+
+
+
+
+
+
 
 
 
