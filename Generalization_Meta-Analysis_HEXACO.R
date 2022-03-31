@@ -174,6 +174,59 @@ reg.Bonett_omega.rma.fit_OX <- rel_rma.reg_hex(merge(BonettOmegaHex_OX, Reg_prep
 
 
 
+reg.alpha.rma.fit_scorevar_HH <- rma(data = merge(AlphaHex_HH, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_hh)
+reg.omega.rma.fit_scorevar_HH <- rma(data = merge(OmegaHex_HH, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_hh)
+reg.Bonett_alpha.rma.fit_scorevar_HH <- rma(data = merge(BonettAlphaHex_HH, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_hh)
+reg.Bonett_omega.rma.fit_scorevar_HH <- rma(data = merge(BonettOmegaHex_HH, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_hh)
+
+reg.alpha.rma.fit_scorevar_EM <- rma(data = merge(AlphaHex_EM, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_em)
+reg.omega.rma.fit_scorevar_EM <- rma(data = merge(OmegaHex_EM, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_em)
+reg.Bonett_alpha.rma.fit_scorevar_EM <- rma(data = merge(BonettAlphaHex_EM, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_em)
+reg.Bonett_omega.rma.fit_scorevar_EM <- rma(data = merge(BonettOmegaHex_EM, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_em)
+
+reg.alpha.rma.fit_scorevar_EX <- rma(data = merge(AlphaHex_EX, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_ex)
+reg.omega.rma.fit_scorevar_EX <- rma(data = merge(OmegaHex_EX, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_ex)
+reg.Bonett_alpha.rma.fit_scorevar_EX <- rma(data = merge(BonettAlphaHex_EX, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_ex)
+reg.Bonett_omega.rma.fit_scorevar_EX <- rma(data = merge(BonettOmegaHex_EX, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_ex)
+
+reg.alpha.rma.fit_scorevar_AG <- rma(data = merge(AlphaHex_AG, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_ag)
+reg.omega.rma.fit_scorevar_AG <- rma(data = merge(OmegaHex_AG, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_ag)
+reg.Bonett_alpha.rma.fit_scorevar_AG <- rma(data = merge(BonettAlphaHex_AG, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_ag)
+reg.Bonett_omega.rma.fit_scorevar_AG <- rma(data = merge(BonettOmegaHex_AG, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_ag)
+
+reg.alpha.rma.fit_scorevar_CO <- rma(data = merge(AlphaHex_CO, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_co)
+reg.omega.rma.fit_scorevar_CO <- rma(data = merge(OmegaHex_CO, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_co)
+reg.Bonett_alpha.rma.fit_scorevar_CO <- rma(data = merge(BonettAlphaHex_CO, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_co)
+reg.Bonett_omega.rma.fit_scorevar_CO <- rma(data = merge(BonettOmegaHex_CO, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_co)
+
+reg.alpha.rma.fit_scorevar_OX <- rma(data = merge(AlphaHex_OX, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_ox)
+reg.omega.rma.fit_scorevar_OX <- rma(data = merge(OmegaHex_OX, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_ox)
+reg.Bonett_alpha.rma.fit_scorevar_OX <- rma(data = merge(BonettAlphaHex_OX, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_ox)
+reg.Bonett_omega.rma.fit_scorevar_OX <- rma(data = merge(BonettOmegaHex_OX, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_ox)
 
 
 
@@ -312,5 +365,64 @@ reg.omega.rma.fit_facets_OX <- rel_rma.reg_hex(merge(OmegaHex_facets_OX, Reg_pre
 reg.Bonett_alpha.rma.fit_facets_OX <- rel_rma.reg_hex(merge(BonettAlphaHex_facets_OX, Reg_prep, by = "source"))
 reg.Bonett_omega.rma.fit_facets_OX <- rel_rma.reg_hex(merge(BonettOmegaHex_facets_OX, Reg_prep, by = "source"))
 
+
+
+
+
+
+
+reg.alpha.rma.fit_scorevar_HH <- rma(data = merge(AlphaHex_HH, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_hh)
+reg.omega.rma.fit_scorevar_HH <- rma(data = merge(OmegaHex_HH, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_hh)
+reg.Bonett_alpha.rma.fit_scorevar_HH <- rma(data = merge(BonettAlphaHex_HH, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_hh)
+reg.Bonett_omega.rma.fit_scorevar_HH <- rma(data = merge(BonettOmegaHex_HH, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_hh)
+
+reg.alpha.rma.fit_scorevar_EM <- rma(data = merge(AlphaHex_EM, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_em)
+reg.omega.rma.fit_scorevar_EM <- rma(data = merge(OmegaHex_EM, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_em)
+reg.Bonett_alpha.rma.fit_scorevar_EM <- rma(data = merge(BonettAlphaHex_EM, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_em)
+reg.Bonett_omega.rma.fit_scorevar_EM <- rma(data = merge(BonettOmegaHex_EM, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_em)
+
+reg.alpha.rma.fit_scorevar_EX <- rma(data = merge(AlphaHex_EX, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_ex)
+reg.omega.rma.fit_scorevar_EX <- rma(data = merge(OmegaHex_EX, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_ex)
+reg.Bonett_alpha.rma.fit_scorevar_EX <- rma(data = merge(BonettAlphaHex_EX, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_ex)
+reg.Bonett_omega.rma.fit_scorevar_EX <- rma(data = merge(BonettOmegaHex_EX, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_ex)
+
+reg.alpha.rma.fit_scorevar_AG <- rma(data = merge(AlphaHex_AG, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_ag)
+reg.omega.rma.fit_scorevar_AG <- rma(data = merge(OmegaHex_AG, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_ag)
+reg.Bonett_alpha.rma.fit_scorevar_AG <- rma(data = merge(BonettAlphaHex_AG, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_ag)
+reg.Bonett_omega.rma.fit_scorevar_AG <- rma(data = merge(BonettOmegaHex_AG, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_ag)
+
+reg.alpha.rma.fit_scorevar_CO <- rma(data = merge(AlphaHex_CO, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_co)
+reg.omega.rma.fit_scorevar_CO <- rma(data = merge(OmegaHex_CO, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_co)
+reg.Bonett_alpha.rma.fit_scorevar_CO <- rma(data = merge(BonettAlphaHex_CO, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_co)
+reg.Bonett_omega.rma.fit_scorevar_CO <- rma(data = merge(BonettOmegaHex_CO, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_co)
+
+reg.alpha.rma.fit_scorevar_OX <- rma(data = merge(AlphaHex_OX, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_ox)
+reg.omega.rma.fit_scorevar_OX <- rma(data = merge(OmegaHex_OX, Reg_prep, by = "source"), yi = reliability, 
+                                     sei = StandardError, mods = ~ var_ox)
+reg.Bonett_alpha.rma.fit_scorevar_OX <- rma(data = merge(BonettAlphaHex_OX, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_ox)
+reg.Bonett_omega.rma.fit_scorevar_OX <- rma(data = merge(BonettOmegaHex_OX, Reg_prep, by = "source"), yi = reliability, 
+                                            sei = StandardError, mods = ~ var_ox)
 
 

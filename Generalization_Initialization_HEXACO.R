@@ -300,12 +300,56 @@ sd_age <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
 
 
 
+## Score Variance
+
+var_hh <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  scores <- pc_df[which(pc_df$source == x),names_items_hex_HH]
+  mean_scores <- rowMeans(scores)
+  var <- var(mean_scores, na.rm = T)
+})
+
+var_em <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  scores <- pc_df[which(pc_df$source == x),names_items_hex_EM]
+  mean_scores <- rowMeans(scores)
+  var <- var(mean_scores, na.rm = T)
+})
+
+var_ex <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  scores <- pc_df[which(pc_df$source == x),names_items_hex_EX]
+  mean_scores <- rowMeans(scores)
+  var <- var(mean_scores, na.rm = T)
+})
+
+var_ag <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  scores <- pc_df[which(pc_df$source == x),names_items_hex_AG]
+  mean_scores <- rowMeans(scores)
+  var <- var(mean_scores, na.rm = T)
+})
+
+var_co <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  scores <- pc_df[which(pc_df$source == x),names_items_hex_CO]
+  mean_scores <- rowMeans(scores)
+  var <- var(mean_scores, na.rm = T)
+})
+
+var_ox <- sapply(as.matrix(unique(pc_df$source)), FUN = function(x){
+  scores <- pc_df[which(pc_df$source == x),names_items_hex_OX]
+  mean_scores <- rowMeans(scores)
+  var <- var(mean_scores, na.rm = T)
+})
+
 Reg_prep <- data.frame(lang = lang_lab_r,
                        comp = comp_lab_r,
                        sex = sex,
-#                      major = maj,
+#                       major = maj,
                        mean_age = mean_age,
-                       source = labs_in_data[labs_in_data %in% labs_in_paper])
+                       source = labs_in_data[labs_in_data %in% labs_in_paper],
+                       var_hh = var_hh,
+                       var_em = var_em,
+                       var_ex = var_ex,
+                       var_ag = var_ag,
+                       var_co = var_co,
+                       var_ox = var_ox)
 
 write.csv(Reg_prep, here("Meta-Regression/meta_regression_dat_HEXACO.csv"), row.names = FALSE)
 
