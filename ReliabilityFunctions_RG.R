@@ -335,5 +335,42 @@ my_forest_plot <- function(rma.fit, rma.data, main.title = "Forest Plot",
       scale_y_continuous(breaks = c(1, (5:(length(rma.fit$yi)+4))), labels = c("RE Model", unique(as.character(rma.data$source)))) 
   }
   
-  print(p)
+  p
 }
+
+
+
+bootstrap_SE_varT <- function(data, indices){
+  
+  d <- data[indices,]
+  
+  alpha_fit <- psych::alpha(d, warnings = FALSE)
+  
+  alpha <- alpha_fit$total[1]
+  
+  var_X <- var(rowMeans(d, na.rm = T), na.rm = T)
+  
+  var_T <- as.numeric(alpha * var_X)
+  
+  return(var_T)
+  
+}
+
+bootstrap_SE_varE <- function(data, indices){
+  
+  d <- data[indices,]
+  
+  alpha_fit <- psych::alpha(d, warnings = FALSE)
+  
+  alpha <- alpha_fit$total[1]
+  
+  var_X <- var(rowMeans(d, na.rm = T), na.rm = T)
+  
+  var_T <- as.numeric(alpha * var_X)
+  
+  var_E <- var_X - var_T
+  
+  return(var_T)
+  
+}
+
