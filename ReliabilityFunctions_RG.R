@@ -352,7 +352,7 @@ bootstrap_SE_varT <- function(data, indices, stat = "ALPHA"){
     rel <- alpha
   }
   if(stat == "OMEGA"){
-    omega_fit <- coefficientalpha::omega(d, se = T, varphi = 0, test = F)
+    omega_fit <- coefficientalpha::omega(d, se = F, varphi = 0, test = F)
     
     omega <- omega_fit$omega
     
@@ -380,7 +380,7 @@ bootstrap_SE_varE <- function(data, indices, stat = "ALPHA"){
     rel <- alpha
   }
   if(stat == "OMEGA"){
-    omega_fit <- coefficientalpha::omega(d, se = T, varphi = 0, test = F)
+    omega_fit <- coefficientalpha::omega(d, se = F, varphi = 0, test = F)
     
     omega <- omega_fit$omega
     

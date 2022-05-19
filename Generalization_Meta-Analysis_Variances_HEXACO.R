@@ -235,6 +235,7 @@ rma.varT_Alpha_OX.fit <- rma(measure = "GEN", yi = (AlphaHex_OX$reliability * Re
 SE_Alpha_varE_HH <- sapply(unique(pc_df$source), FUN = function(x){
   bvarEs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_HH]),
                  statistic = bootstrap_SE_varE,
+                 stat = "ALPHA",
                  R = 1000)
   
   sd(bvarEs$t)
@@ -243,6 +244,7 @@ SE_Alpha_varE_HH <- sapply(unique(pc_df$source), FUN = function(x){
 SE_Alpha_varE_EM <- sapply(unique(pc_df$source), FUN = function(x){
   bvarEs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_EM]),
                  statistic = bootstrap_SE_varE,
+                 stat = "ALPHA",
                  R = 1000)
   
   sd(bvarEs$t)
@@ -251,6 +253,7 @@ SE_Alpha_varE_EM <- sapply(unique(pc_df$source), FUN = function(x){
 SE_Alpha_varE_EX <- sapply(unique(pc_df$source), FUN = function(x){
   bvarEs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_EX]),
                  statistic = bootstrap_SE_varE,
+                 stat = "ALPHA",
                  R = 1000)
   
   sd(bvarEs$t)
@@ -259,6 +262,7 @@ SE_Alpha_varE_EX <- sapply(unique(pc_df$source), FUN = function(x){
 SE_Alpha_varE_AG <- sapply(unique(pc_df$source), FUN = function(x){
   bvarEs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_AG]),
                  statistic = bootstrap_SE_varE,
+                 stat = "ALPHA",
                  R = 1000)
   
   sd(bvarEs$t)
@@ -267,6 +271,7 @@ SE_Alpha_varE_AG <- sapply(unique(pc_df$source), FUN = function(x){
 SE_Alpha_varE_CO <- sapply(unique(pc_df$source), FUN = function(x){
   bvarEs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_CO]),
                  statistic = bootstrap_SE_varE,
+                 stat = "ALPHA",
                  R = 1000)
   
   sd(bvarEs$t)
@@ -275,6 +280,7 @@ SE_Alpha_varE_CO <- sapply(unique(pc_df$source), FUN = function(x){
 SE_Alpha_varE_OX <- sapply(unique(pc_df$source), FUN = function(x){
   bvarEs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_OX]),
                  statistic = bootstrap_SE_varE,
+                 stat = "ALPHA",
                  R = 1000)
   
   sd(bvarEs$t)
@@ -325,6 +331,17 @@ gridExtra::grid.arrange(pT_Alpha_OX, pE_Alpha_OX)
 
 dev.off()
 
+
+
+
+# making sure, standard errors don't disproportionally differ:
+
+plot(SE_Alpha_varT_HH, SE_Alpha_varE_HH)
+plot(SE_Alpha_varT_EM, SE_Alpha_varE_EM)
+plot(SE_Alpha_varT_EX, SE_Alpha_varE_EX)
+plot(SE_Alpha_varT_AG, SE_Alpha_varE_AG)
+plot(SE_Alpha_varT_CO, SE_Alpha_varE_CO)
+plot(SE_Alpha_varT_OX, SE_Alpha_varE_OX)
 
 
 
