@@ -340,33 +340,56 @@ my_forest_plot <- function(rma.fit, rma.data, main.title = "Forest Plot",
 
 
 
-bootstrap_SE_varT <- function(data, indices){
+bootstrap_SE_varT <- function(data, indices, stat = "ALPHA"){
   
   d <- data[indices,]
   
-  alpha_fit <- psych::alpha(d, warnings = FALSE)
+  if(stat == "ALPHA"){
+    alpha_fit <- psych::alpha(d, warnings = FALSE)
+    
+    alpha <- alpha_fit$total[1]
+    
+    rel <- alpha
+  }
+  if(stat == "OMEGA"){
+    omega_fit <- coefficientalpha::omega(d, se = T, varphi = 0, test = F)
+    
+    omega <- omega_fit$omega
+    
+    rel <- omega
+  }
   
-  alpha <- alpha_fit$total[1]
   
   var_X <- var(rowMeans(d, na.rm = T), na.rm = T)
   
-  var_T <- as.numeric(alpha * var_X)
+  var_T <- as.numeric(rel * var_X)
   
   return(var_T)
   
 }
 
-bootstrap_SE_varE <- function(data, indices){
+bootstrap_SE_varE <- function(data, indices, stat = "ALPHA"){
   
   d <- data[indices,]
   
-  alpha_fit <- psych::alpha(d, warnings = FALSE)
-  
-  alpha <- alpha_fit$total[1]
+  if(stat == "ALPHA"){
+    alpha_fit <- psych::alpha(d, warnings = FALSE)
+    
+    alpha <- alpha_fit$total[1]
+    
+    rel <- alpha
+  }
+  if(stat == "OMEGA"){
+    omega_fit <- coefficientalpha::omega(d, se = T, varphi = 0, test = F)
+    
+    omega <- omega_fit$omega
+    
+    rel <- omega
+  }
   
   var_X <- var(rowMeans(d, na.rm = T), na.rm = T)
   
-  var_T <- as.numeric(alpha * var_X)
+  var_T <- as.numeric(rel * var_X)
   
   var_E <- var_X - var_T
   
