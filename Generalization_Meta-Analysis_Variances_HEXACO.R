@@ -158,8 +158,9 @@ SE_Alpha_varT_HH <- sapply(unique(pc_df$source), FUN = function(x){
        stat = "ALPHA",
        R = 1000)
   
-  sd(bvarTs$t)
-})
+  return(c(sd(bvarTs$t), mean(bvarTs$t)))
+}) %>%
+  t() 
 
 SE_Alpha_varT_EM <- sapply(unique(pc_df$source), FUN = function(x){
   bvarTs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_EM]),
@@ -167,8 +168,10 @@ SE_Alpha_varT_EM <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "ALPHA",
                  R = 1000)
   
-  sd(bvarTs$t)
-})
+  return(c(sd(bvarTs$t), mean(bvarTs$t)))
+})%>%
+  t()
+
 
 SE_Alpha_varT_EX <- sapply(unique(pc_df$source), FUN = function(x){
   bvarTs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_EX]),
@@ -176,8 +179,10 @@ SE_Alpha_varT_EX <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "ALPHA",
                  R = 1000)
   
-  sd(bvarTs$t)
-})
+  return(c(sd(bvarTs$t), mean(bvarTs$t)))
+})%>%
+  t()
+
 
 SE_Alpha_varT_AG <- sapply(unique(pc_df$source), FUN = function(x){
   bvarTs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_AG]),
@@ -185,8 +190,10 @@ SE_Alpha_varT_AG <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "ALPHA",
                  R = 1000)
   
-  sd(bvarTs$t)
-})
+  return(c(sd(bvarTs$t), mean(bvarTs$t)))
+})%>%
+  t()
+
 
 SE_Alpha_varT_CO <- sapply(unique(pc_df$source), FUN = function(x){
   bvarTs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_CO]),
@@ -194,8 +201,10 @@ SE_Alpha_varT_CO <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "ALPHA",
                  R = 1000)
   
-  sd(bvarTs$t)
-})
+  return(c(sd(bvarTs$t), mean(bvarTs$t)))
+})%>%
+  t()
+
 
 SE_Alpha_varT_OX <- sapply(unique(pc_df$source), FUN = function(x){
   bvarTs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_OX]),
@@ -203,27 +212,38 @@ SE_Alpha_varT_OX <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "ALPHA",
                  R = 1000)
   
-  sd(bvarTs$t)
-})
+  return(c(sd(bvarTs$t), mean(bvarTs$t)))
+})%>%
+  t()
 
-SE_Alpha_varT.df <- data.frame(HH = SE_Alpha_varT_HH,
-                               EM = SE_Alpha_varT_EM,
-                               EX = SE_Alpha_varT_EX,
-                               AG = SE_Alpha_varT_AG,
-                               CO = SE_Alpha_varT_CO,
-                               OX = SE_Alpha_varT_OX)
+
+SE_Alpha_varT.df <- data.frame(HH = SE_Alpha_varT_HH[,1],
+                               EM = SE_Alpha_varT_EM[,1],
+                               EX = SE_Alpha_varT_EX[,1],
+                               AG = SE_Alpha_varT_AG[,1],
+                               CO = SE_Alpha_varT_CO[,1],
+                               OX = SE_Alpha_varT_OX[,1])
+
+bmean_Alpha_varT.df <- data.frame(HH = SE_Alpha_varT_HH[,2],
+                                  EM = SE_Alpha_varT_EM[,2],
+                                  EX = SE_Alpha_varT_EX[,2],
+                                  AG = SE_Alpha_varT_AG[,2],
+                                  CO = SE_Alpha_varT_CO[,2],
+                                  OX = SE_Alpha_varT_OX[,2])
+
 
 write.csv(SE_Alpha_varT.df, here("Reliability Estimates/BootstrappedSE_Alpha.csv"))
 
-rma.varT_Alpha_HH.fit <- rma(measure = "GEN", yi = (AlphaHex_HH$reliability * Reg_prep$var_hh), sei = SE_Alpha_varT_HH, method = "REML")
-rma.varT_Alpha_EM.fit <- rma(measure = "GEN", yi = (AlphaHex_EM$reliability * Reg_prep$var_em), sei = SE_Alpha_varT_EM, method = "REML")
-rma.varT_Alpha_EX.fit <- rma(measure = "GEN", yi = (AlphaHex_EX$reliability * Reg_prep$var_ex), sei = SE_Alpha_varT_EX, method = "REML")
-rma.varT_Alpha_AG.fit <- rma(measure = "GEN", yi = (AlphaHex_AG$reliability * Reg_prep$var_ag), sei = SE_Alpha_varT_AG, method = "REML")
-rma.varT_Alpha_CO.fit <- rma(measure = "GEN", yi = (AlphaHex_CO$reliability * Reg_prep$var_co), sei = SE_Alpha_varT_CO, method = "REML")
-rma.varT_Alpha_OX.fit <- rma(measure = "GEN", yi = (AlphaHex_OX$reliability * Reg_prep$var_ox), sei = SE_Alpha_varT_OX, method = "REML")
+rma.varT_Alpha_HH.fit <- rma(measure = "GEN", yi = (AlphaHex_HH$reliability * Reg_prep$var_hh), sei = SE_Alpha_varT_HH[,1], method = "REML")
+rma.varT_Alpha_EM.fit <- rma(measure = "GEN", yi = (AlphaHex_EM$reliability * Reg_prep$var_em), sei = SE_Alpha_varT_EM[,1], method = "REML")
+rma.varT_Alpha_EX.fit <- rma(measure = "GEN", yi = (AlphaHex_EX$reliability * Reg_prep$var_ex), sei = SE_Alpha_varT_EX[,1], method = "REML")
+rma.varT_Alpha_AG.fit <- rma(measure = "GEN", yi = (AlphaHex_AG$reliability * Reg_prep$var_ag), sei = SE_Alpha_varT_AG[,1], method = "REML")
+rma.varT_Alpha_CO.fit <- rma(measure = "GEN", yi = (AlphaHex_CO$reliability * Reg_prep$var_co), sei = SE_Alpha_varT_CO[,1], method = "REML")
+rma.varT_Alpha_OX.fit <- rma(measure = "GEN", yi = (AlphaHex_OX$reliability * Reg_prep$var_ox), sei = SE_Alpha_varT_OX[,1], method = "REML")
 
 
 
+SE_Alpha_varT.df <- read.csv(here("Reliability Estimates/BootstrappedSE_Alpha.csv"))
 
 
 
@@ -238,8 +258,10 @@ SE_Alpha_varE_HH <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "ALPHA",
                  R = 1000)
   
-  sd(bvarEs$t)
-})
+  return(c(sd(bvarEs$t), mean(bvarEs$t)))
+})%>%
+  t()
+
 
 SE_Alpha_varE_EM <- sapply(unique(pc_df$source), FUN = function(x){
   bvarEs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_EM]),
@@ -247,8 +269,10 @@ SE_Alpha_varE_EM <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "ALPHA",
                  R = 1000)
   
-  sd(bvarEs$t)
-})
+  return(c(sd(bvarEs$t), mean(bvarEs$t)))
+})%>%
+  t()
+
 
 SE_Alpha_varE_EX <- sapply(unique(pc_df$source), FUN = function(x){
   bvarEs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_EX]),
@@ -256,8 +280,10 @@ SE_Alpha_varE_EX <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "ALPHA",
                  R = 1000)
   
-  sd(bvarEs$t)
-})
+  return(c(sd(bvarEs$t), mean(bvarEs$t)))
+})%>%
+  t()
+
 
 SE_Alpha_varE_AG <- sapply(unique(pc_df$source), FUN = function(x){
   bvarEs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_AG]),
@@ -265,8 +291,10 @@ SE_Alpha_varE_AG <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "ALPHA",
                  R = 1000)
   
-  sd(bvarEs$t)
-})
+  return(c(sd(bvarEs$t), mean(bvarEs$t)))
+})%>%
+  t()
+
 
 SE_Alpha_varE_CO <- sapply(unique(pc_df$source), FUN = function(x){
   bvarEs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_CO]),
@@ -274,8 +302,10 @@ SE_Alpha_varE_CO <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "ALPHA",
                  R = 1000)
   
-  sd(bvarEs$t)
-})
+  return(c(sd(bvarEs$t), mean(bvarEs$t)))
+})%>%
+  t()
+
 
 SE_Alpha_varE_OX <- sapply(unique(pc_df$source), FUN = function(x){
   bvarEs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_OX]),
@@ -283,50 +313,57 @@ SE_Alpha_varE_OX <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "ALPHA",
                  R = 1000)
   
-  sd(bvarEs$t)
-})
+  return(c(sd(bvarEs$t), mean(bvarEs$t)))
+})%>%
+  t()
 
-SE_Alpha_varE.df <- data.frame(HH = SE_Alpha_varE_HH,
-                               EM = SE_Alpha_varE_EM,
-                               EX = SE_Alpha_varE_EX,
-                               AG = SE_Alpha_varE_AG,
-                               CO = SE_Alpha_varE_CO,
-                               OX = SE_Alpha_varE_OX)
+
+SE_Alpha_varE.df <- data.frame(HH = SE_Alpha_varE_HH[,1],
+                               EM = SE_Alpha_varE_EM[,1],
+                               EX = SE_Alpha_varE_EX[,1],
+                               AG = SE_Alpha_varE_AG[,1],
+                               CO = SE_Alpha_varE_CO[,1],
+                               OX = SE_Alpha_varE_OX[,1])
 
 write.csv(SE_Alpha_varE.df, here("Reliability Estimates/BootstrappedSE_E_Alpha.csv"))
 
-rma.varE_Alpha_HH.fit <- rma(measure = "GEN", yi = (Reg_prep$var_hh - AlphaHex_HH$reliability * Reg_prep$var_hh), sei = SE_Alpha_varE_HH, method = "REML")
-rma.varE_Alpha_EM.fit <- rma(measure = "GEN", yi = (Reg_prep$var_em - AlphaHex_EM$reliability * Reg_prep$var_em), sei = SE_Alpha_varE_EM, method = "REML")
-rma.varE_Alpha_EX.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ex - AlphaHex_EX$reliability * Reg_prep$var_ex), sei = SE_Alpha_varE_EX, method = "REML")
-rma.varE_Alpha_AG.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ag - AlphaHex_AG$reliability * Reg_prep$var_ag), sei = SE_Alpha_varE_AG, method = "REML")
-rma.varE_Alpha_CO.fit <- rma(measure = "GEN", yi = (Reg_prep$var_co - AlphaHex_CO$reliability * Reg_prep$var_co), sei = SE_Alpha_varE_CO, method = "REML")
-rma.varE_Alpha_OX.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ox - AlphaHex_OX$reliability * Reg_prep$var_ox), sei = SE_Alpha_varE_OX, method = "REML")
+
+SE_Alpha_varE.df <- read.csv(here("Reliability Estimates/BootstrappedSE_E_Alpha.csv"))
+
+
+
+rma.varE_Alpha_HH.fit <- rma(measure = "GEN", yi = (Reg_prep$var_hh - AlphaHex_HH$reliability * Reg_prep$var_hh), sei = SE_Alpha_varE_HH[,1], method = "REML")
+rma.varE_Alpha_EM.fit <- rma(measure = "GEN", yi = (Reg_prep$var_em - AlphaHex_EM$reliability * Reg_prep$var_em), sei = SE_Alpha_varE_EM[,1], method = "REML")
+rma.varE_Alpha_EX.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ex - AlphaHex_EX$reliability * Reg_prep$var_ex), sei = SE_Alpha_varE_EX[,1], method = "REML")
+rma.varE_Alpha_AG.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ag - AlphaHex_AG$reliability * Reg_prep$var_ag), sei = SE_Alpha_varE_AG[,1], method = "REML")
+rma.varE_Alpha_CO.fit <- rma(measure = "GEN", yi = (Reg_prep$var_co - AlphaHex_CO$reliability * Reg_prep$var_co), sei = SE_Alpha_varE_CO[,1], method = "REML")
+rma.varE_Alpha_OX.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ox - AlphaHex_OX$reliability * Reg_prep$var_ox), sei = SE_Alpha_varE_OX[,1], method = "REML")
 
 
 pdf(here("Graphics/RMA_varEvarT.pdf"))
 
-pT_Alpha_HH <- my_forest_plot(rma.varT_Alpha_HH.fit, AlphaHex_HH, main.title = "Forest Plot - HEXACO HH", x.lab = "Est. True Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
-pE_Alpha_HH <- my_forest_plot(rma.varE_Alpha_HH.fit, AlphaHex_HH, main.title = "Forest Plot - HEXACO HH", x.lab = "Est. Error Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
+pT_Alpha_HH <- my_forest_plot(rma.varT_Alpha_HH.fit, AlphaHex_HH, main.title = paste0("Forest Plot - HEXACO HH --- I2: ", round(rma.varT_Alpha_HH.fit$I2, 2)), x.lab = "Est. True Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
+pE_Alpha_HH <- my_forest_plot(rma.varE_Alpha_HH.fit, AlphaHex_HH, main.title = paste0("Forest Plot - HEXACO HH --- I2: ", round(rma.varE_Alpha_HH.fit$I2, 2)), x.lab = "Est. Error Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
 gridExtra::grid.arrange(pT_Alpha_HH, pE_Alpha_HH)
 
-pT_Alpha_EM <- my_forest_plot(rma.varT_Alpha_EM.fit, AlphaHex_EM, main.title = "Forest Plot - HEXACO EM", x.lab = "Est. True Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
-pE_Alpha_EM <- my_forest_plot(rma.varE_Alpha_EM.fit, AlphaHex_EM, main.title = "Forest Plot - HEXACO EM", x.lab = "Est. Error Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
+pT_Alpha_EM <- my_forest_plot(rma.varT_Alpha_EM.fit, AlphaHex_EM, main.title = paste0("Forest Plot - HEXACO EM --- I2: ", round(rma.varT_Alpha_EM.fit$I2, 2)), x.lab = "Est. True Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
+pE_Alpha_EM <- my_forest_plot(rma.varE_Alpha_EM.fit, AlphaHex_EM, main.title = paste0("Forest Plot - HEXACO EM --- I2: ", round(rma.varE_Alpha_EM.fit$I2, 2)), x.lab = "Est. Error Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
 gridExtra::grid.arrange(pT_Alpha_EM, pE_Alpha_EM)
 
-pT_Alpha_EX <- my_forest_plot(rma.varT_Alpha_EX.fit, AlphaHex_EX, main.title = "Forest Plot - HEXACO EX", x.lab = "Est. True Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
-pE_Alpha_EX <- my_forest_plot(rma.varE_Alpha_EX.fit, AlphaHex_EX, main.title = "Forest Plot - HEXACO EX", x.lab = "Est. Error Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
+pT_Alpha_EX <- my_forest_plot(rma.varT_Alpha_EX.fit, AlphaHex_EX, main.title = paste0("Forest Plot - HEXACO EX --- I2: ", round(rma.varT_Alpha_EX.fit$I2, 2)), x.lab = "Est. True Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
+pE_Alpha_EX <- my_forest_plot(rma.varE_Alpha_EX.fit, AlphaHex_EX, main.title = paste0("Forest Plot - HEXACO EX --- I2: ", round(rma.varE_Alpha_EX.fit$I2, 2)), x.lab = "Est. Error Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
 gridExtra::grid.arrange(pT_Alpha_EX, pE_Alpha_EX)
 
-pT_Alpha_AG <- my_forest_plot(rma.varT_Alpha_AG.fit, AlphaHex_AG, main.title = "Forest Plot - HEXACO AG", x.lab = "Est. True Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
-pE_Alpha_AG <- my_forest_plot(rma.varE_Alpha_AG.fit, AlphaHex_AG, main.title = "Forest Plot - HEXACO AG", x.lab = "Est. Error Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
+pT_Alpha_AG <- my_forest_plot(rma.varT_Alpha_AG.fit, AlphaHex_AG, main.title = paste0("Forest Plot - HEXACO AG --- I2: ", round(rma.varT_Alpha_AG.fit$I2, 2)), x.lab = "Est. True Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
+pE_Alpha_AG <- my_forest_plot(rma.varE_Alpha_AG.fit, AlphaHex_AG, main.title = paste0("Forest Plot - HEXACO AG --- I2: ", round(rma.varE_Alpha_AG.fit$I2, 2)), x.lab = "Est. Error Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
 gridExtra::grid.arrange(pT_Alpha_AG, pE_Alpha_AG)
 
-pT_Alpha_CO <- my_forest_plot(rma.varT_Alpha_CO.fit, AlphaHex_CO, main.title = "Forest Plot - HEXACO CO", x.lab = "Est. True Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
-pE_Alpha_CO <- my_forest_plot(rma.varE_Alpha_CO.fit, AlphaHex_CO, main.title = "Forest Plot - HEXACO CO", x.lab = "Est. Error Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
+pT_Alpha_CO <- my_forest_plot(rma.varT_Alpha_CO.fit, AlphaHex_CO, main.title = paste0("Forest Plot - HEXACO CO --- I2: ", round(rma.varT_Alpha_CO.fit$I2, 2)), x.lab = "Est. True Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
+pE_Alpha_CO <- my_forest_plot(rma.varE_Alpha_CO.fit, AlphaHex_CO, main.title = paste0("Forest Plot - HEXACO CO --- I2: ", round(rma.varE_Alpha_CO.fit$I2, 2)), x.lab = "Est. Error Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
 gridExtra::grid.arrange(pT_Alpha_CO, pE_Alpha_CO)
 
-pT_Alpha_OX <- my_forest_plot(rma.varT_Alpha_OX.fit, AlphaHex_OX, main.title = "Forest Plot - HEXACO OX", x.lab = "Est. True Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
-pE_Alpha_OX <- my_forest_plot(rma.varE_Alpha_OX.fit, AlphaHex_OX, main.title = "Forest Plot - HEXACO OX", x.lab = "Est. Error Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
+pT_Alpha_OX <- my_forest_plot(rma.varT_Alpha_OX.fit, AlphaHex_OX, main.title = paste0("Forest Plot - HEXACO OX --- I2: ", round(rma.varT_Alpha_OX.fit$I2, 2)), x.lab = "Est. True Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
+pE_Alpha_OX <- my_forest_plot(rma.varE_Alpha_OX.fit, AlphaHex_OX, main.title = paste0("Forest Plot - HEXACO OX --- I2: ", round(rma.varE_Alpha_OX.fit$I2, 2)), x.lab = "Est. Error Variance (Alpha)", ci.lvl = .975, CI.display = TRUE)
 gridExtra::grid.arrange(pT_Alpha_OX, pE_Alpha_OX)
 
 dev.off()
@@ -336,12 +373,12 @@ dev.off()
 
 # making sure, standard errors don't disproportionally differ:
 
-plot(SE_Alpha_varT_HH, SE_Alpha_varE_HH)
-plot(SE_Alpha_varT_EM, SE_Alpha_varE_EM)
-plot(SE_Alpha_varT_EX, SE_Alpha_varE_EX)
-plot(SE_Alpha_varT_AG, SE_Alpha_varE_AG)
-plot(SE_Alpha_varT_CO, SE_Alpha_varE_CO)
-plot(SE_Alpha_varT_OX, SE_Alpha_varE_OX)
+plot(SE_Alpha_varT_HH[,1], SE_Alpha_varE_HH[,1])
+plot(SE_Alpha_varT_EM[,1], SE_Alpha_varE_EM[,1])
+plot(SE_Alpha_varT_EX[,1], SE_Alpha_varE_EX[,1])
+plot(SE_Alpha_varT_AG[,1], SE_Alpha_varE_AG[,1])
+plot(SE_Alpha_varT_CO[,1], SE_Alpha_varE_CO[,1])
+plot(SE_Alpha_varT_OX[,1], SE_Alpha_varE_OX[,1])
 
 
 
@@ -358,8 +395,10 @@ SE_Omega_varT_HH <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "OMEGA",
                  R = 1000)
   
-  sd(bvarTs$t)
-})
+  return(c(sd(bvarTs$t), mean(bvarTs$t)))
+})%>%
+  t()
+
 
 SE_Omega_varT_EM <- sapply(unique(pc_df$source), FUN = function(x){
   bvarTs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_EM]),
@@ -367,8 +406,10 @@ SE_Omega_varT_EM <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "OMEGA",
                  R = 1000)
   
-  sd(bvarTs$t)
-})
+  return(c(sd(bvarTs$t), mean(bvarTs$t)))
+})%>%
+  t()
+
 
 SE_Omega_varT_EX <- sapply(unique(pc_df$source), FUN = function(x){
   bvarTs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_EX]),
@@ -376,8 +417,10 @@ SE_Omega_varT_EX <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "OMEGA",
                  R = 1000)
   
-  sd(bvarTs$t)
-})
+  return(c(sd(bvarTs$t), mean(bvarTs$t)))
+})%>%
+  t()
+
 
 SE_Omega_varT_AG <- sapply(unique(pc_df$source), FUN = function(x){
   bvarTs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_AG]),
@@ -385,8 +428,10 @@ SE_Omega_varT_AG <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "OMEGA",
                  R = 1000)
   
-  sd(bvarTs$t)
-})
+  return(c(sd(bvarTs$t), mean(bvarTs$t)))
+})%>%
+  t()
+
 
 SE_Omega_varT_CO <- sapply(unique(pc_df$source), FUN = function(x){
   bvarTs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_CO]),
@@ -394,8 +439,10 @@ SE_Omega_varT_CO <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "OMEGA",
                  R = 1000)
   
-  sd(bvarTs$t)
-})
+  return(c(sd(bvarTs$t), mean(bvarTs$t)))
+})%>%
+  t()
+
 
 SE_Omega_varT_OX <- sapply(unique(pc_df$source), FUN = function(x){
   bvarTs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_OX]),
@@ -403,24 +450,29 @@ SE_Omega_varT_OX <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "OMEGA",
                  R = 1000)
   
-  sd(bvarTs$t)
-})
+  return(c(sd(bvarTs$t), mean(bvarTs$t)))
+})%>%
+  t()
 
-SE_Omega_varT.df <- data.frame(HH = SE_Omega_varT_HH,
-                               EM = SE_Omega_varT_EM,
-                               EX = SE_Omega_varT_EX,
-                               AG = SE_Omega_varT_AG,
-                               CO = SE_Omega_varT_CO,
-                               OX = SE_Omega_varT_OX)
 
-write.csv(SE_varT.df, here("Reliability Estimates/BootstrappedSE_Omega.csv"))
+SE_Omega_varT.df <- data.frame(HH = SE_Omega_varT_HH[,1],
+                               EM = SE_Omega_varT_EM[,1],
+                               EX = SE_Omega_varT_EX[,1],
+                               AG = SE_Omega_varT_AG[,1],
+                               CO = SE_Omega_varT_CO[,1],
+                               OX = SE_Omega_varT_OX[,1])
 
-rma.varT_Omega_HH.fit <- rma(measure = "GEN", yi = (OmegaHex_HH$reliability * Reg_prep$var_hh), sei = SE_Omega_varT_HH, method = "REML")
-rma.varT_Omega_EM.fit <- rma(measure = "GEN", yi = (OmegaHex_EM$reliability * Reg_prep$var_em), sei = SE_Omega_varT_EM, method = "REML")
-rma.varT_Omega_EX.fit <- rma(measure = "GEN", yi = (OmegaHex_EX$reliability * Reg_prep$var_ex), sei = SE_Omega_varT_EX, method = "REML")
-rma.varT_Omega_AG.fit <- rma(measure = "GEN", yi = (OmegaHex_AG$reliability * Reg_prep$var_ag), sei = SE_Omega_varT_AG, method = "REML")
-rma.varT_Omega_CO.fit <- rma(measure = "GEN", yi = (OmegaHex_CO$reliability * Reg_prep$var_co), sei = SE_Omega_varT_CO, method = "REML")
-rma.varT_Omega_OX.fit <- rma(measure = "GEN", yi = (OmegaHex_OX$reliability * Reg_prep$var_ox), sei = SE_Omega_varT_OX, method = "REML")
+write.csv(SE_Omega_varT.df, here("Reliability Estimates/BootstrappedSE_Omega.csv"))
+
+
+
+
+rma.varT_Omega_HH.fit <- rma(measure = "GEN", yi = (OmegaHex_HH$reliability * Reg_prep$var_hh), sei = SE_Omega_varT_HH[,1], method = "REML")
+rma.varT_Omega_EM.fit <- rma(measure = "GEN", yi = (OmegaHex_EM$reliability * Reg_prep$var_em), sei = SE_Omega_varT_EM[,1], method = "REML")
+rma.varT_Omega_EX.fit <- rma(measure = "GEN", yi = (OmegaHex_EX$reliability * Reg_prep$var_ex), sei = SE_Omega_varT_EX[,1], method = "REML")
+rma.varT_Omega_AG.fit <- rma(measure = "GEN", yi = (OmegaHex_AG$reliability * Reg_prep$var_ag), sei = SE_Omega_varT_AG[,1], method = "REML")
+rma.varT_Omega_CO.fit <- rma(measure = "GEN", yi = (OmegaHex_CO$reliability * Reg_prep$var_co), sei = SE_Omega_varT_CO[,1], method = "REML")
+rma.varT_Omega_OX.fit <- rma(measure = "GEN", yi = (OmegaHex_OX$reliability * Reg_prep$var_ox), sei = SE_Omega_varT_OX[,1], method = "REML")
 
 
 
@@ -438,8 +490,10 @@ SE_Omega_varE_HH <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "OMEGA",
                  R = 1000)
   
-  sd(bvarEs$t)
-})
+  return(c(sd(bvarEs$t), mean(bvarEs$t)))
+})%>%
+  t()
+
 
 SE_Omega_varE_EM <- sapply(unique(pc_df$source), FUN = function(x){
   bvarEs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_EM]),
@@ -447,8 +501,10 @@ SE_Omega_varE_EM <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "OMEGA",
                  R = 1000)
   
-  sd(bvarEs$t)
-})
+  return(c(sd(bvarEs$t), mean(bvarEs$t)))
+})%>%
+  t()
+
 
 SE_Omega_varE_EX <- sapply(unique(pc_df$source), FUN = function(x){
   bvarEs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_EX]),
@@ -456,8 +512,10 @@ SE_Omega_varE_EX <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "OMEGA",
                  R = 1000)
   
-  sd(bvarEs$t)
-})
+  return(c(sd(bvarEs$t), mean(bvarEs$t)))
+})%>%
+  t()
+
 
 SE_Omega_varE_AG <- sapply(unique(pc_df$source), FUN = function(x){
   bvarEs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_AG]),
@@ -465,8 +523,10 @@ SE_Omega_varE_AG <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "OMEGA",
                  R = 1000)
   
-  sd(bvarEs$t)
-})
+  return(c(sd(bvarEs$t), mean(bvarEs$t)))
+})%>%
+  t()
+
 
 SE_Omega_varE_CO <- sapply(unique(pc_df$source), FUN = function(x){
   bvarEs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_CO]),
@@ -474,8 +534,10 @@ SE_Omega_varE_CO <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "OMEGA",
                  R = 1000)
   
-  sd(bvarEs$t)
-})
+  return(c(sd(bvarEs$t), mean(bvarEs$t)))
+})%>%
+  t()
+
 
 SE_Omega_varE_OX <- sapply(unique(pc_df$source), FUN = function(x){
   bvarEs <- boot(data = as.matrix(pc_df[pc_df$source == x, names_items_hex_OX]),
@@ -483,22 +545,24 @@ SE_Omega_varE_OX <- sapply(unique(pc_df$source), FUN = function(x){
                  stat = "OMEGA",
                  R = 1000)
   
-  sd(bvarEs$t)
-})
+  return(c(sd(bvarEs$t), mean(bvarEs$t)))
+})%>%
+  t()
 
-SE_Omega_varE.df <- data.frame(HH = SE_Omega_varE_HH,
-                               EM = SE_Omega_varE_EM,
-                               EX = SE_Omega_varE_EX,
-                               AG = SE_Omega_varE_AG,
-                               CO = SE_Omega_varE_CO,
-                               OX = SE_Omega_varE_OX)
+
+SE_Omega_varE.df <- data.frame(HH = SE_Omega_varE_HH[,1],
+                               EM = SE_Omega_varE_EM[,1],
+                               EX = SE_Omega_varE_EX[,1],
+                               AG = SE_Omega_varE_AG[,1],
+                               CO = SE_Omega_varE_CO[,1],
+                               OX = SE_Omega_varE_OX[,1])
 
 write.csv(SE_varE.df, here("Reliability Estimates/BootstrappedSE_E_Omega.csv"))
 
-rma.varE_Omega_HH.fit <- rma(measure = "GEN", yi = (Reg_prep$var_hh - OmegaHex_HH$reliability * Reg_prep$var_hh), sei = SE_Omega_varE_HH, method = "REML")
-rma.varE_Omega_EM.fit <- rma(measure = "GEN", yi = (Reg_prep$var_em - OmegaHex_EM$reliability * Reg_prep$var_em), sei = SE_Omega_varE_EM, method = "REML")
-rma.varE_Omega_EX.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ex - OmegaHex_EX$reliability * Reg_prep$var_ex), sei = SE_Omega_varE_EX, method = "REML")
-rma.varE_Omega_AG.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ag - OmegaHex_AG$reliability * Reg_prep$var_ag), sei = SE_Omega_varE_AG, method = "REML")
-rma.varE_Omega_CO.fit <- rma(measure = "GEN", yi = (Reg_prep$var_co - OmegaHex_CO$reliability * Reg_prep$var_co), sei = SE_Omega_varE_CO, method = "REML")
-rma.varE_Omega_OX.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ox - OmegaHex_OX$reliability * Reg_prep$var_ox), sei = SE_Omega_varE_OX, method = "REML")
+rma.varE_Omega_HH.fit <- rma(measure = "GEN", yi = (Reg_prep$var_hh - OmegaHex_HH$reliability * Reg_prep$var_hh), sei = SE_Omega_varE_HH[,1], method = "REML")
+rma.varE_Omega_EM.fit <- rma(measure = "GEN", yi = (Reg_prep$var_em - OmegaHex_EM$reliability * Reg_prep$var_em), sei = SE_Omega_varE_EM[,1], method = "REML")
+rma.varE_Omega_EX.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ex - OmegaHex_EX$reliability * Reg_prep$var_ex), sei = SE_Omega_varE_EX[,1], method = "REML")
+rma.varE_Omega_AG.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ag - OmegaHex_AG$reliability * Reg_prep$var_ag), sei = SE_Omega_varE_AG[,1], method = "REML")
+rma.varE_Omega_CO.fit <- rma(measure = "GEN", yi = (Reg_prep$var_co - OmegaHex_CO$reliability * Reg_prep$var_co), sei = SE_Omega_varE_CO[,1], method = "REML")
+rma.varE_Omega_OX.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ox - OmegaHex_OX$reliability * Reg_prep$var_ox), sei = SE_Omega_varE_OX[,1], method = "REML")
 
