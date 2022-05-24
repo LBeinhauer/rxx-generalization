@@ -393,7 +393,7 @@ bootstrap_SE_varE <- function(data, indices, stat = "ALPHA"){
   
   var_E <- var_X - var_T
   
-  return(var_T)
+  return(var_E)
   
 }
 

@@ -232,7 +232,9 @@ bmean_Alpha_varT.df <- data.frame(HH = SE_Alpha_varT_HH[,2],
                                   OX = SE_Alpha_varT_OX[,2])
 
 
-write.csv(SE_Alpha_varT.df, here("Reliability Estimates/BootstrappedSE_Alpha.csv"))
+write.csv(SE_Alpha_varT.df, here("Reliability Estimates/BootstrappedSE_T_Alpha.csv"), row.names = FALSE)
+write.csv(bmean_Alpha_varT.df, here("Reliability Estimates/Bootstrappedmeanvar_T_Alpha.csv"), row.names = FALSE)
+
 
 rma.varT_Alpha_HH.fit <- rma(measure = "GEN", yi = (AlphaHex_HH$reliability * Reg_prep$var_hh), sei = SE_Alpha_varT_HH[,1], method = "REML")
 rma.varT_Alpha_EM.fit <- rma(measure = "GEN", yi = (AlphaHex_EM$reliability * Reg_prep$var_em), sei = SE_Alpha_varT_EM[,1], method = "REML")
@@ -243,7 +245,7 @@ rma.varT_Alpha_OX.fit <- rma(measure = "GEN", yi = (AlphaHex_OX$reliability * Re
 
 
 
-SE_Alpha_varT.df <- read.csv(here("Reliability Estimates/BootstrappedSE_Alpha.csv"))
+SE_Alpha_varT.df <- read.csv(here("Reliability Estimates/BootstrappedSE_T_Alpha.csv"))
 
 
 
@@ -325,7 +327,18 @@ SE_Alpha_varE.df <- data.frame(HH = SE_Alpha_varE_HH[,1],
                                CO = SE_Alpha_varE_CO[,1],
                                OX = SE_Alpha_varE_OX[,1])
 
-write.csv(SE_Alpha_varE.df, here("Reliability Estimates/BootstrappedSE_E_Alpha.csv"))
+write.csv(SE_Alpha_varE.df, here("Reliability Estimates/BootstrappedSE_E_Alpha.csv"), row.names = FALSE)
+
+
+bmean_Alpha_varE.df <- data.frame(HH = SE_Alpha_varE_HH[,2],
+                                  EM = SE_Alpha_varE_EM[,2],
+                                  EX = SE_Alpha_varE_EX[,2],
+                                  AG = SE_Alpha_varE_AG[,2],
+                                  CO = SE_Alpha_varE_CO[,2],
+                                  OX = SE_Alpha_varE_OX[,2])
+
+
+write.csv(bmean_Alpha_varE.df, here("Reliability Estimates/Bootstrappedmeanvar_E_Alpha.csv"), row.names = FALSE)
 
 
 SE_Alpha_varE.df <- read.csv(here("Reliability Estimates/BootstrappedSE_E_Alpha.csv"))
