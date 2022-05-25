@@ -397,3 +397,34 @@ bootstrap_SE_varE <- function(data, indices, stat = "ALPHA"){
   
 }
 
+
+bootstrap_SE_varET <- function(data, indices, stat = "ALPHA"){
+  
+  d <- data[indices,]
+  
+  if(stat == "ALPHA"){
+    alpha_fit <- psych::alpha(d, warnings = FALSE)
+    
+    alpha <- alpha_fit$total[1]
+    
+    rel <- alpha
+  }
+  if(stat == "OMEGA"){
+    omega_fit <- coefficientalpha::omega(d, se = F, varphi = 0, test = F)
+    
+    omega <- omega_fit$omega
+    
+    rel <- omega
+  }
+  
+  var_X <- var(rowMeans(d, na.rm = T), na.rm = T)
+  
+  var_T <- as.numeric(rel * var_X)
+  
+  var_E <- var_X - var_T
+  
+  varET <- var_E/var_X
+  
+  return(varET)
+  
+}
