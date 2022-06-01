@@ -1,6 +1,6 @@
 ### Reliability Generalization HEXACO - Analysis of Error & True Variance ###
 
-## 18/05/2022
+## 26/05/2022
 
 
 
@@ -236,12 +236,12 @@ write.csv(SE_Alpha_varT.df, here("Reliability Estimates/BootstrappedSE_T_Alpha.c
 write.csv(bmean_Alpha_varT.df, here("Reliability Estimates/Bootstrappedmeanvar_T_Alpha.csv"), row.names = FALSE)
 
 
-rma.varT_Alpha_HH.fit <- rma(measure = "GEN", yi = (AlphaHex_HH$reliability * Reg_prep$var_hh), sei = SE_Alpha_varT_HH[,1], method = "REML")
-rma.varT_Alpha_EM.fit <- rma(measure = "GEN", yi = (AlphaHex_EM$reliability * Reg_prep$var_em), sei = SE_Alpha_varT_EM[,1], method = "REML")
-rma.varT_Alpha_EX.fit <- rma(measure = "GEN", yi = (AlphaHex_EX$reliability * Reg_prep$var_ex), sei = SE_Alpha_varT_EX[,1], method = "REML")
-rma.varT_Alpha_AG.fit <- rma(measure = "GEN", yi = (AlphaHex_AG$reliability * Reg_prep$var_ag), sei = SE_Alpha_varT_AG[,1], method = "REML")
-rma.varT_Alpha_CO.fit <- rma(measure = "GEN", yi = (AlphaHex_CO$reliability * Reg_prep$var_co), sei = SE_Alpha_varT_CO[,1], method = "REML")
-rma.varT_Alpha_OX.fit <- rma(measure = "GEN", yi = (AlphaHex_OX$reliability * Reg_prep$var_ox), sei = SE_Alpha_varT_OX[,1], method = "REML")
+rma.varT_Alpha_HH.fit <- rma(measure = "GEN", yi = (AlphaHex_HH$reliability * Reg_prep$var_hh), sei = SE_Alpha_varT.df[,1], method = "REML")
+rma.varT_Alpha_EM.fit <- rma(measure = "GEN", yi = (AlphaHex_EM$reliability * Reg_prep$var_em), sei = SE_Alpha_varT.df[,2], method = "REML")
+rma.varT_Alpha_EX.fit <- rma(measure = "GEN", yi = (AlphaHex_EX$reliability * Reg_prep$var_ex), sei = SE_Alpha_varT.df[,3], method = "REML")
+rma.varT_Alpha_AG.fit <- rma(measure = "GEN", yi = (AlphaHex_AG$reliability * Reg_prep$var_ag), sei = SE_Alpha_varT.df[,4], method = "REML")
+rma.varT_Alpha_CO.fit <- rma(measure = "GEN", yi = (AlphaHex_CO$reliability * Reg_prep$var_co), sei = SE_Alpha_varT.df[,5], method = "REML")
+rma.varT_Alpha_OX.fit <- rma(measure = "GEN", yi = (AlphaHex_OX$reliability * Reg_prep$var_ox), sei = SE_Alpha_varT.df[,6], method = "REML")
 
 
 
@@ -345,12 +345,12 @@ SE_Alpha_varE.df <- read.csv(here("Reliability Estimates/BootstrappedSE_E_Alpha.
 
 
 
-rma.varE_Alpha_HH.fit <- rma(measure = "GEN", yi = (Reg_prep$var_hh - AlphaHex_HH$reliability * Reg_prep$var_hh), sei = SE_Alpha_varE_HH[,1], method = "REML")
-rma.varE_Alpha_EM.fit <- rma(measure = "GEN", yi = (Reg_prep$var_em - AlphaHex_EM$reliability * Reg_prep$var_em), sei = SE_Alpha_varE_EM[,1], method = "REML")
-rma.varE_Alpha_EX.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ex - AlphaHex_EX$reliability * Reg_prep$var_ex), sei = SE_Alpha_varE_EX[,1], method = "REML")
-rma.varE_Alpha_AG.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ag - AlphaHex_AG$reliability * Reg_prep$var_ag), sei = SE_Alpha_varE_AG[,1], method = "REML")
-rma.varE_Alpha_CO.fit <- rma(measure = "GEN", yi = (Reg_prep$var_co - AlphaHex_CO$reliability * Reg_prep$var_co), sei = SE_Alpha_varE_CO[,1], method = "REML")
-rma.varE_Alpha_OX.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ox - AlphaHex_OX$reliability * Reg_prep$var_ox), sei = SE_Alpha_varE_OX[,1], method = "REML")
+rma.varE_Alpha_HH.fit <- rma(measure = "GEN", yi = (Reg_prep$var_hh - AlphaHex_HH$reliability * Reg_prep$var_hh), sei = SE_Alpha_varE.df[,1], method = "REML")
+rma.varE_Alpha_EM.fit <- rma(measure = "GEN", yi = (Reg_prep$var_em - AlphaHex_EM$reliability * Reg_prep$var_em), sei = SE_Alpha_varE.df[,2], method = "REML")
+rma.varE_Alpha_EX.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ex - AlphaHex_EX$reliability * Reg_prep$var_ex), sei = SE_Alpha_varE.df[,3], method = "REML")
+rma.varE_Alpha_AG.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ag - AlphaHex_AG$reliability * Reg_prep$var_ag), sei = SE_Alpha_varE.df[,4], method = "REML")
+rma.varE_Alpha_CO.fit <- rma(measure = "GEN", yi = (Reg_prep$var_co - AlphaHex_CO$reliability * Reg_prep$var_co), sei = SE_Alpha_varE.df[,5], method = "REML")
+rma.varE_Alpha_OX.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ox - AlphaHex_OX$reliability * Reg_prep$var_ox), sei = SE_Alpha_varE.df[,6], method = "REML")
 
 
 pdf(here("Graphics/RMA_varEvarT.pdf"))
@@ -687,13 +687,15 @@ bmean_Alpha_varET.df <- data.frame(HH = SE_Alpha_varET_HH[,2],
 write.csv(SE_Alpha_varET.df, here("Reliability Estimates/BootstrappedSE_ET_Alpha.csv"), row.names = FALSE)
 write.csv(bmean_Alpha_varET.df, here("Reliability Estimates/Bootstrappedmeanvar_ET_Alpha.csv"), row.names = FALSE)
 
+SE_Alpha_varET.df <- read.csv(here("Reliability Estimates/BootstrappedSE_ET_Alpha.csv"))
+bmean_Alpha_varET.df <- read.csv(here("Reliability Estimates/Bootstrappedmeanvar_ET_Alpha.csv"))
 
-rma.varET_Alpha_HH.fit <- rma(measure = "GEN", yi = (Reg_prep$var_hh - (AlphaHex_HH$reliability * Reg_prep$var_hh))/(AlphaHex_HH$reliability * Reg_prep$var_hh), sei = SE_Alpha_varET_HH[,1], method = "REML")
-rma.varET_Alpha_EM.fit <- rma(measure = "GEN", yi = (Reg_prep$var_em - (AlphaHex_EM$reliability * Reg_prep$var_em))/(AlphaHex_EM$reliability * Reg_prep$var_em), sei = SE_Alpha_varET_EM[,1], method = "REML")
-rma.varET_Alpha_EX.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ex - (AlphaHex_EX$reliability * Reg_prep$var_ex))/(AlphaHex_EX$reliability * Reg_prep$var_ex), sei = SE_Alpha_varET_EX[,1], method = "REML")
-rma.varET_Alpha_AG.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ag - (AlphaHex_AG$reliability * Reg_prep$var_ag))/(AlphaHex_AG$reliability * Reg_prep$var_ag), sei = SE_Alpha_varET_AG[,1], method = "REML")
-rma.varET_Alpha_CO.fit <- rma(measure = "GEN", yi = (Reg_prep$var_co - (AlphaHex_CO$reliability * Reg_prep$var_co))/(AlphaHex_CO$reliability * Reg_prep$var_co), sei = SE_Alpha_varET_CO[,1], method = "REML")
-rma.varET_Alpha_OX.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ox - (AlphaHex_OX$reliability * Reg_prep$var_ox))/(AlphaHex_OX$reliability * Reg_prep$var_ox), sei = SE_Alpha_varET_OX[,1], method = "REML")
+rma.varET_Alpha_HH.fit <- rma(measure = "GEN", yi = (Reg_prep$var_hh - (AlphaHex_HH$reliability * Reg_prep$var_hh))/(AlphaHex_HH$reliability * Reg_prep$var_hh), sei = SE_Alpha_varET.df[,1], method = "REML")
+rma.varET_Alpha_EM.fit <- rma(measure = "GEN", yi = (Reg_prep$var_em - (AlphaHex_EM$reliability * Reg_prep$var_em))/(AlphaHex_EM$reliability * Reg_prep$var_em), sei = SE_Alpha_varET.df[,2], method = "REML")
+rma.varET_Alpha_EX.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ex - (AlphaHex_EX$reliability * Reg_prep$var_ex))/(AlphaHex_EX$reliability * Reg_prep$var_ex), sei = SE_Alpha_varET.df[,3], method = "REML")
+rma.varET_Alpha_AG.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ag - (AlphaHex_AG$reliability * Reg_prep$var_ag))/(AlphaHex_AG$reliability * Reg_prep$var_ag), sei = SE_Alpha_varET.df[,4], method = "REML")
+rma.varET_Alpha_CO.fit <- rma(measure = "GEN", yi = (Reg_prep$var_co - (AlphaHex_CO$reliability * Reg_prep$var_co))/(AlphaHex_CO$reliability * Reg_prep$var_co), sei = SE_Alpha_varET.df[,5], method = "REML")
+rma.varET_Alpha_OX.fit <- rma(measure = "GEN", yi = (Reg_prep$var_ox - (AlphaHex_OX$reliability * Reg_prep$var_ox))/(AlphaHex_OX$reliability * Reg_prep$var_ox), sei = SE_Alpha_varET.df[,6], method = "REML")
 
 
 
