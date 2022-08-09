@@ -313,7 +313,43 @@ my_forest_plot <- function(rma.fit, rma.data, main.title = "Forest Plot",
 }
 
 
-gg_color_hue <- function(n) {
-  hues = seq(15, 375, length = n + 1)
-  hcl(h = hues, l = 65, c = 100)[1:n]
+sim_het_VC <- function(j, n, k, reliability = 0.5, mean_score = 0, mean_observed_var = 10, 
+                       tau_var_T = 0, tau_var_E = 0){
+  
+  mean_var_T <- mean_observed_var * reliability
+  
+  mean_var_E <- mean_observed_var - mean_var_T
+  
+  true_var <- truncnorm::rtruncnorm(n = k, mean = mean_var_T, sd = tau_var_T, a = 0)
+  
+  error_var <- truncnorm::rtruncnorm(n = k, mean = mean_var_E, sd = tau_var_E, a = 0)
+  
+  sim_d.L <- apply(as.matrix(1:k), MARGIN = 1, FUN = function(x){
+    
+    var_T1 <- true_var[x]/j
+    
+    var_E1 <- error_var[x]
+    
+    mat <- matrix(var_T1, nrow = j, ncol = j)
+    
+    diag(mat) <- var_T1 + var_E1
+    
+    obs_scores <- mvrnorm(n = n, mu = rep(0, j), Sigma = mat)
+    
+    sim_data <- obs_scores
+    
+    rel <- spsUtil::quiet(psych::alpha(sim_data, warnings = FALSE))
+    
+    return(list(reliability = rel$total$raw_alpha,
+                StandardError = rel$total$ase,
+                data = sim_data))
+  })
+  
+  sim_data.L <- lapply(sim_d.L, FUN = function(x){x$data})
+  
+  sim_d.df <- data.frame(Reliability = sapply(sim_d.L, FUN = function(x){x$reliability}),
+                         StandardError = sapply(sim_d.L, FUN = function(x){x$StandardError}))
+  
+  return(list(sim_data.L = sim_data.L,
+              reliability.df = sim_d.df))
 }
