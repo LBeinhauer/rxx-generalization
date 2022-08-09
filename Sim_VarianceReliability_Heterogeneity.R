@@ -3,7 +3,7 @@
 
 
 
-packages <- c("tidyverse", "here", "psych", "coefficientalpha", "boot", "MASS")
+packages <- c("tidyverse", "here", "psych", "coefficientalpha", "boot", "MASS", "truncnorm")
 
 # check, whether library already installed or not - install and load as needed:
 apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
@@ -35,36 +35,21 @@ n <- 100
 # nr of samples
 k <- 1000
 
-# var on each item
-var_j <- 1
-
-# cov between items
-cov_jh <- .3
-
-
-mat <- matrix(cov_jh, nrow = j, ncol = j) 
-
-diag(mat) <- var_j
-
-simdat <- mvrnorm(n = n, mu = rep(3.5, j), Sigma = mat)
-
-C <- cov(simdat)
-
-(1 - tr(C)/sum(C)) * (j / (j-1))
-
-
-rxx <- rnorm(100, mean = .7, sd = .1)
-
-# Cronbach's Alpha as: rxx = (j / (j-1)) * (1 - (A / A + B))
-# assuming constant item variance 1, varying covariance & j = 10 ->
-# rxx = (10/9) * (1 - (10 / 10 + B))
-# this leads to:
-
-A = 10
-
-B = (10 / (-(rxx/(10/9)) + 1)) - 10
-
-cov_jh = B / 90
+# 
+# (1 - tr(C)/sum(C)) * (j / (j-1))
+# 
+# rxx <- rnorm(100, mean = .7, sd = .1)
+# 
+# # Cronbach's Alpha as: rxx = (j / (j-1)) * (1 - (A / A + B))
+# # assuming constant item variance 1, varying covariance & j = 10 ->
+# # rxx = (10/9) * (1 - (10 / 10 + B))
+# # this leads to:
+# 
+# A = 10
+# 
+# B = (10 / (-(rxx/(10/9)) + 1)) - 10
+# 
+# cov_jh = B / 90
 
 
 
@@ -84,16 +69,16 @@ mat <- matrix(var_T1, nrow = j, ncol = j)
 
 diag(mat) <- var_T1 + var_E1
 
-obs_scores <- mvrnorm(n = 100, mu = rep(0, j), Sigma = mat)
+obs_scores <- mvrnorm(n = n, mu = rep(0, j), Sigma = mat)
 
 
 
 
 # no heterogeneity
 
-test.L <- apply(matrix(1:1000), MARGIN = 1, FUN = function(x){
+test.L <- apply(matrix(1:k), MARGIN = 1, FUN = function(x){
   
-  obs_scores <- mvrnorm(n = 100, mu = rep(0, j), Sigma = mat)
+  obs_scores <- mvrnorm(n = n, mu = rep(0, j), Sigma = mat)
   
   sim_data <- obs_scores
   
@@ -120,11 +105,11 @@ metafor::rma(measure = "GEN", method = "REML", data = test.df,
 
 
 
-true_var <- rnorm(1000, mean = 5, sd = 2)
+true_var <- truncnorm::rtruncnorm(k, mean = 5, sd = 2, a = 0)
 
 error_var <- 5
 
-test.L2 <- apply(matrix(1:1000), MARGIN = 1, FUN = function(x){
+test.L2 <- apply(matrix(1:k), MARGIN = 1, FUN = function(x){
   
   var_T1 <- true_var[x]/(j)
   
@@ -134,7 +119,7 @@ test.L2 <- apply(matrix(1:1000), MARGIN = 1, FUN = function(x){
   
   diag(mat) <- var_T1 + var_E1
   
-  obs_scores <- mvrnorm(n = 100, mu = rep(0, j), Sigma = mat)
+  obs_scores <- mvrnorm(n = n, mu = rep(0, j), Sigma = mat)
   
   sim_data <- obs_scores
   
@@ -167,19 +152,19 @@ metafor::rma(measure = "GEN", method = "REML", data = test.df2,
 
 true_var <- 5
 
-error_var <- rnorm(1000, mean = 5, sd = 2)
+error_var <- truncnorm::rtruncnorm(k, mean = 5, sd = 2, a = 0)
 
-test.L3 <- apply(matrix(1:1000), MARGIN = 1, FUN = function(x){
+test.L3 <- apply(matrix(1:k), MARGIN = 1, FUN = function(x){
   
   var_T1 <- true_var/j
   
-  var_E1 <- error_var[i]
+  var_E1 <- error_var[x]
   
   mat <- matrix(var_T1, nrow = j, ncol = j)
   
   diag(mat) <- var_T1 + var_E1
   
-  obs_scores <- mvrnorm(n = 100, mu = rep(0, j), Sigma = mat)
+  obs_scores <- mvrnorm(n = n, mu = rep(0, j), Sigma = mat)
   
   sim_data <- obs_scores
   
@@ -198,7 +183,7 @@ for(i in seq_along(test.L3)){
 }
 
 
-# does find heterogeneity
+# does NOT find heterogeneity
 metafor::rma(measure = "GEN", method = "REML", data = test.df3,
              yi = Reliability, sei = StandardError)
 
@@ -212,39 +197,17 @@ metafor::rma(measure = "GEN", method = "REML", data = test.df3,
 # 
 # sim_data <- t(dat)
 
-sim_data <- obs_scores
-
-t <- psych::alpha(sim_data)
-
-C <- cov(sim_data)
-(1 - tr(C)/sum(C)) * (j / (j-1))
-
-cor(sim_data)
-
-var(rowSums(sim_data))
-j^2*var(rowMeans(sim_data))
-
-
-
-tau_T <- .1
-
-SE_T <- .05
-
-tau_E <- 0
-
-SE_E <- .05
-
-rxx <- .7
-
-varX <- 10
-
-
-k <- 100
-
-
-
-var_T <- rnorm(100, mean = varX * rxx, sd = tau_T + SE_T)
-var_E <- rnorm(100, mean = varX * rxx, sd = tau_T + SE_T)
-
+# sim_data <- obs_scores
+# 
+# t <- psych::alpha(sim_data)
+# 
+# C <- cov(sim_data)
+# (1 - tr(C)/sum(C)) * (j / (j-1))
+# 
+# cor(sim_data)
+# 
+# var(rowSums(sim_data))
+# j^2*var(rowMeans(sim_data))
+# 
 
 
