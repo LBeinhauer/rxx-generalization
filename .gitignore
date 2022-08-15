@@ -1,2 +1,5 @@
 Lit/
 Data/
+*.DS_Store
+*.Rhistory
+old/
