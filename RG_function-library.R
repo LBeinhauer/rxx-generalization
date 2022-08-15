@@ -379,7 +379,7 @@ sim_het_VC <- function(j, n, k, reliability = 0.5, mean_score = 0, mean_observed
     
     diag(mat) <- var_T1 + var_E1
     
-    obs_scores <- mvrnorm(n = n, mu = rep(0, j), Sigma = mat)
+    obs_scores <- mvrnorm(n = n, mu = rep(mean_score, j), Sigma = mat)
     
     sim_data <- obs_scores
     
