@@ -90,11 +90,11 @@ hist(test1$reliability.df$StandardError)
 # takes about 17 seconds for a single run of 1000 samples.
 
 system.time(
-  test2 <- sim_het_VC(j = 10, n = 1000, k = 1000,
-                      reliability = .5, mean_score = 0, 
+  test2 <- sim_het_VC(j = 10, n = 1000, k = 100,
+                      reliability = .8, mean_score = 0, 
                       mean_observed_var = 10,
                       tau_var_T = 0,
-                      tau_var_E = 1)
+                      tau_var_E = 0)
 )
 
 
@@ -131,7 +131,157 @@ mean(long_test_E$SE)
 
 
 
+# simulating a bunch of null-heterogeneity situations
 
+rel <- seq(from = .41, to = .9, length.out = 50)
+
+zero_het_data <- lapply(1:50, FUN = function(x){
+  data <- sim_het_VC(j = 10, n = 100, k = 100,
+             reliability = rel[x], mean_score = 0, 
+             mean_observed_var = 10,
+             tau_var_T = 0,
+             tau_var_E = 0)
+  
+  zero_test_T <- apply_Bootstrap_SE_nonspecific(data$sim_data.L, var.component = "TRUE", R = 100)
+
+  zero_test_E <- apply_Bootstrap_SE_nonspecific(data$sim_data.L, var.component = "TRUE", R = 100)
+
+  return(list(data = data,
+              df = data.frame(varT = zero_test_T$boot.mean,
+                              SE_T = zero_test_T$SE,
+                              varE = zero_test_E$boot.mean,
+                              SE_E = zero_test_E$SE))
+  )
+  
+  # return(list(data = data))
+  
+})
+
+
+
+rel_het_test <- lapply(zero_het_data, FUN = function(x){
+  alpha.L <- lapply(x[[1]]$sim_data.L, FUN = function(i){
+    C.alpha <- spsUtil::quiet(psych::alpha(i))
+    
+    rel <- C.alpha$total$raw_alpha
+    SE <- C.alpha$total$ase
+    varX <- var(rowMeans(i))
+    
+    return(data.frame(rel = rel,
+                      SE = SE,
+                      varX = varX))
+  })
+  
+  return(data.frame(rel = sapply(alpha.L, FUN = function(x){x$rel}),
+                    SE = sapply(alpha.L, FUN = function(x){x$rel}),
+                    varX = sapply(alpha.L, FUN = function(x){x$varX})))
+  
+})
+
+
+sapply(rel_het_test, FUN = function(x){
+  sqrt(metafor::rma(data = x, measure = "GEN", method = "DL",
+                        yi = rel, sei = SE)$tau2)
+})
+
+
+rel_rma <- sapply(rel_het_test, FUN = function(x){
+  metafor::rma(data = x, measure = "GEN", method = "PMM",
+                    yi = rel, sei = SE)$b[1]
+})
+
+
+rel_non_rma <- sapply(rel_het_test, FUN = function(x){
+  mean(x$rel)
+})
+
+
+
+# meta-analysis of true variance, using point estimate from original sample and bootstrapped SE
+
+rel_nonB.mean_rma.tauT <- sapply(seq_along(zero_het_data), FUN = function(x){
+  sqrt(metafor::rma(measure = "GEN", method = "REML", sei = zero_het_data[[x]]$df$SE_T,
+                    yi = (rel_het_test[[x]]$rel * rel_het_test[[x]]$varX))$tau2)
+})
+
+rel_nonB.mean_rma.meanT <- sapply(seq_along(zero_het_data), FUN = function(x){
+  metafor::rma(measure = "GEN", method = "REML", sei = zero_het_data[[x]]$df$SE_T,
+               yi = (rel_het_test[[x]]$rel * rel_het_test[[x]]$varX))$b[1]
+})
+
+
+# meta-analysis of error variance, using point estimate from original sample and bootstrapped SE
+
+rel_nonB.mean_rma.tauE <- sapply(seq_along(zero_het_data), FUN = function(x){
+  sqrt(metafor::rma(measure = "GEN", method = "REML", sei = zero_het_data[[x]]$df$SE_E,
+                    yi = (rel_het_test[[x]]$varX - rel_het_test[[x]]$rel * rel_het_test[[x]]$varX))$tau2)
+})
+
+rel_nonB.mean_rma.meanE <- sapply(seq_along(zero_het_data), FUN = function(x){
+  metafor::rma(measure = "GEN", method = "REML", sei = zero_het_data[[x]]$df$SE_E,
+               yi = (rel_het_test[[x]]$varX - rel_het_test[[x]]$rel * rel_het_test[[x]]$varX))$b[1]
+})
+
+
+plot(rel*10, rel_nonB.mean_rma.mean)
+abline(a = 0, b = 1)
+
+plot(rel, rel_rma)
+abline(a = 0, b = 1)
+
+plot(rel, rel_non_rma)
+abline(a = 0, b = 1)
+
+zero_het_data[[1]]$
+
+
+
+
+
+rma_zero_test <- lapply(zero_het_data, FUN = function(x){
+  tauT <- sqrt(metafor::rma(measure = "GEN", method = "REML", data = x$df, yi = varT, sei = SE_T)$tau2)
+  tauE <- sqrt(metafor::rma(measure = "GEN", method = "REML", data = x$df, yi = varE, sei = SE_E)$tau2)
+  
+  pT <- metafor::rma(measure = "GEN", method = "REML", data = x$df, yi = varT, sei = SE_T)$QEp
+  pE <- metafor::rma(measure = "GEN", method = "REML", data = x$df, yi = varE, sei = SE_E)$QEp
+  
+  return(df = data.frame(tauT = tauT,
+                         tauE = tauE,
+                         pT = pT,
+                         pE = pE))
+})
+
+
+
+test_T <- sapply(rma_zero_test, FUN = function(x){x$tauT})
+test_E <- sapply(rma_zero_test, FUN = function(x){x$tauE})
+
+p_T <- sapply(rma_zero_test, FUN = function(x){x$pT})
+p_E <- sapply(rma_zero_test, FUN = function(x){x$pE})
+
+mean(sapply(rma_zero_test, FUN = function(x){x$pT < .5}))
+mean(sapply(rma_zero_test, FUN = function(x){x$pE} < .5))
+
+hist(test_T)
+hist(test_E)
+hist(p_T)
+hist(p_E)
+
+plot(test_T, test_E)
+
+plot(test_T / (test_T + test_E))
+
+
+
+
+saveRDS(rma_zero_test, file = here("Notes/Sim_zero_test.RData"))
+rma_zero_test <- readRDS(file = here("Notes/Sim_zero_test.RData"))
+
+rma_zero_test[[1]]
+
+
+  
+  
 
 # simulation scheme:
 
@@ -161,10 +311,21 @@ Large_Sim_Data <- lapply(1:nrow(condition_combinations), FUN = function(x){
   b.data_T <- apply_Bootstrap_SE_nonspecific(it.simdata$sim_data.L, var.component = "TRUE", R = 100)
   b.data_E <- apply_Bootstrap_SE_nonspecific(it.simdata$sim_data.L, var.component = "ERROR", R = 100)
   
-  return(data.frame(varT = b.data_T$boot.mean,
-                    SE_T = b.data_T$SE,
-                    varE = b.data_E$boot.mean,
-                    SE_E = b.data_E$SE))
+  a <- lapply(it.simdata, FUN = function(x){
+    al <- spsUtil::quiet(psych::alpha(x))
+    
+    return(data.frame(rel = al$total$raw_alpha,
+                      ase = al$total$ase))
+  })
+  
+  return(data.frame(varT.b = b.data_T$boot.mean,
+                    SE_T.b = b.data_T$SE,
+                    varE.b = b.data_E$boot.mean,
+                    SE_E.b = b.data_E$SE,
+                    varT = sapply(it.simdata, FUN = function(x){var(rowMeans(x))}) * sapply(a, FUN = function(x){x$rel}),
+                    varE = sapply(it.simdata, FUN = function(x){var(rowMeans(x))}) * (1-sapply(a, FUN = function(x){x$rel})),
+                    rel = sapply(a, FUN = function(x){x$rel}),
+                    ase = sapply(a, FUN = function(x){x$ase})))
   
 })
 
@@ -206,6 +367,9 @@ cov_matrices <- lapply(1:nrow(condition_combinations), FUN = function(x){
 cov_matrices[[1]]$mats
 
 
+
+
+
 saveRDS(Large_Sim_Data, file = here("Notes/Sim_80_conditions.RData"))
 
 Large_Sim_Data <- readRDS(file = here("Notes/Sim_80_conditions.RData"))
@@ -221,8 +385,8 @@ Large_Sim_Data_RMA <- lapply(Large_Sim_Data, FUN = function(x){
   
   return(data.frame(tau_T = sqrt(tauT$tau2),
                     tau_E = sqrt(tauE$tau2),
-                    p_T = sqrt(tauT$QEp),
-                    p_E = sqrt(tauE$QEp)))
+                    p_T = tauT$QEp,
+                    p_E = tauE$QEp))
 })
 
 vis.df <- data.frame(condition_combinations,
@@ -232,17 +396,67 @@ vis.df <- data.frame(condition_combinations,
                      p_E = sapply(Large_Sim_Data_RMA, FUN = function(x){x$p_E}))
 
 
+sapply(Large_Sim_Data, FUN = function(x){mean(x$SE_T)})
+sapply(Large_Sim_Data, FUN = function(x){mean(x$varT)})
+
+sapply(Large_Sim_Data, FUN = function(x){sd(x$SE_T)})
+sapply(Large_Sim_Data, FUN = function(x){sd(x$varT)})
+
+plot(sapply(Large_Sim_Data, FUN = function(x){mean(x$SE_T)}))
+plot(sapply(Large_Sim_Data, FUN = function(x){mean(x$varT)}))
+plot(sapply(Large_Sim_Data, FUN = function(x){sd(x$varT)}))
+
+
+
+sapply(Large_Sim_Data, FUN = function(x){mean(x$SE_E)})
+sapply(Large_Sim_Data, FUN = function(x){mean(x$varE)})
+
+sapply(Large_Sim_Data, FUN = function(x){sd(x$SE_E)})
+sapply(Large_Sim_Data, FUN = function(x){sd(x$varE)})
+
+plot(sapply(Large_Sim_Data, FUN = function(x){mean(x$SE_E)}))
+plot(sapply(Large_Sim_Data, FUN = function(x){mean(x$varE)}))
+plot(sapply(Large_Sim_Data, FUN = function(x){sd(x$varE)}))
+
+
+
+
+for(i in seq_along(Large_Sim_Data)){
+  plot(Large_Sim_Data[[i]]$varT)
+  abline(h = condition_combinations$CVT[i] * condition_combinations$rel[i] * 10)
+}
+
+
 
 ggplot(data = vis.df) + 
+  geom_point(aes(y = CVT*(10*rel), x = CVT), colour = "grey") +
+  geom_line(aes(y = CVT*(10*rel), x = CVT), colour = "grey") +
   geom_point(aes(y = tau_T, x = CVT)) + 
   geom_line(aes(y = tau_T, x = CVT)) +
   facet_grid(rows = vars(CVE), cols = vars(rel))
 
+ggplot(data = vis.df) + 
+  geom_abline(colour = "grey") +
+  geom_point(aes(y = tau_T, x = CVT*(10*rel))) + 
+  geom_line(aes(y = tau_T, x = CVT*(10*rel))) +
+  facet_grid(rows = vars(CVE), cols = vars(rel))
+
+
 
 ggplot(data = vis.df) + 
+  geom_point(aes(y =CVE*(10*(1-rel)), x = CVE), colour = "grey") +
+  geom_line(aes(y = CVE*(10*(1-rel)), x = CVE), colour = "grey") +
   geom_point(aes(y = tau_E, x = CVE)) + 
   geom_line(aes(y = tau_E, x = CVE)) +
   facet_grid(rows = vars(CVT), cols = vars(rel))
+
+ggplot(data = vis.df) + 
+  geom_abline(colour = "grey") +
+  geom_point(aes(y = tau_E, x = CVE*(10*(1-rel)))) + 
+  geom_line(aes(y = tau_E, x = CVE*(10*(1-rel)))) +
+  facet_grid(rows = vars(CVT), cols = vars(rel))
+
+
 
 
 ggplot(data = vis.df) + 
@@ -261,6 +475,8 @@ bias_T <- mean(vis.df$tau_T) - mean(vis.df$CVT * (vis.df$rel*10))
 (vis.df$tau_T - (vis.df$CVT * (vis.df$rel*10)))^2
 
 plot((vis.df$tau_T - (vis.df$CVT * (vis.df$rel*10))))
+
+abline(a = 0, b = 1)
 
 plot(vis.df$CVT * 10*vis.df$rel, vis.df$tau_T)
 
