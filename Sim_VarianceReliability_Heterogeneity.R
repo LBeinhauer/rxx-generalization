@@ -311,7 +311,7 @@ Large_Sim_Data <- lapply(1:nrow(condition_combinations), FUN = function(x){
   b.data_T <- apply_Bootstrap_SE_nonspecific(it.simdata$sim_data.L, var.component = "TRUE", R = 100)
   b.data_E <- apply_Bootstrap_SE_nonspecific(it.simdata$sim_data.L, var.component = "ERROR", R = 100)
   
-  a <- lapply(it.simdata, FUN = function(x){
+  a <- lapply(it.simdata$sim_data.L, FUN = function(x){
     al <- spsUtil::quiet(psych::alpha(x))
     
     return(data.frame(rel = al$total$raw_alpha,
@@ -322,8 +322,8 @@ Large_Sim_Data <- lapply(1:nrow(condition_combinations), FUN = function(x){
                     SE_T.b = b.data_T$SE,
                     varE.b = b.data_E$boot.mean,
                     SE_E.b = b.data_E$SE,
-                    varT = sapply(it.simdata, FUN = function(x){var(rowMeans(x))}) * sapply(a, FUN = function(x){x$rel}),
-                    varE = sapply(it.simdata, FUN = function(x){var(rowMeans(x))}) * (1-sapply(a, FUN = function(x){x$rel})),
+                    varT = sapply(it.simdata$sim_data.L, FUN = function(x){var(rowMeans(x))}) * sapply(a, FUN = function(x){x$rel}),
+                    varE = sapply(it.simdata$sim_data.L, FUN = function(x){var(rowMeans(x))}) * (1-sapply(a, FUN = function(x){x$rel})),
                     rel = sapply(a, FUN = function(x){x$rel}),
                     ase = sapply(a, FUN = function(x){x$ase})))
   
@@ -331,7 +331,7 @@ Large_Sim_Data <- lapply(1:nrow(condition_combinations), FUN = function(x){
 
 
 
-# extracting covariance matrices (used for simulation)
+   # extracting covariance matrices (used for simulation)
 
 cov_matrices <- lapply(1:nrow(condition_combinations), FUN = function(x){
   
@@ -380,8 +380,8 @@ Large_Sim_Data[[1]]
 Large_Sim_Data_RMA <- lapply(Large_Sim_Data, FUN = function(x){
   
   
-  tauT <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = varT, sei = SE_T)
-  tauE <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = varE, sei = SE_E)
+  tauT <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = varT, sei = SE_T.b)
+  tauE <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = varE, sei = SE_E.b)
   
   return(data.frame(tau_T = sqrt(tauT$tau2),
                     tau_E = sqrt(tauE$tau2),
@@ -420,27 +420,63 @@ plot(sapply(Large_Sim_Data, FUN = function(x){sd(x$varE)}))
 
 
 
+pdf(here("Notes/Est_varT.pdf"))
 
 for(i in seq_along(Large_Sim_Data)){
   plot(Large_Sim_Data[[i]]$varT)
-  abline(h = condition_combinations$CVT[i] * condition_combinations$rel[i] * 10)
+  abline(h = condition_combinations$rel[i] * 10)
 }
 
+dev.off()
+pdf(here("Notes/Est_varE.pdf"))
 
+
+for(i in seq_along(Large_Sim_Data)){
+  plot(Large_Sim_Data[[i]]$varE)
+  abline(h = (1 - condition_combinations$rel[i]) * 10)
+}
+
+dev.off()
+
+pdf(here("Notes/Facet_grid_tauT.pdf"))
 
 ggplot(data = vis.df) + 
   geom_point(aes(y = CVT*(10*rel), x = CVT), colour = "grey") +
   geom_line(aes(y = CVT*(10*rel), x = CVT), colour = "grey") +
   geom_point(aes(y = tau_T, x = CVT)) + 
   geom_line(aes(y = tau_T, x = CVT)) +
-  facet_grid(rows = vars(CVE), cols = vars(rel))
+  facet_grid(rows = vars(CVE), cols = vars(rel)) +
+  labs(x = "Simulated Coefficient of Variation", y = "Estimated tau", title = "Sim - True Score Variance", 
+       subtitle = "Columns = Reliability, Rows = CV_E")
 
 ggplot(data = vis.df) + 
   geom_abline(colour = "grey") +
+  geom_point(aes(y = CVT*10*rel, x = CVT * 10 * rel), colour = "grey") +
   geom_point(aes(y = tau_T, x = CVT*(10*rel))) + 
   geom_line(aes(y = tau_T, x = CVT*(10*rel))) +
-  facet_grid(rows = vars(CVE), cols = vars(rel))
+  facet_grid(rows = vars(CVE), cols = vars(rel))+
+  labs(x = "Simulated tau", y = "Estimated tau", title = "Sim - True Score Variance", 
+       subtitle = "Columns = Reliability, Rows = CV_E")
 
+
+ggplot(data = vis.df[which(vis.df$CVT == 0),]) +
+  geom_line(aes(y = CVT*(10*rel), x = rel), colour = "grey") +
+  geom_point(aes(y = CVT*(10*rel), x = rel), colour = "grey") +
+  geom_point(aes(y = tau_T, x = rel)) + 
+  geom_line(aes(y = tau_T, x = rel)) +
+  facet_grid(rows = vars(CVE)) +
+  labs(x = "Simulated Reliability", y = "Estimated tau", title = "Sim - True Score Variance (zero Heterogeneity)", 
+       subtitle = "Rows = CV_E")
+
+ggplot() + 
+  geom_point(aes(x = vis.df$p_T, y = (vis.df$CVT * (vis.df$rel*10))), alpha = .3) +
+  geom_vline(xintercept = .05) +
+  labs(x = "P-value Heterogeneity", y = "Simulated tau", title = "Signficance Testing Heterogeneity - True Score Variance")
+
+
+dev.off()
+
+pdf(here("Notes/Facet_grid_tauE.pdf"))
 
 
 ggplot(data = vis.df) + 
@@ -448,14 +484,36 @@ ggplot(data = vis.df) +
   geom_line(aes(y = CVE*(10*(1-rel)), x = CVE), colour = "grey") +
   geom_point(aes(y = tau_E, x = CVE)) + 
   geom_line(aes(y = tau_E, x = CVE)) +
-  facet_grid(rows = vars(CVT), cols = vars(rel))
+  facet_grid(rows = vars(CVT), cols = vars(rel)) +
+  labs(x = "Simulated CV_E", y = "Estimated tau", title = "Sim - Error Variance", 
+       subtitle = "Columns = Reliability, Rows = CV_T")
 
 ggplot(data = vis.df) + 
   geom_abline(colour = "grey") +
+  geom_point(aes(y = CVE*(10*(1-rel)), x = CVE*(10*(1-rel))), colour = "grey") +
   geom_point(aes(y = tau_E, x = CVE*(10*(1-rel)))) + 
   geom_line(aes(y = tau_E, x = CVE*(10*(1-rel)))) +
-  facet_grid(rows = vars(CVT), cols = vars(rel))
+  facet_grid(rows = vars(CVT), cols = vars(rel)) +
+  labs(x = "Simulated Coefficient of Variation", y = "Estimated tau", title = "Sim - Error Variance", 
+       subtitle = "Columns = Reliability, Rows = CV_T")
 
+ggplot(data = vis.df[which(vis.df$CVE == 0),]) +
+  geom_line(aes(y = CVE*(10*(1-rel)), x = rel), colour = "grey") +
+  geom_point(aes(y = CVE*(10*(1-rel)), x = rel), colour = "grey") +
+  geom_point(aes(y = tau_E, x = rel)) + 
+  geom_line(aes(y = tau_E, x = rel)) +
+  facet_grid(rows = vars(CVT)) +
+  labs(x = "Simulated Reliability", y = "Estimated tau", title = "Sim - Error Variance (zero Heterogeneity)", 
+       subtitle = "Rows = CV_T")
+
+ggplot() + 
+  geom_point(aes(x = vis.df$p_E, y = (vis.df$CVE * (10 - (vis.df$rel*10)))), alpha = .3) +
+  geom_vline(xintercept = .05) +
+  labs(x = "P-value Heterogeneity", y = "Simulated tau", title = "Signficance Testing Heterogeneity - Error Variance")
+
+
+
+dev.off()
 
 
 
@@ -469,6 +527,8 @@ ggplot(data = vis.df) +
 
 
 
+
+
 MSE_T <- mean((vis.df$tau_T - (vis.df$CVT * (vis.df$rel*10)))^2)
 bias_T <- mean(vis.df$tau_T) - mean(vis.df$CVT * (vis.df$rel*10))
 
@@ -476,11 +536,13 @@ bias_T <- mean(vis.df$tau_T) - mean(vis.df$CVT * (vis.df$rel*10))
 
 plot((vis.df$tau_T - (vis.df$CVT * (vis.df$rel*10))))
 
-abline(a = 0, b = 1)
 
 plot(vis.df$CVT * 10*vis.df$rel, vis.df$tau_T)
+abline(a = 0, b = 1)
+
 
 plot(vis.df$CVE * (10 - 10*vis.df$rel), vis.df$tau_E)
+abline(a = 0, b = 1)
 
 
 mean((vis.df[which(vis.df$CVE == 0),]$tau_T - (vis.df[which(vis.df$CVE == 0),]$CVT * (vis.df[which(vis.df$CVE == 0),]$rel*10))))
@@ -505,7 +567,9 @@ plot(vis.df$p_E, (vis.df$CVE * (10 - (vis.df$rel*10))))
 
 ggplot() + 
   geom_point(aes(x = vis.df$p_T, y = (vis.df$CVT * (vis.df$rel*10))), alpha = .3) +
-  geom_vline(xintercept = .05)
+  geom_vline(xintercept = .05) +
+  labs(x = "P-value Heterogeneity", y = "Simulated tau", title = "Signficance Testing Heterogeneity - True Score Variance")
+
 
 mean(vis.df$p_T[which(vis.df$CVT > 0)] < .05)
 mean(vis.df$p_T[which(vis.df$CVT == 0)] < .05)
@@ -516,7 +580,8 @@ mean(vis.df$p_E[which(vis.df$CVE == 0)] < .05)
 
 ggplot() + 
   geom_point(aes(x = vis.df$p_E, y = (vis.df$CVE * (10 - (vis.df$rel*10)))), alpha = .3) +
-  geom_vline(xintercept = .05)
+  geom_vline(xintercept = .05) +
+  labs(x = "P-value Heterogeneity", y = "Simulated tau", title = "Signficance Testing Heterogeneity - Error Variance")
 
 
 # 
