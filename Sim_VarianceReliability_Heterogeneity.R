@@ -330,7 +330,6 @@ Large_Sim_Data <- lapply(1:nrow(condition_combinations), FUN = function(x){
 })
 
 
-
    # extracting covariance matrices (used for simulation)
 
 cov_matrices <- lapply(1:nrow(condition_combinations), FUN = function(x){
@@ -394,6 +393,15 @@ vis.df <- data.frame(condition_combinations,
                      tau_E = sapply(Large_Sim_Data_RMA, FUN = function(x){x$tau_E}),
                      p_T = sapply(Large_Sim_Data_RMA, FUN = function(x){x$p_T}),
                      p_E = sapply(Large_Sim_Data_RMA, FUN = function(x){x$p_E}))
+
+
+test <- metafor::rma(data = Large_Sim_Data[[1]], yi = varT, sei = SE_T.b, measure = "GEN", method = "REML")
+
+sqrt(test$tau2)
+sqrt(test$se.tau2)
+
+(test$tau2)
+(test$se.tau2)
 
 
 sapply(Large_Sim_Data, FUN = function(x){mean(x$SE_T)})
@@ -527,6 +535,64 @@ ggplot(data = vis.df) +
 
 
 
+
+var_X.L <- lapply(Large_Sim_Data, FUN = function(x){
+  var_X <- x$varT + x$varE
+  SE_var_X <- (var_X * (99/100))/sqrt(2*(100-1))
+  
+  return(data.frame(var_X = var_X,
+                    SE_var_X = SE_var_X))
+})
+
+
+plot(sapply(var_X.L, FUN = function(x){mean(x$SE_var_X)}), sapply(Large_Sim_Data, FUN = function(x){mean(x$SE_T)}))
+
+
+var_X_rma <- sapply(var_X.L, FUN = function(x){
+  sqrt(metafor::rma(measure = "GEN", method = "REML", yi = var_X, sei = SE_var_X, data = x)$tau2)
+})
+
+
+alpha_rma <- sapply(Large_Sim_Data, FUN = function(x){
+  sqrt(metafor::rma(measure = "GEN", method = "REML", yi = rel, sei = ase, data = x)$tau2)
+})
+
+condition_combinations$CVT * 10 * condition_combinations$rel
+condition_combinations$CVE * 10 * (1-condition_combinations$rel)
+condition_combinations$CVT * 10 * condition_combinations$rel + condition_combinations$CVE * 10 * (1-condition_combinations$rel)
+
+plot(condition_combinations$CVT * 10 * condition_combinations$rel + condition_combinations$CVE * 10 * (1-condition_combinations$rel),
+     var_X_rma)
+abline(a = 0, b = 1)
+
+
+data <- sim_het_VC(j = 10, n = 100, k = 100,
+                   reliability = condition_combinations$rel[33], mean_score = 0, 
+                   mean_observed_var = 10,
+                   CV_var_T = condition_combinations$CVT[33],
+                   CV_var_E = condition_combinations$CVE[33])
+
+
+B.varX <- lapply(data$sim_data.L, FUN = function(x){
+  B <- boot::boot(x, 
+             statistic = function(data, indices){
+               d <- data[indices,]
+               v <- var(rowMeans(d))
+               return(v)
+               },
+             R = 1000)
+  
+  var_X <- var(rowMeans(x))
+  
+  return(data.frame(b.SE_varX = sd(B$t),
+                    SE_varX = (var_X * (99/100))/sqrt(2*(100-1))))
+})
+
+
+
+
+plot(sapply(B.varX, FUN = function(x){x$SE_varX}), sapply(B.varX, FUN = function(x){x$b.SE_varX}))
+abline(a = 0, b = 1)
 
 
 MSE_T <- mean((vis.df$tau_T - (vis.df$CVT * (vis.df$rel*10)))^2)
