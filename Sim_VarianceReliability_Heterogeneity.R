@@ -3,7 +3,8 @@
 
 
 
-packages <- c("tidyverse", "here", "psych", "coefficientalpha", "boot", "MASS", "truncnorm", "spsUtil", "metafor")
+packages <- c("tidyverse", "here", "psych", "coefficientalpha", "boot", "MASS", "truncnorm", "spsUtil", "metafor",
+              "meta", "bayesmeta")
 
 # check, whether library already installed or not - install and load as needed:
 apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
@@ -388,14 +389,54 @@ Large_Sim_Data_RMA <- lapply(Large_Sim_Data, FUN = function(x){
                     p_E = tauE$QEp))
 })
 
+Large_Sim_Data_RMA.meta <- lapply(Large_Sim_Data, FUN = function(x){
+  
+  tauT <- meta::metagen(TE = x$varT, seTE = x$SE_T.b)
+  tauE <- meta::metagen(TE = x$varE, seTE = x$SE_E.b)
+  
+  return(data.frame(tau_T = (tauT$tau),
+                    tau_E = (tauE$tau),
+                    p_T = tauT$pval.Q,
+                    p_E = tauE$pval.Q,
+                    tau_T.lower = tauT$lower.tau,
+                    tau_T.upper = tauT$upper.tau,
+                    tau_E.lower = tauE$lower.tau,
+                    tau_E.upper = tauE$upper.tau))
+})
+
+
 vis.df <- data.frame(condition_combinations,
                      tau_T = sapply(Large_Sim_Data_RMA, FUN = function(x){x$tau_T}),
                      tau_E = sapply(Large_Sim_Data_RMA, FUN = function(x){x$tau_E}),
                      p_T = sapply(Large_Sim_Data_RMA, FUN = function(x){x$p_T}),
                      p_E = sapply(Large_Sim_Data_RMA, FUN = function(x){x$p_E}))
 
+vis.df.meta <- data.frame(condition_combinations,
+                          tau_T = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_T}),
+                          tau_E = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_E}),
+                          p_T = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$p_T}),
+                          p_E = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$p_E}),
+                          tau_T.lower = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_T.lower}),
+                          tau_T.upper = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_T.upper}),
+                          tau_E.lower = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_E.lower}),
+                          tau_E.upper = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_E.upper}))
+
 
 test <- metafor::rma(data = Large_Sim_Data[[1]], yi = varT, sei = SE_T.b, measure = "GEN", method = "REML")
+test_meta <- meta::metagen(TE = Large_Sim_Data[[1]]$varT, seTE = Large_Sim_Data[[1]]$SE_T.b)
+test_bayes <- bayesmeta::bayesmeta()
+
+
+test_meta$tau2 + test_meta$se.tau2 * 1.96
+
+(test_meta$upper.tau2 - test_meta$tau2)/1.96
+test_meta$se.tau2
+
+test_meta$lower.tau
+test_meta$upper.tau
+
+(test_meta$upper.tau - test_meta$tau)/1.96
+
 
 sqrt(test$tau2)
 sqrt(test$se.tau2)
@@ -455,7 +496,20 @@ ggplot(data = vis.df) +
   geom_line(aes(y = tau_T, x = CVT)) +
   facet_grid(rows = vars(CVE), cols = vars(rel)) +
   labs(x = "Simulated Coefficient of Variation", y = "Estimated tau", title = "Sim - True Score Variance", 
-       subtitle = "Columns = Reliability, Rows = CV_E")
+       subtitle = "Columns = Reliability, Rows = CV_E, Package = metafor")
+
+ggplot(data = vis.df.meta) + 
+  geom_ribbon(aes(x = CVT, ymin = tau_T.lower, ymax = tau_T.upper), 
+              alpha = .1, fill = "blue") +
+  geom_point(aes(y = CVT*(10*rel), x = CVT), colour = "darkgrey") +
+  geom_line(aes(y = CVT*(10*rel), x = CVT), colour = "darkgrey") +
+  geom_point(aes(y = tau_T, x = CVT)) +
+  # geom_point(aes(y = tau_T.lower, x = CVT), colour = "blue", alpha = .3) +
+  # geom_point(aes(y = tau_T.upper, x = CVT), colour = "blue", alpha = .3) + 
+  geom_line(aes(y = tau_T, x = CVT)) +
+  facet_grid(rows = vars(CVE), cols = vars(rel)) +
+  labs(x = "Simulated Coefficient of Variation", y = "Estimated tau", title = "Sim - True Score Variance", 
+       subtitle = "Columns = Reliability, Rows = CV_E, Package = meta") 
 
 ggplot(data = vis.df) + 
   geom_abline(colour = "grey") +
@@ -464,7 +518,18 @@ ggplot(data = vis.df) +
   geom_line(aes(y = tau_T, x = CVT*(10*rel))) +
   facet_grid(rows = vars(CVE), cols = vars(rel))+
   labs(x = "Simulated tau", y = "Estimated tau", title = "Sim - True Score Variance", 
-       subtitle = "Columns = Reliability, Rows = CV_E")
+       subtitle = "Columns = Reliability, Rows = CV_E, Package = metafor")
+
+ggplot(data = vis.df.meta) + 
+  geom_ribbon(aes(x = CVT*10*rel, ymin = tau_T.lower, ymax = tau_T.upper), 
+              alpha = .1, fill = "blue") +
+  geom_abline(colour = "grey") +
+  geom_point(aes(y = CVT*10*rel, x = CVT * 10 * rel), colour = "grey") +
+  geom_point(aes(y = tau_T, x = CVT*(10*rel))) + 
+  geom_line(aes(y = tau_T, x = CVT*(10*rel))) +
+  facet_grid(rows = vars(CVE), cols = vars(rel))+
+  labs(x = "Simulated tau", y = "Estimated tau", title = "Sim - True Score Variance", 
+       subtitle = "Columns = Reliability, Rows = CV_E, Package = meta")
 
 
 ggplot(data = vis.df[which(vis.df$CVT == 0),]) +
@@ -488,13 +553,25 @@ pdf(here("Notes/Facet_grid_tauE.pdf"))
 
 
 ggplot(data = vis.df) + 
-  geom_point(aes(y =CVE*(10*(1-rel)), x = CVE), colour = "grey") +
+  geom_point(aes(y = CVE*(10*(1-rel)), x = CVE), colour = "grey") +
   geom_line(aes(y = CVE*(10*(1-rel)), x = CVE), colour = "grey") +
   geom_point(aes(y = tau_E, x = CVE)) + 
   geom_line(aes(y = tau_E, x = CVE)) +
   facet_grid(rows = vars(CVT), cols = vars(rel)) +
   labs(x = "Simulated CV_E", y = "Estimated tau", title = "Sim - Error Variance", 
-       subtitle = "Columns = Reliability, Rows = CV_T")
+       subtitle = "Columns = Reliability, Rows = CV_T, Package = metafor")
+
+ggplot(data = vis.df.meta) + 
+  geom_ribbon(aes(x = CVE, ymin = tau_E.lower, ymax = tau_E.upper), alpha = .1, fill = "blue") +
+  geom_point(aes(y = CVE*(10*(1-rel)), x = CVE), colour = "grey") +
+  geom_line(aes(y = CVE*(10*(1-rel)), x = CVE), colour = "grey") +
+  geom_point(aes(y = tau_E, x = CVE)) +
+  # geom_point(aes(y = tau_E.lower, x = CVE), colour = "blue", alpha = .3) +
+  # geom_point(aes(y = tau_E.upper, x = CVE), colour = "blue", alpha = .3) + 
+  geom_line(aes(y = tau_E, x = CVE)) +
+  facet_grid(rows = vars(CVT), cols = vars(rel)) +
+  labs(x = "Simulated Coefficient of Variation", y = "Estimated tau", title = "Sim - Error Variance", 
+       subtitle = "Columns = Reliability, Rows = CV_T, package = meta") 
 
 ggplot(data = vis.df) + 
   geom_abline(colour = "grey") +
@@ -503,7 +580,17 @@ ggplot(data = vis.df) +
   geom_line(aes(y = tau_E, x = CVE*(10*(1-rel)))) +
   facet_grid(rows = vars(CVT), cols = vars(rel)) +
   labs(x = "Simulated Coefficient of Variation", y = "Estimated tau", title = "Sim - Error Variance", 
-       subtitle = "Columns = Reliability, Rows = CV_T")
+       subtitle = "Columns = Reliability, Rows = CV_T, package = metafor")
+
+ggplot(data = vis.df.meta) + 
+  geom_ribbon(aes(x = CVE*(10*(1-rel)), ymin = tau_E.lower, ymax = tau_E.upper), alpha = .1, fill = "blue") +
+  geom_abline(colour = "grey") +
+  geom_point(aes(y = CVE*(10*(1-rel)), x = CVE*(10*(1-rel))), colour = "grey") +
+  geom_point(aes(y = tau_E, x = CVE*(10*(1-rel)))) + 
+  geom_line(aes(y = tau_E, x = CVE*(10*(1-rel)))) +
+  facet_grid(rows = vars(CVT), cols = vars(rel)) +
+  labs(x = "Simulated Coefficient of Variation", y = "Estimated tau", title = "Sim - Error Variance", 
+       subtitle = "Columns = Reliability, Rows = CV_T, package = metafor")
 
 ggplot(data = vis.df[which(vis.df$CVE == 0),]) +
   geom_line(aes(y = CVE*(10*(1-rel)), x = rel), colour = "grey") +
@@ -538,7 +625,7 @@ ggplot(data = vis.df) +
 
 var_X.L <- lapply(Large_Sim_Data, FUN = function(x){
   var_X <- x$varT + x$varE
-  SE_var_X <- (var_X * (99/100))/sqrt(2*(100-1))
+  SE_var_X <- (var_X * (99/100))*sqrt(2/(100-1))
   
   return(data.frame(var_X = var_X,
                     SE_var_X = SE_var_X))
@@ -585,7 +672,7 @@ B.varX <- lapply(data$sim_data.L, FUN = function(x){
   var_X <- var(rowMeans(x))
   
   return(data.frame(b.SE_varX = sd(B$t),
-                    SE_varX = (var_X * (99/100))/sqrt(2*(100-1))))
+                    SE_varX = (var_X * (99/100))*sqrt(2/(100-1))))
 })
 
 
