@@ -14,7 +14,7 @@
 
 # library loading and installing as necessary
 
-packages <- c("tidyverse", "here", "psych", "coefficientalpha", "spsUtil")
+packages <- c("tidyverse", "here", "psych", "coefficientalpha", "spsUtil", "future.apply")
 
 # check, whether library already installed or not - install and load as needed:
 apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
@@ -256,6 +256,37 @@ apply_Bootstrap_SE_nonspecific <- function(data.L, var.component = c("TRUE", "ER
   }
   suppressMessages(
     vboot.L <- lapply(data.L, FUN = function(x){
+      bvar <- boot(data = x,
+                   statistic = stat.f,
+                   stat = "ALPHA",
+                   R = R)
+      
+      return(list(SE = sd(bvar$t), 
+                  boot.mean = mean(bvar$t)))
+    })
+  )
+  
+  df.formatted <- data.frame(SE = sapply(vboot.L, FUN = function(x){x$SE}),
+                             boot.mean = sapply(vboot.L, FUN = function(x){x$boot.mean}))
+  
+}
+
+
+future_apply_Bootstrap_SE_nonspecific <- function(data.L, var.component = c("TRUE", "ERROR"), R = 100){
+  if(length(var.component) != 1){
+    stop("Set var.component as either TRUE or ERROR.")
+  }
+  if(!is.list(data.L)){
+    stop("data.L needs to be a List.")
+  }
+  if(var.component == "TRUE"){
+    stat.f <- bootstrap_SE_varT
+  }
+  if(var.component == "ERROR"){
+    stat.f <- bootstrap_SE_varE
+  }
+  suppressMessages(
+    vboot.L <- future_lapply(data.L, future.seed = TRUE, FUN = function(x){
       bvar <- boot(data = x,
                    statistic = stat.f,
                    stat = "ALPHA",
