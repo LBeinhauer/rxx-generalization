@@ -155,9 +155,14 @@ bootstrap_SE_varT <- function(data, indices, stat = "ALPHA"){
   d <- data[indices,]
   
   if(stat == "ALPHA"){
-    alpha_fit <- psych::alpha(d, warnings = FALSE)
+    # alpha_fit <- psych::alpha(d, warnings = FALSE)
+    # 
+    # alpha <- alpha_fit$total[1]
+    C <- cov(d)
+    n <- dim(C)[1]
     
-    alpha <- alpha_fit$total[1]
+    alpha <- (1 - sum(diag(C))/sum(C)) * (n/(n - 1))
+    
     
     rel <- alpha
   }
@@ -185,9 +190,14 @@ bootstrap_SE_varE <- function(data, indices, stat = "ALPHA"){
   d <- data[indices,]
   
   if(stat == "ALPHA"){
-    alpha_fit <- psych::alpha(d, warnings = FALSE)
+    # alpha_fit <- psych::alpha(d, warnings = FALSE)
+    # 
+    # alpha <- alpha_fit$total[1]
+    # 
+    C <- cov(d)
+    n <- dim(C)[1]
     
-    alpha <- alpha_fit$total[1]
+    alpha <- (1 - sum(diag(C))/sum(C)) * (n/(n - 1))
     
     rel <- alpha
   }
