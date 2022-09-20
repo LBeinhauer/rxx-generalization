@@ -335,6 +335,7 @@ vis.df2 <- data.frame(all_conditions,
 )
 
 
+write.table(vis.df2, here("Notes/vis_df.csv"), row.names = FALSE)
 
 
 test <- metafor::rma(data = Large_Sim_Data[[1]], yi = varT, sei = SE_T.b, measure = "GEN", method = "REML")
