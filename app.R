@@ -68,6 +68,7 @@ vis.df_summarised <- vis.df %>%
             tau_rel_cTE_ul = quantile(tau_rel_cTE, .975, na.rm = T))
 
 var_names <- colnames(vis.df)
+
 var_summarised_names <- colnames(vis.df_summarised)
 
 
@@ -80,11 +81,25 @@ x_var_agg_df <- data.frame(CVT = vis.df_summarised$CVT,
 
 x_var_agg_choices <- colnames(x_var_agg_df)
 
+x_var_agg_labels <- c("Coeff.Var. - True Score Variance",
+                      "Coeff.Var. - Error Variance",
+                      "Reliability",
+                      "Sim - tau True Score Variance",
+                      "Sim - tau Error Variance")
+
 y_var_agg_choices <- c("tau_varT", "tau_varE", "tau_rel")
+
+y_var_agg_labels <- c("Est. tau True Score Variance",
+                      "Est. tau Error Variance",
+                      "Est. tau Reliability")
 
 y_var_agg_correspondence <- c("T_m", "E_m", "tau_rel_m")
 
 col_var_agg_choices <- c("CVT", "CVE", "rel")
+
+col_var_agg_labels <- c("Coeff.Var. - True Score Variance",
+                        "Coeff.Var. - Error Variance",
+                        "Reliability")
 
 
 
@@ -97,12 +112,26 @@ x_var_disagg_df <- data.frame(CVT = vis.df$CVT,
 
 x_var_disagg_choices <- colnames(x_var_disagg_df)
 
+x_var_disagg_labels <- c("Coeff.Var. - True Score Variance",
+                         "Coeff.Var. - Error Variance",
+                         "Sim - Reliability",
+                         "Sim - tau True Score Variance",
+                         "Sim - tau Error Variance")
+
 y_var_disagg_choices <- c("tau_varT", "tau_varE", "tau_rel")
+
+y_var_disagg_labels <- c("Est. tau True Score Variance",
+                         "Est. tau Error Variance",
+                         "Est. tau Reliability")
+
 
 y_var_disagg_correspondence <- c("tau_T", "tau_E", "tau_rel")
 
 col_var_disagg_choices <- c("CVT", "CVE", "rel")
 
+col_var_disagg_labels <- c("Coeff.Var. - True Score Variance",
+                           "Coeff.Var. - Error Variance",
+                           "Reliability")
 
 
 
@@ -139,12 +168,27 @@ x_var_bm_df <- data.frame(CVT = vis.df_summarized2$CVT,
 
 x_var_bm_choices <- colnames(x_var_bm_df)
 
+x_var_bm_labels <- c("Coeff.Var. - True Score Variance",
+                     "Coeff.Var. - Error Variance",
+                     "Sim - Reliability",
+                     "Sim - tau True Score Variance",
+                     "Sim - tau Error Variance")
+
 y_var_bm_choices <- c("tau_varT", "tau_varE", "rel", "varT", "varE")
+
+y_var_bm_labels <- c(" - Est. tau True Score Variance",
+                     " - Est. tau Error Variance",
+                     " - Est. Reliability ",
+                     " - Est. True Score Variance ",
+                     " - Est. Error Variance ")
 
 y_var_bm_correspondence <- c("tauT", "tauE", "rel", "varT", "varE")
 
 col_var_bm_choices <- c("CVT", "CVE", "rel")
 
+col_var_bm_labels <- c("Coeff.Var. - True Score Variance",
+                       "Coeff.Var. - Error Variance",
+                       "Reliability")
 
 
 
@@ -167,13 +211,27 @@ x_var_bm_da_df <- data.frame(CVT = vis.df2$CVT,
 
 x_var_bm_da_choices <- colnames(x_var_bm_da_df)
 
+x_var_bm_da_labels <- c("Coeff.Var. - True Score Variance",
+                        "Coeff.Var. - Error Variance",
+                        "Sim - Reliability",
+                        "Sim - tau True Score Variance",
+                        "Sim - tau Error Variance")
+
 y_var_bm_da_choices <- c("tau_varT", "tau_varE", "rel", "varT", "varE")
+
+y_var_bm_da_labels <- c(" - Est. tau True Score Variance",
+                        " - Est. tau Error Variance",
+                        " - Est. Reliability ",
+                        " - Est. True Score Variance ",
+                        " - Est. Error Variance ")
 
 y_var_bm_da_correspondence <- c("tauT", "tauE", "rel", "varT", "varE")
 
 col_var_bm_da_choices <- c("CVT", "CVE", "rel")
 
-
+col_var_bm_da_labels <- c("Coeff.Var. - True Score Variance",
+                          "Coeff.Var. - Error Variance",
+                          "Reliability")
 
 
 # Define UI for application
@@ -205,13 +263,17 @@ ui <- navbarPage(
         selectInput(inputId = "col_variable_agg",
                     label = "Select column-variable.",
                     choices = col_var_agg_choices,
-                    selected = "rel")
+                    selected = "rel"),
+        
+        width = 2
       ),
       
       # Show a plot of the generated distribution
       mainPanel(
         h4("Aggregated Results of Simulation Study on Reliability Heterogeneity"),
-        plotOutput("grid_plot_aggregate")
+        plotOutput("grid_plot_aggregate"),
+        
+        width = 10
       )
     ),
     
@@ -239,12 +301,21 @@ ui <- navbarPage(
         selectInput(inputId = "col_variable_disagg",
                     label = "Select column-variable.",
                     choices = col_var_disagg_choices,
-                    selected = "rel")
+                    selected = "rel"),
+        
+        checkboxInput(inputId = "density_disagg",
+                      label = "Visualise Density",
+                      value = FALSE),
+        
+        width = 2
       ),
       
       # Show a plot of the generated distribution
       mainPanel(
-        plotOutput("grid_plot_disaggregate")
+        h4("Disaggregated Results of Simulation Study on Reliability Heterogeneity"),
+        plotOutput("grid_plot_disaggregate"),
+        
+        width = 10
       )
     ),
   
@@ -277,11 +348,15 @@ ui <- navbarPage(
                     choices = col_var_bm_choices,
                     selected = "rel"),
         
-        uiOutput("aggregate_kind_UI")
+        uiOutput("aggregate_kind_UI"),
+        
+        width = 2
       ),
       
       mainPanel(h4("Visualising Bias and MSE - aggregated"),
-                plotOutput("biasMSEplot"))
+                plotOutput("biasMSEplot"),
+                
+                width = 10)
     
     ), 
   
@@ -312,18 +387,22 @@ ui <- navbarPage(
                     choices = col_var_bm_da_choices,
                     selected = "rel"),
         
-        uiOutput("aggregate_kind_UI_da")
+        uiOutput("aggregate_kind_UI_da"),
+        
+        width = 2
       ),
       
       mainPanel(h4("Visualising Bias and MSE"),
-                plotOutput("biasMSEplot_da"))
+                plotOutput("biasMSEplot_da"),
+                
+                width = 10)
     
   )
   
 )
 
 # Define server logic required to draw a histogram
-server <- function(input, output) {
+server <- function(input, output, session) {
 
     output$grid_plot_aggregate <- renderPlot({
         # generate bins based on input$bins from ui.R
@@ -331,6 +410,11 @@ server <- function(input, output) {
       y_var <- y_var_agg_correspondence[which(y_var_agg_choices == input$y_variable_agg)]
       y_var_ll <- paste0(substr(y_var, start = 1, stop = nchar(y_var)-1), "ll")
       y_var_ul <- paste0(substr(y_var, start = 1, stop = nchar(y_var)-1), "ul")
+      
+      label_x <- x_var_agg_labels[which(x_var_agg_choices == input$x_variable_agg)]
+      label_y <- y_var_agg_labels[which(y_var_agg_choices == input$y_variable_agg)]
+      label_col <- col_var_agg_labels[which(col_var_agg_choices == input$col_variable_agg)]
+      label_row <- col_var_agg_labels[which(col_var_agg_choices == input$row_variable_agg)]
       
       ggplot(data = vis.df_summarised) +
         geom_ribbon(aes(x = x_var_agg_df[,input$x_variable_agg],
@@ -341,23 +425,64 @@ server <- function(input, output) {
                        y = unlist(vis.df_summarised[,y_var]))) +
         geom_line(aes(x = x_var_agg_df[,input$x_variable_agg], 
                       y = unlist(vis.df_summarised[,y_var]))) +
-        facet_grid(paste0(input$row_variable_agg, " ~ ", input$col_variable_agg))
+        facet_grid(paste0(input$row_variable_agg, " ~ ", input$col_variable_agg)) +
+        labs(x = label_x, y = label_y, 
+             subtitle = paste0("Rows = ", label_row, "; Columns = ", label_col)) +
+        theme(text = element_text(size = 15))
+      
+      
+    }, height = function() {
+      session$clientData$output_grid_plot_aggregate_width*.5
     })
     
     output$grid_plot_disaggregate <- renderPlot({
       
-      y_var <- y_var_disagg_correspondence[which(y_var_disagg_choices == input$y_variable_disagg)]
-
-      ggplot(vis.df) +
-        geom_point(aes(x = x_var_disagg_df[,input$x_variable_disagg], 
-                       y = unlist(vis.df[,y_var]),
-                       colour = as.factor(x_var_disagg_df[,input$x_variable_disagg])),
-                   position = position_jitter(width = .04, height = 0),
-                   alpha = .2) +
-        facet_grid(paste0(input$row_variable_disagg, " ~ ", input$col_variable_disagg))
+      if(!input$density_disagg){
+        y_var <- y_var_disagg_correspondence[which(y_var_disagg_choices == input$y_variable_disagg)]
+        
+        label_f <- x_var_disagg_labels[which(x_var_disagg_choices == input$x_variable_disagg)]
+        label_fill <- paste(str_split(label_f, " - ")[[1]], collapse = " \n")
+        label_x <- x_var_disagg_labels[which(x_var_disagg_choices == input$x_variable_disagg)]
+        label_y <- y_var_disagg_labels[which(y_var_disagg_choices == input$y_variable_disagg)]
+        label_col <- col_var_disagg_labels[which(col_var_disagg_choices == input$col_variable_disagg)]
+        label_row <- col_var_disagg_labels[which(col_var_disagg_choices == input$row_variable_disagg)]
+        
+        ggplot(vis.df) +
+          geom_point(aes(x = x_var_disagg_df[,input$x_variable_disagg], 
+                         y = unlist(vis.df[,y_var]),
+                         colour = as.factor(x_var_disagg_df[,input$x_variable_disagg])),
+                     position = position_jitter(width = .04, height = 0),
+                     alpha = .2) +
+          facet_grid(paste0(input$row_variable_disagg, " ~ ", input$col_variable_disagg)) +
+          labs(x = label_x, y = label_y, colour = label_fill,
+               subtitle = paste0("Rows = ", label_row, "; Columns = ", label_col)) +
+          theme(text = element_text(size = 15))
+      }else{
+        y_var <- y_var_disagg_correspondence[which(y_var_disagg_choices == input$y_variable_disagg)]
+        
+        label_f <- x_var_disagg_labels[which(x_var_disagg_choices == input$x_variable_disagg)]
+        label_fill <- paste(str_split(label_f, " - ")[[1]], collapse = " \n")
+        label_x <- y_var_disagg_labels[which(y_var_disagg_choices == input$y_variable_disagg)]
+        label_col <- col_var_disagg_labels[which(col_var_disagg_choices == input$col_variable_disagg)]
+        label_row <- col_var_disagg_labels[which(col_var_disagg_choices == input$row_variable_disagg)]
+        
+        ggplot(vis.df) +
+          geom_density(aes(fill = as.factor(x_var_disagg_df[,input$x_variable_disagg]), 
+                           x = unlist(vis.df[,y_var]),
+                           group = as.factor(x_var_disagg_df[,input$x_variable_disagg])),
+                       alpha = .3) +
+          facet_grid(paste0(input$row_variable_disagg, " ~ ", input$col_variable_disagg)) +
+          labs(x = label_x, y = "Density", fill = label_fill, group = label_fill,
+               subtitle = paste0("Rows = ", label_row, "; Columns = ", label_col)) +
+          theme(text = element_text(size = 15))
+      }
       
       
       
+      
+      
+    }, height = function() {
+      session$clientData$output_grid_plot_disaggregate_width*.5
     })
     
     
@@ -399,19 +524,32 @@ server <- function(input, output) {
       y_var <- paste0(ifelse(input$bias_mse_choice == "bias", "bias_", "MSE_"),
                       y_v)
       
+      label_x <- x_var_bm_labels[which(x_var_bm_choices == input$x_variable_bm)]
+      label_y <- paste0(ifelse(input$bias_mse_choice == "bias", "Bias", "MSE"), 
+                        y_var_bm_labels[which(y_var_bm_choices == input$y_variable_bm)])
+      label_col <- col_var_bm_labels[which(col_var_bm_choices == input$col_variable_bm)]
+      label_row <- col_var_bm_labels[which(col_var_bm_choices == input$row_variable_bm)]
+      
       if(input$y_variable_bm %in% c("rel", "varT", "varE")){
         y_var <- paste0(y_var, ifelse(input$aggregate_kind == "mean", ".M", ".MAE"))
+        
+        label_y <- paste0(label_y, ifelse(input$aggregate_kind == "mean", "(mean)", "(meta-analytic)"))
       }
         
       
       ggplot(vis.df_summarized2) +
+        geom_hline(yintercept = 0, colour = "grey") +
         geom_point(aes(x = x_var_bm_df[,input$x_variable_bm],
                        y = unlist(vis.df_summarized2[,y_var]))) +
         geom_line(aes(x = x_var_bm_df[,input$x_variable_bm],
                        y = unlist(vis.df_summarized2[,y_var]))) +
-        # geom_hline(yintercept = 0) +
-        facet_grid(paste0(input$row_variable_bm, " ~ ", input$col_variable_bm))
+        facet_grid(paste0(input$row_variable_bm, " ~ ", input$col_variable_bm)) +
+        labs(x = label_x, y = label_y, 
+             subtitle = paste0("Rows = ", label_row, "; Columns = ", label_col)) +
+        theme(text = element_text(size = 15))
       
+    }, height = function() {
+      session$clientData$output_biasMSEplot_width*.5
     })
     
     
@@ -421,8 +559,18 @@ server <- function(input, output) {
       
       y_var <- paste0("bias_", y_v)
       
+      label_f <- x_var_bm_da_labels[which(x_var_bm_da_choices == input$x_variable_bm_da)]
+      label_fill <- paste(str_split(label_f, " - ")[[1]], collapse = " \n")
+      label_x <- x_var_bm_da_labels[which(x_var_bm_da_choices == input$x_variable_bm_da)]
+      label_y <- paste0("Bias", y_var_bm_da_labels[which(y_var_bm_da_choices == input$y_variable_bm_da)])
+      label_col <- col_var_bm_da_labels[which(col_var_bm_da_choices == input$col_variable_bm_da)]
+      label_row <- col_var_bm_da_labels[which(col_var_bm_da_choices == input$row_variable_bm_da)]
+      
+      
       if(input$y_variable_bm_da %in% c("rel", "varT", "varE")){
         y_var <- paste0(y_var, ifelse(input$aggregate_kind_da == "mean", ".M", ".MAE"))
+        
+        label_y <- paste0(label_y, ifelse(input$aggregate_kind_da == "mean", "(mean)", "(meta-analytic)"))
       }
       
       
@@ -432,8 +580,13 @@ server <- function(input, output) {
                        y = unlist(vis.df2[,y_var]),
                        colour = as.factor(x_var_bm_da_df[,input$x_variable_bm_da])),
                    position = position_jitter(width = .03, height = 0), alpha = .2) +
-        facet_grid(paste0(input$row_variable_bm_da, " ~ ", input$col_variable_bm_da))
+        facet_grid(paste0(input$row_variable_bm_da, " ~ ", input$col_variable_bm_da)) +
+        labs(x = label_x, y = label_y, colour = label_fill,
+             subtitle = paste0("Rows = ", label_row, "; Columns = ", label_col)) +
+        theme(text = element_text(size = 15))
       
+    }, height = function() {
+      session$clientData$output_biasMSEplot_da_width*.5
     })
 }
 
