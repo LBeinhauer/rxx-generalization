@@ -265,6 +265,8 @@ ui <- navbarPage(
                     choices = col_var_agg_choices,
                     selected = "rel"),
         
+        uiOutput("correction_UI"),
+        
         width = 2
       ),
       
@@ -408,6 +410,19 @@ server <- function(input, output, session) {
         # generate bins based on input$bins from ui.R
       
       y_var <- y_var_agg_correspondence[which(y_var_agg_choices == input$y_variable_agg)]
+      
+      if(input$y_variable_agg == "tau_rel"){
+        if(input$correction_agg == "true score"){
+          y_var <- paste0(substr(y_var, start = 1, stop = nchar(y_var)-2), "_cT_m")
+        }
+        if(input$correction_agg == "error"){
+          y_var <- paste0(substr(y_var, start = 1, stop = nchar(y_var)-2), "_cE_m")
+        }
+        if(input$correction_agg == "both"){
+          y_var <- paste0(substr(y_var, start = 1, stop = nchar(y_var)-2), "_cTE_m")
+        }
+      }
+      
       y_var_ll <- paste0(substr(y_var, start = 1, stop = nchar(y_var)-1), "ll")
       y_var_ul <- paste0(substr(y_var, start = 1, stop = nchar(y_var)-1), "ul")
       
@@ -415,6 +430,16 @@ server <- function(input, output, session) {
       label_y <- y_var_agg_labels[which(y_var_agg_choices == input$y_variable_agg)]
       label_col <- col_var_agg_labels[which(col_var_agg_choices == input$col_variable_agg)]
       label_row <- col_var_agg_labels[which(col_var_agg_choices == input$row_variable_agg)]
+      
+      
+      if(input$y_variable_agg == "tau_rel"){
+        if(input$correction_agg == "none"){
+          label_y <- paste0(label_y, " (corr: ", input$correction_agg, ")")
+        }else{
+          label_y <- paste0(label_y, " (corr: ", input$correction_agg, " var.)")
+        }
+      }
+      
       
       ggplot(data = vis.df_summarised) +
         geom_ribbon(aes(x = x_var_agg_df[,input$x_variable_agg],
@@ -483,6 +508,23 @@ server <- function(input, output, session) {
       
     }, height = function() {
       session$clientData$output_grid_plot_disaggregate_width*.5
+    })
+    
+    
+    
+    output$correction_UI <- renderUI({
+      if(input$y_variable_agg == "tau_rel"){
+        
+        sidebarPanel(
+          selectInput(inputId = "correction_agg",
+                      label = "Choose Variance \ncorrection mechanism.",
+                      choices = c("none", "true score", "error", "both")),
+          width = 8
+          
+        )
+        
+        
+      }
     })
     
     
