@@ -388,7 +388,8 @@ my_forest_plot <- function(rma.fit, rma.data, main.title = "Forest Plot",
 
 
 sim_het_VC <- function(j, n, k, reliability = 0.5, mean_score = 0, mean_observed_var = 10, 
-                       CV_var_T = 0, CV_var_E = 0, tau_var_T = 0, tau_var_E = 0){
+                       CV_var_T = 0, CV_var_E = 0, tau_var_T = 0, tau_var_E = 0, 
+                       empirical = FALSE){
   
   mean_var_T <- mean_observed_var * reliability
   
@@ -420,7 +421,8 @@ sim_het_VC <- function(j, n, k, reliability = 0.5, mean_score = 0, mean_observed
     
     diag(mat) <- var_T1 + var_E1
     
-    obs_scores <- mvrnorm(n = n, mu = rep(mean_score, j), Sigma = mat)
+    obs_scores <- mvrnorm(n = n, mu = rep(mean_score, j), Sigma = mat,
+                          empirical = empirical)
     
     sim_data <- obs_scores
     
