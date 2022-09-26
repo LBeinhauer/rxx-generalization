@@ -24,7 +24,8 @@ apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
 
 
 
-vis.df <- read.csv(here("Notes/vis_df.csv"), sep = " ")
+# vis.df <- read.csv(here("Notes/vis_df.csv"), sep = " ")
+vis.df <- read.csv(here("Notes/vis_df_empT.csv"), sep = " ")
 
 vis.df_summarised <- vis.df %>% 
   group_by(CVT, CVE, rel) %>%
