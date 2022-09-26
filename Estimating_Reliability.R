@@ -105,3 +105,4 @@ Bonett.omega_estimates.list <- lapply(seq_along(data.list), FUN = function(x){
   
 })
 
+
