@@ -25,9 +25,10 @@ apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
 
 
 # vis.df <- read.csv(here("Notes/vis_df.csv"), sep = " ")
-vis.df <- read.csv(here("Notes/vis_df_empT.csv"), sep = " ")
+vis.df_empF <- read.csv(here("Notes/vis_df.csv"), sep = " ")
+vis.df_empT <- read.csv(here("Notes/vis_df_empT.csv"), sep = " ")
 
-vis.df_summarised <- vis.df %>% 
+vis.df_summarised_empF <- vis.df_empF %>% 
   group_by(CVT, CVE, rel) %>%
   summarise(T_m = mean(tau_T, na.rm = T),
             E_m = mean(tau_E, na.rm = T),
@@ -68,9 +69,124 @@ vis.df_summarised <- vis.df %>%
             tau_rel_cTE_ll = quantile(tau_rel_cTE, .025, na.rm = T),
             tau_rel_cTE_ul = quantile(tau_rel_cTE, .975, na.rm = T))
 
-var_names <- colnames(vis.df)
+vis.df_summarised_empT <- vis.df_empT %>% 
+  group_by(CVT, CVE, rel) %>%
+  summarise(T_m = mean(tau_T, na.rm = T),
+            E_m = mean(tau_E, na.rm = T),
+            T_sd = sd(tau_T, na.rm = T),
+            E_sd = sd(tau_E, na.rm = T),
+            T_ll = quantile(tau_T, .025, na.rm = T),
+            T_ul = quantile(tau_T, .975, na.rm = T),
+            E_ll = quantile(tau_E, .025, na.rm = T),
+            E_ul = quantile(tau_E, .975, na.rm = T),
+            VT.MAE_m = mean(varT.MAE, na.rm = T),
+            VE.MAE_m = mean(varE.MAE, na.rm = T),
+            VT.MAE_ll = quantile(varT.MAE, .025, na.rm = T),
+            VT.MAE_ul = quantile(varT.MAE, .975, na.rm = T),
+            VE.MAE_ll = quantile(varE.MAE, .025, na.rm = T),
+            VE.MAE_ul = quantile(varE.MAE, .975, na.rm = T),
+            VT.M_m = mean(varT.M, na.rm = T),
+            VE.M_m = mean(varE.M, na.rm = T),
+            VT.M_ll = quantile(varT.M, .025, na.rm = T),
+            VT.M_ul = quantile(varT.M, .975, na.rm = T),
+            VE.M_ll = quantile(varE.M, .025, na.rm = T),
+            VE.M_ul = quantile(varE.M, .975, na.rm = T),
+            rel.M_m = mean(rel.M, na.rm = T),
+            rel.M_ll = quantile(rel.M, .025, na.rm = T),
+            rel.M_ul = quantile(rel.M, .975, na.rm = T),
+            rel.MAE_m = mean(rel.MAE, na.rm = T),
+            rel.MAE_ll = quantile(rel.MAE, .025, na.rm = T),
+            rel.MAE_ul = quantile(rel.MAE, .975, na.rm = T),
+            tau_rel_m = mean(tau_rel, na.rm = T),
+            tau_rel_ll = quantile(tau_rel, .025, na.rm = T),
+            tau_rel_ul = quantile(tau_rel, .975, na.rm = T),
+            tau_rel_cT_m = mean(tau_rel_cT, na.rm = T),
+            tau_rel_cT_ll = quantile(tau_rel_cT, .025, na.rm = T),
+            tau_rel_cT_ul = quantile(tau_rel_cT, .975, na.rm = T),
+            tau_rel_cE_m = mean(tau_rel_cE, na.rm = T),
+            tau_rel_cE_ll = quantile(tau_rel_cE, .025, na.rm = T),
+            tau_rel_cE_ul = quantile(tau_rel_cE, .975, na.rm = T),
+            tau_rel_cTE_m = mean(tau_rel_cTE, na.rm = T),
+            tau_rel_cTE_ll = quantile(tau_rel_cTE, .025, na.rm = T),
+            tau_rel_cTE_ul = quantile(tau_rel_cTE, .975, na.rm = T))
 
-var_summarised_names <- colnames(vis.df_summarised)
+
+
+
+vis.df_summarized2_empF <- vis.df_empF %>%
+  group_by(CVT, CVE, rel) %>%
+  summarise(bias_varT.M = mean(varT.M - rel*10, na.rm = T),
+            bias_varT.MAE = mean(varT.MAE - rel*10, na.rm = T),
+            bias_varE.M = mean(varE.M - (1-rel)*10, na.rm = T),
+            bias_varE.MAE = mean(varE.MAE - (1-rel)*10, na.rm = T),
+            bias_rel.M = mean(rel.M - rel, na.rm = T),
+            bias_rel.MAE = mean(rel.MAE-rel, na.rm = T),
+            bias_tauT = mean(tau_T - CVT*rel*10, na.rm = T),
+            bias_tauE = mean(tau_E - CVE*(1-rel)*10, na.rm = T),
+            MSE_varT.M = mean((varT.M - rel*10)^2, na.rm = T),
+            MSE_varT.MAE = mean((varT.MAE - rel*10)^2, na.rm = T),
+            MSE_varE.M = mean((varE.M - (1-rel)*10)^2, na.rm = T),
+            MSE_varE.MAE = mean((varE.MAE - (1-rel)*10)^2, na.rm = T),
+            MSE_rel.M = mean((rel.M - rel)^2, na.rm = T),
+            MSE_rel.MAE = mean((rel.MAE-rel)^2, na.rm = T),
+            MSE_tauT = mean((tau_T - CVT*rel*10)^2, na.rm = T),
+            MSE_tauE = mean((tau_E - CVE*(1-rel)*10), na.rm = T)^2)
+
+
+
+vis.df_summarized2_empT <- vis.df_empT %>%
+  group_by(CVT, CVE, rel) %>%
+  summarise(bias_varT.M = mean(varT.M - rel*10, na.rm = T),
+            bias_varT.MAE = mean(varT.MAE - rel*10, na.rm = T),
+            bias_varE.M = mean(varE.M - (1-rel)*10, na.rm = T),
+            bias_varE.MAE = mean(varE.MAE - (1-rel)*10, na.rm = T),
+            bias_rel.M = mean(rel.M - rel, na.rm = T),
+            bias_rel.MAE = mean(rel.MAE-rel, na.rm = T),
+            bias_tauT = mean(tau_T - CVT*rel*10, na.rm = T),
+            bias_tauE = mean(tau_E - CVE*(1-rel)*10, na.rm = T),
+            MSE_varT.M = mean((varT.M - rel*10)^2, na.rm = T),
+            MSE_varT.MAE = mean((varT.MAE - rel*10)^2, na.rm = T),
+            MSE_varE.M = mean((varE.M - (1-rel)*10)^2, na.rm = T),
+            MSE_varE.MAE = mean((varE.MAE - (1-rel)*10)^2, na.rm = T),
+            MSE_rel.M = mean((rel.M - rel)^2, na.rm = T),
+            MSE_rel.MAE = mean((rel.MAE-rel)^2, na.rm = T),
+            MSE_tauT = mean((tau_T - CVT*rel*10)^2, na.rm = T),
+            MSE_tauE = mean((tau_E - CVE*(1-rel)*10), na.rm = T)^2)
+
+
+vis.df2_empF <- vis.df_empF %>%
+  mutate(bias_varT.M = (varT.M - rel*10),
+         bias_varT.MAE = (varT.MAE - rel*10),
+         bias_varE.M = (varE.M - (1-rel)*10),
+         bias_varE.MAE = (varE.MAE - (1-rel)*10),
+         bias_rel.M = (rel.M - rel),
+         bias_rel.MAE = (rel.MAE-rel),
+         bias_tauT = (tau_T - CVT*rel*10),
+         bias_tauE = (tau_E - CVE*(1-rel)*10)
+  )
+
+vis.df2_empT <- vis.df_empT %>%
+  mutate(bias_varT.M = (varT.M - rel*10),
+         bias_varT.MAE = (varT.MAE - rel*10),
+         bias_varE.M = (varE.M - (1-rel)*10),
+         bias_varE.MAE = (varE.MAE - (1-rel)*10),
+         bias_rel.M = (rel.M - rel),
+         bias_rel.MAE = (rel.MAE-rel),
+         bias_tauT = (tau_T - CVT*rel*10),
+         bias_tauE = (tau_E - CVE*(1-rel)*10)
+  )
+
+
+
+colnames(vis.df_empT) <- paste0(colnames(vis.df_empF), "_empT")
+colnames(vis.df_summarised_empT) <- paste0(colnames(vis.df_summarised_empF), "_empT")
+colnames(vis.df_summarized2_empT) <- paste0(colnames(vis.df_summarized2_empF), "_empT")
+colnames(vis.df2_empT) <- paste0(colnames(vis.df2_empF), "_empT")
+
+vis.df <- cbind(vis.df_empF, vis.df_empT)
+vis.df_summarised <- cbind(vis.df_summarised_empF, vis.df_summarised_empT)
+vis.df_summarized2 <- cbind(vis.df_summarized2_empF, vis.df_summarized2_empT)
+vis.df2 <- cbind(vis.df2_empF, vis.df2_empT)
 
 
 
@@ -136,28 +252,6 @@ col_var_disagg_labels <- c("Coeff.Var. - True Score Variance",
 
 
 
-vis.df_summarized2 <- vis.df %>%
-  group_by(CVT, CVE, rel) %>%
-  summarise(bias_varT.M = mean(varT.M - rel*10, na.rm = T),
-            bias_varT.MAE = mean(varT.MAE - rel*10, na.rm = T),
-            bias_varE.M = mean(varE.M - (1-rel)*10, na.rm = T),
-            bias_varE.MAE = mean(varE.MAE - (1-rel)*10, na.rm = T),
-            bias_rel.M = mean(rel.M - rel, na.rm = T),
-            bias_rel.MAE = mean(rel.MAE-rel, na.rm = T),
-            bias_tauT = mean(tau_T - CVT*rel*10, na.rm = T),
-            bias_tauE = mean(tau_E - CVE*(1-rel)*10, na.rm = T),
-            MSE_varT.M = mean((varT.M - rel*10)^2, na.rm = T),
-            MSE_varT.MAE = mean((varT.MAE - rel*10)^2, na.rm = T),
-            MSE_varE.M = mean((varE.M - (1-rel)*10)^2, na.rm = T),
-            MSE_varE.MAE = mean((varE.MAE - (1-rel)*10)^2, na.rm = T),
-            MSE_rel.M = mean((rel.M - rel)^2, na.rm = T),
-            MSE_rel.MAE = mean((rel.MAE-rel)^2, na.rm = T),
-            MSE_tauT = mean((tau_T - CVT*rel*10)^2, na.rm = T),
-            MSE_tauE = mean((tau_E - CVE*(1-rel)*10), na.rm = T)^2)
-
-
-
-
 
 
 
@@ -193,16 +287,6 @@ col_var_bm_labels <- c("Coeff.Var. - True Score Variance",
 
 
 
-vis.df2 <- vis.df %>%
-  mutate(bias_varT.M = (varT.M - rel*10),
-         bias_varT.MAE = (varT.MAE - rel*10),
-         bias_varE.M = (varE.M - (1-rel)*10),
-         bias_varE.MAE = (varE.MAE - (1-rel)*10),
-         bias_rel.M = (rel.M - rel),
-         bias_rel.MAE = (rel.MAE-rel),
-         bias_tauT = (tau_T - CVT*rel*10),
-         bias_tauE = (tau_E - CVE*(1-rel)*10)
-  )
 
 x_var_bm_da_df <- data.frame(CVT = vis.df2$CVT,
                           CVE = vis.df2$CVE,
@@ -246,6 +330,10 @@ ui <- navbarPage(
       
       
       sidebarPanel(
+        checkboxInput(inputId = "empT_agg",
+                      label = "Use Data from empirical = TRUE",
+                      value = FALSE),
+        
         selectInput(inputId = "x_variable_agg",
                     label = "Select X-variable.",
                     choices = x_var_agg_choices,
@@ -286,6 +374,10 @@ ui <- navbarPage(
       
       
       sidebarPanel(
+        checkboxInput(inputId = "empT_disagg",
+                      label = "Use Data from empirical = TRUE",
+                      value = FALSE),
+        
         selectInput(inputId = "x_variable_disagg",
                     label = "Select X-variable.",
                     choices = x_var_disagg_choices,
@@ -326,6 +418,9 @@ ui <- navbarPage(
       "Simulation Results - averaged Bias and MSE",
       
       sidebarPanel(
+        checkboxInput(inputId = "empT_bm",
+                      label = "Use Data from empirical = TRUE",
+                      value = FALSE),
         
         selectInput(inputId = "bias_mse_choice",
                     label = "Choose bias or MSE.",
@@ -369,6 +464,9 @@ ui <- navbarPage(
       "Simulation Results - Individual Bias",
       
       sidebarPanel(
+        checkboxInput(inputId = "empT_bm_da",
+                      label = "Use Data from empirical = TRUE",
+                      value = FALSE),
         
         selectInput(inputId = "x_variable_bm_da",
                     label = "Select X-variable.",
@@ -395,7 +493,7 @@ ui <- navbarPage(
         width = 2
       ),
       
-      mainPanel(h4("Visualising Bias and MSE"),
+      mainPanel(h4("Visualising individual Bias"),
                 plotOutput("biasMSEplot_da"),
                 
                 width = 10)
@@ -424,6 +522,7 @@ server <- function(input, output, session) {
         }
       }
       
+      
       y_var_ll <- paste0(substr(y_var, start = 1, stop = nchar(y_var)-1), "ll")
       y_var_ul <- paste0(substr(y_var, start = 1, stop = nchar(y_var)-1), "ul")
       
@@ -432,6 +531,11 @@ server <- function(input, output, session) {
       label_col <- col_var_agg_labels[which(col_var_agg_choices == input$col_variable_agg)]
       label_row <- col_var_agg_labels[which(col_var_agg_choices == input$row_variable_agg)]
       
+      if(input$empT_agg){
+        y_var <- paste0(y_var, "_empT")
+        y_var_ll <- paste0(y_var_ll, "_empT")
+        y_var_ul <- paste0(y_var_ul, "_empT")
+      }
       
       if(input$y_variable_agg == "tau_rel"){
         if(input$correction_agg == "none"){
@@ -473,6 +577,10 @@ server <- function(input, output, session) {
         label_col <- col_var_disagg_labels[which(col_var_disagg_choices == input$col_variable_disagg)]
         label_row <- col_var_disagg_labels[which(col_var_disagg_choices == input$row_variable_disagg)]
         
+        if(input$empT_disagg){
+          y_var <- paste0(y_var, "_empT")
+        }
+        
         ggplot(vis.df) +
           geom_point(aes(x = x_var_disagg_df[,input$x_variable_disagg], 
                          y = unlist(vis.df[,y_var]),
@@ -491,6 +599,10 @@ server <- function(input, output, session) {
         label_x <- y_var_disagg_labels[which(y_var_disagg_choices == input$y_variable_disagg)]
         label_col <- col_var_disagg_labels[which(col_var_disagg_choices == input$col_variable_disagg)]
         label_row <- col_var_disagg_labels[which(col_var_disagg_choices == input$row_variable_disagg)]
+        
+        if(input$empT_disagg){
+          y_var <- paste0(y_var, "_empT")
+        }
         
         ggplot(vis.df) +
           geom_density(aes(fill = as.factor(x_var_disagg_df[,input$x_variable_disagg]), 
@@ -579,6 +691,9 @@ server <- function(input, output, session) {
         label_y <- paste0(label_y, ifelse(input$aggregate_kind == "mean", "(mean)", "(meta-analytic)"))
       }
         
+      if(input$empT_bm){
+        y_var <- paste0(y_var, "_empT")
+      }
       
       ggplot(vis.df_summarized2) +
         geom_hline(yintercept = 0, colour = "grey") +
@@ -616,6 +731,9 @@ server <- function(input, output, session) {
         label_y <- paste0(label_y, ifelse(input$aggregate_kind_da == "mean", "(mean)", "(meta-analytic)"))
       }
       
+      if(input$empT_bm_da){
+        y_var <- paste0(y_var, "_empT")
+      }
       
       ggplot(vis.df2) +
         geom_hline(yintercept = 0, colour = "grey") +
