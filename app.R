@@ -546,7 +546,32 @@ server <- function(input, output, session) {
       }
       
       
-      ggplot(data = vis.df_summarised) +
+      p <- ggplot(data = vis.df_summarised) 
+      
+      
+      # adding grey expectation-line
+      if(input$y_variable_agg == "tau_varT" & input$x_variable_agg == "CVT"){
+        p <- p + 
+          geom_line(aes(x = x_var_agg_df[,input$x_variable_agg],
+                        y = vis.df_summarised$CVT * vis.df_summarised$rel * 10),
+                    color = "grey") +
+          geom_point(aes(x = x_var_agg_df[,input$x_variable_agg],
+                         y = vis.df_summarised$CVT * vis.df_summarised$rel * 10),
+                     color = "grey")
+      }
+      if(input$y_variable_agg == "tau_varE" & input$x_variable_agg == "CVE"){
+        p <- p + 
+          geom_line(aes(x = x_var_agg_df[,input$x_variable_agg],
+                        y = vis.df_summarised$CVE * (1-vis.df_summarised$rel) * 10),
+                    color = "grey") +
+          geom_point(aes(x = x_var_agg_df[,input$x_variable_agg],
+                         y = vis.df_summarised$CVE * (1-vis.df_summarised$rel) * 10),
+                     color = "grey")
+      }
+      
+      
+      
+      p +
         geom_ribbon(aes(x = x_var_agg_df[,input$x_variable_agg],
                         ymin = unlist(vis.df_summarised[,y_var_ll]),
                         ymax = unlist(vis.df_summarised[,y_var_ul])),
@@ -559,6 +584,8 @@ server <- function(input, output, session) {
         labs(x = label_x, y = label_y, 
              subtitle = paste0("Rows = ", label_row, "; Columns = ", label_col)) +
         theme(text = element_text(size = 15))
+      
+      
       
       
     }, height = function() {
@@ -581,7 +608,29 @@ server <- function(input, output, session) {
           y_var <- paste0(y_var, "_empT")
         }
         
-        ggplot(vis.df) +
+        p <- ggplot(vis.df) 
+        
+        # add grey baseline/expectation line
+        if(input$y_variable_disagg == "tau_varT" & input$x_variable_disagg == "CVT"){
+          p <- p + 
+            geom_line(aes(x = x_var_disagg_df[,input$x_variable_disagg],
+                          y = vis.df$CVT * vis.df$rel * 10),
+                      color = "grey") +
+            geom_point(aes(x = x_var_disagg_df[,input$x_variable_disagg],
+                           y = vis.df$CVT * vis.df$rel * 10),
+                       color = "grey")
+        }
+        if(input$y_variable_disagg == "tau_varE" & input$x_variable_disagg == "CVE"){
+          p <- p + 
+            geom_line(aes(x = x_var_disagg_df[,input$x_variable_disagg],
+                          y = vis.df$CVE * (1-vis.df$rel) * 10),
+                      color = "grey") +
+            geom_point(aes(x = x_var_disagg_df[,input$x_variable_disagg],
+                           y = vis.df$CVE * (1-vis.df$rel) * 10),
+                       color = "grey")
+        }
+        
+        p +
           geom_point(aes(x = x_var_disagg_df[,input$x_variable_disagg], 
                          y = unlist(vis.df[,y_var]),
                          colour = as.factor(x_var_disagg_df[,input$x_variable_disagg])),
@@ -603,6 +652,7 @@ server <- function(input, output, session) {
         if(input$empT_disagg){
           y_var <- paste0(y_var, "_empT")
         }
+        
         
         ggplot(vis.df) +
           geom_density(aes(fill = as.factor(x_var_disagg_df[,input$x_variable_disagg]), 
