@@ -1,6 +1,6 @@
 
 
-packages <- c("tidyverse", "here", "shiny")
+packages <- c("tidyverse", "here", "shiny", "ggdist")
 
 # check, whether library already installed or not - install and load as needed:
 apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
@@ -655,12 +655,21 @@ server <- function(input, output, session) {
         
         
         ggplot(vis.df) +
-          geom_density(aes(fill = as.factor(x_var_disagg_df[,input$x_variable_disagg]), 
-                           x = unlist(vis.df[,y_var]),
-                           group = as.factor(x_var_disagg_df[,input$x_variable_disagg])),
-                       alpha = .3) +
+          ggdist::stat_halfeye(aes(fill = as.factor(x_var_disagg_df[,input$x_variable_disagg]), 
+                                   x = unlist(vis.df[,y_var]),
+                                   group = as.factor(x_var_disagg_df[,input$x_variable_disagg])),
+                               alpha = .3, .width = 0, point_colour = NA) +
+          ggdist::stat_dots(aes(fill = as.factor(x_var_disagg_df[,input$x_variable_disagg]),
+                                colour = as.factor(x_var_disagg_df[,input$x_variable_disagg]),
+                                x = unlist(vis.df[,y_var]),
+                                group = as.factor(x_var_disagg_df[,input$x_variable_disagg])),
+                            side = "bottom", alpha = .3) +
+          # geom_density(aes(fill = as.factor(x_var_disagg_df[,input$x_variable_disagg]), 
+          #                  x = unlist(vis.df[,y_var]),
+          #                  group = as.factor(x_var_disagg_df[,input$x_variable_disagg])),
+          #              alpha = .3) +
           facet_grid(paste0(input$row_variable_disagg, " ~ ", input$col_variable_disagg)) +
-          labs(x = label_x, y = "Density", fill = label_fill, group = label_fill,
+          labs(x = label_x, y = "Density", fill = label_fill, group = label_fill, colour = label_fill,
                subtitle = paste0("Rows = ", label_row, "; Columns = ", label_col)) +
           theme(text = element_text(size = 15))
       }
