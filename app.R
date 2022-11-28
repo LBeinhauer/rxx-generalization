@@ -488,6 +488,10 @@ ui <- navbarPage(
                     choices = col_var_bm_da_choices,
                     selected = "rel"),
         
+        checkboxInput(inputId = "density_bm_da",
+                      label = "Visualise Density",
+                      value = FALSE),
+        
         uiOutput("aggregate_kind_UI_da"),
         
         width = 2
@@ -577,13 +581,23 @@ server <- function(input, output, session) {
                         ymax = unlist(vis.df_summarised[,y_var_ul])),
                     alpha = .1, fill = "blue") +
         geom_point(aes(x = x_var_agg_df[,input$x_variable_agg], 
-                       y = unlist(vis.df_summarised[,y_var]))) +
+                       y = unlist(vis.df_summarised[,y_var]))
+#                   , colour = rgb(14, 48, 74, maxColorValue = 255)
+                     ) +
         geom_line(aes(x = x_var_agg_df[,input$x_variable_agg], 
-                      y = unlist(vis.df_summarised[,y_var]))) +
+                      y = unlist(vis.df_summarised[,y_var]))
+#                  , colour = rgb(14, 48, 74, maxColorValue = 255)
+                    ) +
         facet_grid(paste0(input$row_variable_agg, " ~ ", input$col_variable_agg)) +
         labs(x = label_x, y = label_y, 
              subtitle = paste0("Rows = ", label_row, "; Columns = ", label_col)) +
-        theme(text = element_text(size = 15))
+        theme(text = element_text(size = 15)
+              # ,
+              # panel.background = element_rect(fill = rgb(204, 229, 230, maxColorValue = 255)),
+              # panel.grid.major = element_line(colour = "lightgrey"),
+              # panel.grid.minor = element_line(colour = "lightgrey"),
+              # axis.line = element_line(colour = "black")
+              )
       
       
       
@@ -772,6 +786,8 @@ server <- function(input, output, session) {
     
     output$biasMSEplot_da <- renderPlot({
       
+      if(!input$density_bm_da){
+      
       y_v <- y_var_bm_da_correspondence[which(y_var_bm_da_choices == input$y_variable_bm_da)]
       
       y_var <- paste0("bias_", y_v)
@@ -804,6 +820,53 @@ server <- function(input, output, session) {
         labs(x = label_x, y = label_y, colour = label_fill,
              subtitle = paste0("Rows = ", label_row, "; Columns = ", label_col)) +
         theme(text = element_text(size = 15))
+      
+      
+      
+      
+      }else{
+        y_v <- y_var_bm_da_correspondence[which(y_var_bm_da_choices == input$y_variable_bm_da)]
+        
+        y_var <- paste0("bias_", y_v)
+        
+        label_f <- x_var_bm_da_labels[which(x_var_bm_da_choices == input$x_variable_bm_da)]
+        label_fill <- paste(str_split(label_f, " - ")[[1]], collapse = " \n")
+        label_x <- x_var_bm_da_labels[which(x_var_bm_da_choices == input$x_variable_bm_da)]
+        label_y <- paste0("Bias", y_var_bm_da_labels[which(y_var_bm_da_choices == input$y_variable_bm_da)])
+        label_col <- col_var_bm_da_labels[which(col_var_bm_da_choices == input$col_variable_bm_da)]
+        label_row <- col_var_bm_da_labels[which(col_var_bm_da_choices == input$row_variable_bm_da)]
+        
+        
+        if(input$y_variable_bm_da %in% c("rel", "varT", "varE")){
+          y_var <- paste0(y_var, ifelse(input$aggregate_kind_da == "mean", ".M", ".MAE"))
+          
+          label_y <- paste0(label_y, ifelse(input$aggregate_kind_da == "mean", "(mean)", "(meta-analytic)"))
+        }
+        
+        if(input$empT_bm_da){
+          y_var <- paste0(y_var, "_empT")
+        }
+        
+        
+        ggplot(vis.df2) +
+          ggdist::stat_halfeye(aes(fill = as.factor(x_var_bm_da_df[,input$x_variable_bm_da]), 
+                                   x = unlist(vis.df2[,y_var]),
+                                   group = as.factor(x_var_bm_da_df[,input$x_variable_bm_da])),
+                               alpha = .3, .width = 0, point_colour = NA) +
+          ggdist::stat_dots(aes(fill = as.factor(x_var_bm_da_df[,input$x_variable_disagg]),
+                                colour = as.factor(x_var_bm_da_df[,input$x_variable_bm_da]),
+                                x = unlist(vis.df2[,y_var]),
+                                group = as.factor(x_var_bm_da_df[,input$x_variable_bm_da])),
+                            side = "bottom", alpha = .3) +
+          # geom_density(aes(fill = as.factor(x_var_bm_da_df[,input$x_variable_bm_da]), 
+          #                  x = unlist(vis.df2[,y_var]),
+          #                  group = as.factor(x_var_bm_da_df[,input$x_variable_bm_da])),
+          #              alpha = .3) +
+          facet_grid(paste0(input$row_variable_bm_da, " ~ ", input$col_variable_bm_da)) +
+          labs(x = label_x, y = "Density", fill = label_fill, group = label_fill, colour = label_fill,
+               subtitle = paste0("Rows = ", label_row, "; Columns = ", label_col)) +
+          theme(text = element_text(size = 15))
+      }
       
     }, height = function() {
       session$clientData$output_biasMSEplot_da_width*.5
