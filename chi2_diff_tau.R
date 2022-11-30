@@ -39,6 +39,8 @@ model <- "F =~ V1 + V2 + V3 + V4 + V5 + V6 + V7 + V8 + V9 + V10"
 
 plan(multisession, workers = 7)
 
+# std.lv = TRUE, auto.fix.first = FALSE
+
 system.time(
   sim_data <- future_lapply(1:nrow(condition_combinations), future.seed = TRUE, FUN = function(x){
   # sim_data <- lapply(1:nrow(condition_combinations), FUN = function(x){
@@ -110,7 +112,88 @@ system.time(
 )
 
 
+#saveRDS(sim_data, file = "MGCFA-MLSEM_test.RData")
+sim_data <- readRDS(file = "MGCFA-MLSEM_test.RData")
+
+# std.lv = FALSE, auto.fix.first = TRUE
+
+system.time(
+  sim_data <- future_lapply(1:nrow(condition_combinations), future.seed = TRUE, FUN = function(x){
+    # sim_data <- lapply(1:nrow(condition_combinations), FUN = function(x){
+    it.simdata <- sim_het_VC(j = 10, n = 1000, k = 20,
+                             reliability = condition_combinations$rel[x], mean_score = 0, 
+                             mean_observed_var = 10,
+                             CV_var_T = condition_combinations$CVT[x],
+                             CV_var_E = condition_combinations$CVE[x])
+    
+    d <- NULL
+    
+    for(i in seq_along(it.simdata$sim_data.L)){
+      dat <- as.data.frame(it.simdata$sim_data.L[[i]]) %>%
+        mutate(group = i)
+      
+      d <- rbind(d, dat)
+    }
+    
+    tryCatch(
+      {
+        fit1 <- cfa(model, group = "group", data = d, std.lv = FALSE, auto.fix.first = TRUE,)
+        
+        fit2 <- cfa(model, group = "group", data = d, std.lv = FALSE, auto.fix.first = TRUE,
+                    group.equal = c("loadings"))
+        
+        fit4 <- cfa(model, group = "group", data = d, std.lv = FALSE, auto.fix.first = TRUE,
+                    group.equal = c("loadings", "intercepts", "residuals"))
+        
+        fit3 <- lavaan::cfa(model, group = "group", data = d, std.lv = FALSE, auto.fix.first = TRUE,
+                            group.equal = c("loadings", "intercepts"))
+        
+        fit1.5 <- cfa(model, group = "group", data = d, std.lv = FALSE, auto.fix.first = TRUE,
+                      group.equal = c("intercepts", "residuals"))
+        
+        fit2.5 <- cfa(model, group = "group", data = d, std.lv = FALSE, auto.fix.first = TRUE,
+                      group.equal = c("loadings", "residuals"))
+        
+        # fit4 <- lavaan::cfa(model, group = "group", data = d, std.lv = TRUE, auto.fix.first = TRUE,
+        #                     group.equal = c("loadings", "intercepts", "residuals"))
+        # 
+        
+        lIf3.vcov <- lavInspect(fit3, what = "vcov")
+        lIf3.est <- lavInspect(fit3, what = "est")
+        
+        lIf1.vcov <- lavInspect(fit1, what = "vcov")
+        lIf1.est <- lavInspect(fit1, what = "est")
+        
+        return(list(data = d,
+                    fit1 = fit1,
+                    fit2 = fit2,
+                    fit3 = fit3,
+                    fit4 = fit4,
+                    fit1.5 = fit1.5,
+                    fit2.5 = fit2.5,
+                    lIf3.vcov = lIf3.vcov,
+                    lIf3.est = lIf3.est,
+                    lIf1.vcov = lIf1.vcov,
+                    lIf1.est = lIf1.est
+        ))
+      }
+      
+      ,
+      error = function(e)(cat("ERROR: ", conditionMessage(e)))
+    )
+    
+    
+    
+  })
+)
+
+# saveRDS(sim_data, file = "MGCFA-MLSEM_test_scaleloading.RData")
+sim_data <- readRDS(file = "MGCFA-MLSEM_test_scaleloading.RData")
+
+
+
 plan(sequential)
+
 
 
 
@@ -160,11 +243,43 @@ tau_Theta <- sapply(theta, FUN = function(x){
 
 plot(tau_Theta, condition_combinations$CVE * (1 - condition_combinations$rel) * 10)
 
+
+ggplot() +
+  geom_point(aes(x = condition_combinations$CVE * (1 - condition_combinations$rel) * 10,
+                 y = tau_Theta),
+             alpha = .3) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", colour = "grey") +
+  labs(title = "Scatter tau_sim - tau_theta", 
+       x = "tau_sim",
+       y = "tau_theta") +
+  theme(panel.grid.major.x = element_line("grey"),
+        panel.grid.major.y = element_line("grey"),
+        panel.grid.minor.x = element_line("lightgrey"),
+        panel.grid.minor.y = element_line("lightgrey"),
+        panel.background = element_rect("transparent"),
+        axis.line.x = element_line("grey"),
+        axis.line.y = element_line("grey"),
+        axis.ticks = element_line("grey"))
+
+
 ggplot() +
   geom_point(aes(x = tau_Theta[which(condition_combinations$CVT == 0)], 
                  y = condition_combinations$CVE[which(condition_combinations$CVT == 0)] * 
                    (1 - condition_combinations$rel[which(condition_combinations$CVT == 0)]) * 10),
-             alpha = .3)
+             alpha = .3) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", colour = "grey") +
+  labs(title = "Scatter tau_sim - tau_theta (CVT = 0)", 
+       x = "tau_sim",
+       y = "tau_theta") +
+  theme(panel.grid.major.x = element_line("grey"),
+        panel.grid.major.y = element_line("grey"),
+        panel.grid.minor.x = element_line("lightgrey"),
+        panel.grid.minor.y = element_line("lightgrey"),
+        panel.background = element_rect("transparent"),
+        axis.line.x = element_line("grey"),
+        axis.line.y = element_line("grey"),
+        axis.ticks = element_line("grey")) +
+  scale_x_continuous(breaks = c(0, 1, 2))
 
 
 
@@ -196,10 +311,26 @@ plot(condition_combinations$CVE * (1-condition_combinations$rel) * 10,
 
 exp.tau_VE <- condition_combinations$CVE * (1-condition_combinations$rel) * 10
 
+
+
 ggplot() +
-  geom_point(aes(x = exp.tau_VE,
-                  y = chi2_fit4 - chi2_fit3),
-              alpha = .3, position = position_jitter(width = .05))
+  geom_point(aes(x = exp.tau_VE, 
+                 y = chi2_fit4 - chi2_fit3),
+             alpha = .3,
+             position = position_jitter(width = .025)) +
+  labs(title = "Scatter tau_sim - Chi2-diff", 
+       subtitle = "model 1: fixed loadings & intercepts, \nmodel 0: fixed loadings, intercepts, res. variances",
+       x = "tau_sim",
+       y = "Chi2-diff") +
+  theme(panel.grid.major.x = element_line("grey"),
+        panel.grid.major.y = element_line("grey"),
+        panel.grid.minor.x = element_line("lightgrey"),
+        panel.grid.minor.y = element_line("lightgrey"),
+        panel.background = element_rect("transparent"),
+        axis.line.x = element_line("grey"),
+        axis.line.y = element_line("grey"),
+        axis.ticks = element_line("grey")) +
+  scale_x_continuous(breaks = c(0, 1, 2))
 
 
 ggplot() +
@@ -209,7 +340,189 @@ ggplot() +
 
 
 
+ggplot() +
+  geom_point(aes(x = exp.tau_VE[condition_combinations$CVT == 0], 
+                 y = chi2_fit4[condition_combinations$CVT == 0] - chi2_fit3[condition_combinations$CVT == 0]),
+             alpha = .3,
+             position = position_jitter(width = .025)) +
+  labs(title = "Scatter tau_sim - Chi2-diff (CVT = 0)", 
+       subtitle = "model 1: fixed loadings & intercepts, \nmodel 0: fixed loadings, intercepts, res. variances",
+       x = "tau_sim",
+       y = "Chi2-diff") +
+  theme(panel.grid.major.x = element_line("grey"),
+        panel.grid.major.y = element_line("grey"),
+        panel.grid.minor.x = element_line("lightgrey"),
+        panel.grid.minor.y = element_line("lightgrey"),
+        panel.background = element_rect("transparent"),
+        axis.line.x = element_line("grey"),
+        axis.line.y = element_line("grey"),
+        axis.ticks = element_line("grey")) +
+  scale_x_continuous(breaks = c(0, 1, 2))
 
+
+
+
+chi2_fit1 <- sapply(sim_data, FUN = function(x){
+  
+  num <- tryCatch(
+    lavInspect(x$fit1, what = "test")$standard$stat,
+    
+    error = function(e)(cat("ERROR: ", conditionMessage(e)))
+  )
+  
+  ifelse(is.numeric(num), yes = num, no = NA)
+})
+
+
+
+chi2_fit2 <- sapply(sim_data, FUN = function(x){
+  
+  num <- tryCatch(
+    lavInspect(x$fit2, what = "test")$standard$stat,
+    
+    error = function(e)(cat("ERROR: ", conditionMessage(e)))
+  )
+  
+  ifelse(is.numeric(num), yes = num, no = NA)
+})
+
+
+
+chi2_fit2 - chi2_fit1
+
+exp.tau_VT <- condition_combinations$CVT * condition_combinations$rel * 10
+
+
+
+lambda <- lapply(sim_data, function(x){
+  
+  lIf1.vcov <- x$lIf1.vcov
+  lIf1.est <- x$lIf1.est
+  
+  
+  lIf1.vcov.lambda.L <- lapply(1:20, FUN = function(x){
+    if(x == 1){
+      covmat <- lIf1.vcov[colnames(lIf1.vcov)  %in% sprintf("F=~V%i", 1:20),
+                          rownames(lIf1.vcov)  %in% sprintf("F=~V%i", 1:20)] 
+    }else{
+      covmat <- lIf1.vcov[colnames(lIf1.vcov)  %in% paste0(sprintf("F=~V%i", 1:20), ".g", x),
+                          colnames(lIf1.vcov)  %in% paste0(sprintf("F=~V%i", 1:20), ".g", x)]
+    }
+  })
+  
+  lIf1.est.LambdaSE <- sapply(lIf1.vcov.lambda.L, FUN = function(x){sqrt(sum(diag(x)^2))})
+  
+  
+  lIf1.est.Lambda.L <- lapply(lIf1.est, FUN = function(x){x$lambda})
+  lIf1.est.Lambda <- sapply(lIf1.est.Lambda.L, FUN = function(x){
+    sum(x^2)/10
+  })
+  
+  return(list(lambdaSE = lIf1.est.LambdaSE,
+              lambda = lIf1.est.Lambda))
+  
+})
+
+
+tau_Lambda <- sapply(lambda, FUN = function(x){
+  
+  
+  num <- tryCatch(
+    sqrt(metafor::rma(yi = x$lambda, sei = x$lambdaSE)$tau2),
+    
+    error = function(e)(cat("ERROR: ", conditionMessage(e)))
+  )
+  
+  ifelse(is.numeric(num), num, NA)
+  
+})
+
+
+plot(tau_Lambda, condition_combinations$CVT * condition_combinations$rel * 10)
+
+
+
+ggplot() +
+  geom_point(aes(x = exp.tau_VT,
+                 y = tau_Lambda),
+             alpha = .3) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", colour = "grey") +
+  labs(title = "Scatter tau_sim - tau_lambda", 
+       subtitle = "model: no parameters fixed",
+       x = "tau_lambda",
+       y = "Chi2-diff") +
+  theme(panel.grid.major.x = element_line("grey"),
+        panel.grid.major.y = element_line("grey"),
+        panel.grid.minor.x = element_line("lightgrey"),
+        panel.grid.minor.y = element_line("lightgrey"),
+        panel.background = element_rect("transparent"),
+        axis.line.x = element_line("grey"),
+        axis.line.y = element_line("grey"),
+        axis.ticks = element_line("grey")) +
+  scale_x_continuous(breaks = c(0, 1, 2))
+
+
+ggplot() +
+  geom_point(aes(x = exp.tau_VT[condition_combinations$CVE == 0],
+                 y = tau_Lambda[condition_combinations$CVE == 0]),
+             alpha = .3) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", colour = "grey") +
+  labs(title = "Scatter tau_sim - tau_lambda (CVE = 0)", 
+       subtitle = "model: no parameters fixed",
+       x = "tau_lambda",
+       y = "Chi2-diff") +
+  theme(panel.grid.major.x = element_line("grey"),
+        panel.grid.major.y = element_line("grey"),
+        panel.grid.minor.x = element_line("lightgrey"),
+        panel.grid.minor.y = element_line("lightgrey"),
+        panel.background = element_rect("transparent"),
+        axis.line.x = element_line("grey"),
+        axis.line.y = element_line("grey"),
+        axis.ticks = element_line("grey")) +
+  scale_x_continuous(breaks = c(0, 1, 2))
+
+
+
+
+ggplot() +
+  geom_point(aes(x = exp.tau_VT, 
+                 y = chi2_fit2 - chi2_fit1),
+             alpha = .3,
+             position = position_jitter(width = .025)) +
+  labs(title = "Scatter tau_sim - Chi2-diff", 
+       subtitle = "model 1: nothing fixed, \nmodel 0: fixed loadings",
+       x = "tau_sim",
+       y = "Chi2-diff") +
+  theme(panel.grid.major.x = element_line("grey"),
+        panel.grid.major.y = element_line("grey"),
+        panel.grid.minor.x = element_line("lightgrey"),
+        panel.grid.minor.y = element_line("lightgrey"),
+        panel.background = element_rect("transparent"),
+        axis.line.x = element_line("grey"),
+        axis.line.y = element_line("grey"),
+        axis.ticks = element_line("grey")) +
+  scale_x_continuous(breaks = c(0, 1, 2))
+
+
+
+ggplot() +
+  geom_point(aes(x = exp.tau_VT[condition_combinations$CVE == 0], 
+                 y = (chi2_fit2 - chi2_fit1)[condition_combinations$CVE == 0]),
+             alpha = .3,
+             position = position_jitter(width = .025)) +
+  labs(title = "Scatter tau_sim - Chi2-diff (CVE = 0)", 
+       subtitle = "model 1: nothing fixed, \nmodel 0: fixed loadings",
+       x = "tau_sim",
+       y = "Chi2-diff") +
+  theme(panel.grid.major.x = element_line("grey"),
+        panel.grid.major.y = element_line("grey"),
+        panel.grid.minor.x = element_line("lightgrey"),
+        panel.grid.minor.y = element_line("lightgrey"),
+        panel.background = element_rect("transparent"),
+        axis.line.x = element_line("grey"),
+        axis.line.y = element_line("grey"),
+        axis.ticks = element_line("grey")) +
+  scale_x_continuous(breaks = c(0, 1, 2))
 
 
 chi2_fit1.5 <- sapply(sim_data, FUN = function(x){
@@ -230,16 +543,46 @@ plot(condition_combinations$CVT * (condition_combinations$rel) * 10,
 
 exp.tau_VT <- condition_combinations$CVT * (condition_combinations$rel) * 10
 
+
 ggplot() +
-  geom_point(aes(x = exp.tau_VT,
+  geom_point(aes(x = exp.tau_VT, 
                  y = chi2_fit4 - chi2_fit1.5),
-             alpha = .3, position = position_jitter(width = .05))
+             alpha = .3,
+             position = position_jitter(width = .025)) +
+  labs(title = "Scatter tau_sim - Chi2-diff", 
+       subtitle = "model 1: fixed intercepts, res. variances, \nmodel 0: fixed intercepts, loadings, res. variances",
+       x = "tau_sim",
+       y = "Chi2-diff") +
+  theme(panel.grid.major.x = element_line("grey"),
+        panel.grid.major.y = element_line("grey"),
+        panel.grid.minor.x = element_line("lightgrey"),
+        panel.grid.minor.y = element_line("lightgrey"),
+        panel.background = element_rect("transparent"),
+        axis.line.x = element_line("grey"),
+        axis.line.y = element_line("grey"),
+        axis.ticks = element_line("grey")) +
+  scale_x_continuous(breaks = c(0, 1, 2))
+
 
 
 ggplot() +
-  geom_point(aes(x = exp.tau_VT[condition_combinations$CVE == 0],
-                 y = chi2_fit4[condition_combinations$CVE == 0] - chi2_fit1.5[condition_combinations$CVE == 0]),
-             alpha = .3, position = position_jitter(width = .05))
+  geom_point(aes(x = exp.tau_VT[condition_combinations$CVE == 0], 
+                 y = (chi2_fit4 - chi2_fit1.5)[condition_combinations$CVE == 0]),
+             alpha = .3,
+             position = position_jitter(width = .025)) +
+  labs(title = "Scatter tau_sim - Chi2-diff (CVE = 0)", 
+       subtitle = "model 1: fixed intercepts, res. variances, \nmodel 0: fixed intercepts, loadings, res. variances",
+       x = "tau_sim",
+       y = "Chi2-diff") +
+  theme(panel.grid.major.x = element_line("grey"),
+        panel.grid.major.y = element_line("grey"),
+        panel.grid.minor.x = element_line("lightgrey"),
+        panel.grid.minor.y = element_line("lightgrey"),
+        panel.background = element_rect("transparent"),
+        axis.line.x = element_line("grey"),
+        axis.line.y = element_line("grey"),
+        axis.ticks = element_line("grey")) +
+  scale_x_continuous(breaks = c(0, 1, 2))
 
 
 
@@ -302,10 +645,9 @@ fit <- cfa(model = two.level.model, data = sim_data[[1]]$data, cluster = "group"
 
 summary(fit)
 
-#saveRDS(sim_data, file = "MGCFA-MLSEM_test.RData")
-sim_data <- readRDS(file = "MGCFA-MLSEM_test.RData")
 
 it <- 0
+
 test <- lapply(sim_data, FUN = function(x){
   
   dat <- x$data

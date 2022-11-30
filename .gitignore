@@ -6,3 +6,4 @@ old/
 .Rproj.user
 *.Rproj
 MGCFA-MLSEM_test.RData
+MGCFA-MLSEM_test_scaleloading.RData
