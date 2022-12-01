@@ -1,7 +1,6 @@
 
 
-
-
+# packages required (likely not all atm)
 packages <- c("tidyverse", "here", "psych", "coefficientalpha", "MASS", "truncnorm", "spsUtil", "metafor",
               "meta", "bayesmeta", "future.apply", "lavaan")
 
@@ -22,29 +21,46 @@ apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
   }
 })
 
+# source function-script, required for data simulation
 source(here("RG_function-library.R"))
 
 
-
+# define conditions:
+# coefficient of variation for true score variance
 CVT <- seq(from = 0, to = .3, by = .1)
+# coefficient of variation for error score variance
 CVE <- seq(from = 0, to = .3, by = .1)
+# reliability ranging from .1 to .9
 rel <- seq(from = .1, to = .9, by = .2)
 
+# combine conditions
 condition_combinations <- expand.grid(CVT, CVE, rel)
-
 names(condition_combinations) <- c("CVT", "CVE", "rel")
 
 
+##### Data Simulation #####
+
+##############################################################################
+# Do not run if not specifically necessary - I can send you a data file.     #
+# Running likely takes a while - up to an hour or longer, depending on specs #
+##############################################################################
+
+# simple factor model for evaluation
 model <- "F =~ V1 + V2 + V3 + V4 + V5 + V6 + V7 + V8 + V9 + V10"
 
+# use multiple cores for simulation & first analysis
 plan(multisession, workers = 7)
 
+
+# version 1: identify/scale by constraining latent factor variance = 1
 # std.lv = TRUE, auto.fix.first = FALSE
 
 system.time(
   sim_data <- future_lapply(1:nrow(condition_combinations), future.seed = TRUE, FUN = function(x){
-  # sim_data <- lapply(1:nrow(condition_combinations), FUN = function(x){
-    it.simdata <- sim_het_VC(j = 10, n = 1000, k = 20,
+    # sim_data <- lapply(1:nrow(condition_combinations), FUN = function(x){
+    
+    # function to simulate data (description in RG_function-library.R)
+    it.simdata <- sim_het_VC(j = 10, n = 1000, k = a,
                              reliability = condition_combinations$rel[x], mean_score = 0, 
                              mean_observed_var = 10,
                              CV_var_T = condition_combinations$CVT[x],
@@ -52,6 +68,7 @@ system.time(
     
     d <- NULL
     
+    # combine into single data set, wide format
     for(i in seq_along(it.simdata$sim_data.L)){
       dat <- as.data.frame(it.simdata$sim_data.L[[i]]) %>%
         mutate(group = i)
@@ -59,6 +76,8 @@ system.time(
       d <- rbind(d, dat)
     }
     
+    # fit a variety of MG-CFA models, restricting mroe and more parameters.
+    # tryCatch to make sure function doesn't break down under error
     tryCatch(
       {
         fit1 <- cfa(model, group = "group", data = d, std.lv = TRUE, auto.fix.first = FALSE,)
@@ -78,16 +97,17 @@ system.time(
         fit2.5 <- cfa(model, group = "group", data = d, std.lv = TRUE, auto.fix.first = FALSE,
                       group.equal = c("loadings", "residuals"))
         
-        # fit4 <- lavaan::cfa(model, group = "group", data = d, std.lv = TRUE, auto.fix.first = TRUE,
-        #                     group.equal = c("loadings", "intercepts", "residuals"))
-        # 
-        
+        # standard errors (variances) for model 3
         lIf3.vcov <- lavInspect(fit3, what = "vcov")
+        # parameter estimates for model 3
         lIf3.est <- lavInspect(fit3, what = "est")
         
+        # standard errors (variances) for model 1
         lIf1.vcov <- lavInspect(fit1, what = "vcov")
+        # parameter estimates for model 1
         lIf1.est <- lavInspect(fit1, what = "est")
         
+        # specify return object
         return(list(data = d,
                     fit1 = fit1,
                     fit2 = fit2,
@@ -114,6 +134,8 @@ system.time(
 
 #saveRDS(sim_data, file = "MGCFA-MLSEM_test.RData")
 sim_data <- readRDS(file = "MGCFA-MLSEM_test.RData")
+
+
 
 # std.lv = FALSE, auto.fix.first = TRUE
 
@@ -191,7 +213,7 @@ system.time(
 sim_data <- readRDS(file = "MGCFA-MLSEM_test_scaleloading.RData")
 
 
-
+# free up cores
 plan(sequential)
 
 
@@ -624,6 +646,9 @@ ggplot() +
 
 
 
+
+# specify two-level model for Multilevel SEM in lavaan
+# same measurement model on both levels.
 two.level.model <- "
 level: 1
 FW =~ V1 + V2 + V3 + V4 + V5 + V6 + V7 + V8 + V9 + V10
@@ -631,6 +656,7 @@ FW =~ V1 + V2 + V3 + V4 + V5 + V6 + V7 + V8 + V9 + V10
 level: 2
 FB =~ V1 + V2 + V3 + V4 + V5 + V6 + V7 + V8 + V9 + V10
 "
+
 
 two.level.model <- "
 level: 1
@@ -646,20 +672,25 @@ fit <- cfa(model = two.level.model, data = sim_data[[1]]$data, cluster = "group"
 summary(fit)
 
 
+# iterator to count through iteration of lapply
 it <- 0
 
+# apply ML-SEM using lavaan to previously simulated data
 test <- lapply(sim_data, FUN = function(x){
   
   dat <- x$data
   
+  # fit model
   fit <- lavaan::sem(model = two.level.model, data = dat, cluster = "group",
                      std.lv = TRUE, auto.fix.first = FALSE, h1 = TRUE)
   
   it <<- it + 1
   
+  # return iteration
   cat(paste0(it, "\n"))
   return(fit)
 })
+
 
 
 
@@ -670,6 +701,27 @@ further.test <- lapply(test, FUN = function(x){
 })
 
 
+# collect individual estimates of theta or lambda, within and  group
+
+# theta (item residual variance) on group-level
+ft.theta.group <- lapply(further.test, FUN = function(x){
+  diag(x$group$theta)
+})
+# theta (item residual variance) on within-level
+ft.theta.within <- lapply(further.test, FUN = function(x){
+  diag(x$within$theta)
+})
+
+# lambda (factor loading / shared sqrt(variation)) on group-level
+ft.lambda.group <- lapply(further.test, FUN = function(x){
+  (x$group$lambda)
+})
+# lambda (factor loading / shared sqrt(variation)) on group-level
+ft.lambda.within <- lapply(further.test, FUN = function(x){
+  (x$within$lambda)
+})
+
+
 lapply(test, FUN = function(x){
   If <- lavInspect(x, what = "cov.all")
   return(If)
@@ -677,19 +729,49 @@ lapply(test, FUN = function(x){
 })
 
 
+
+# aggregate individual estimates to what we would ususally deem
+#  true and error score variance
+
+# theta - residual variance equivalent to error score variance:
+# sum individual estimates and divide by 100 (error variance
+# averages out across items)
+within.theta.sum <- sapply(further.test, FUN = function(x){
+  s <- sum(diag(x$within$theta))/100
+  return(ifelse(s != .1, s, NA))
+})
 group.theta.sum <- sapply(further.test, FUN = function(x){
-  s <- sum(x$group$theta)
-  return(ifelse(s != 10, s, NA))
+  s <- sum(diag(x$group$theta)/100)
+  return(ifelse(s != .1, s, NA))
 })
 
 
+plot(group.theta.sum)
+
+
+# lmabda - factor loadings, with correct scaling by restricting
+#  latent factor variance to 1, we can sum up the squared loadings 
+#  to arrive at the true score variance. Since we are dealing with
+#  mean total scores, we also need to divide the sum by the number
+#  of items (10)
+within.lambda.sumsquare <- sapply(further.test, FUN = function(x){
+  s <- sum(x$within$lambda^2)/10
+  return(ifelse(s != 1, s, NA))
+})
 group.lambda.sumsquare <- sapply(further.test, FUN = function(x){
-  s <- sum(x$group$lambda^2)
-  return(ifelse(s != 10, s, NA))
+  s <- sum(x$group$lambda^2)/10
+  return(ifelse(s != 1, s, NA))
 })
 
 
+# notably, estimates at the within-level estimate the true and 
+# error score variance reasonably well. At the group-level, 
+# however, the estimates don't seem to make a lot of sense
 
+plot(group.lambda.sumsquare)
+
+# interestingly, estimates of true and (abs.) error score variance seem
+#  to correlate stronly, no matter the actually induced heterogeneity
 plot(abs(group.theta.sum), group.lambda.sumsquare)
 
 
