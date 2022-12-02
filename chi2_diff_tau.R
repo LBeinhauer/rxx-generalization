@@ -60,7 +60,7 @@ system.time(
     # sim_data <- lapply(1:nrow(condition_combinations), FUN = function(x){
     
     # function to simulate data (description in RG_function-library.R)
-    it.simdata <- sim_het_VC(j = 10, n = 1000, k = a,
+    it.simdata <- sim_het_VC(j = 10, n = 1000, k = 20,
                              reliability = condition_combinations$rel[x], mean_score = 0, 
                              mean_observed_var = 10,
                              CV_var_T = condition_combinations$CVT[x],
