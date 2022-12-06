@@ -304,6 +304,50 @@ ggplot() +
   scale_x_continuous(breaks = c(0, 1, 2))
 
 
+plan(multisession, workers = 7)
+
+varE_tau <- lapply(sim_data, FUN = function(x){
+  
+  tryCatch({
+    data <- lapply(unique(x$data$group), FUN = function(y){
+      x$data[which(x$data$group == y),]
+    })
+    
+    faB <- future_apply_Bootstrap_SE_nonspecific(data, var.component = "ERROR", R = 1000)
+    
+    sqrt(metafor::rma(yi = faB$boot.mean, sei = faB$SE)$tau2)
+  }
+  ,
+  error = function(e)(cat("ERROR: ", conditionMessage(e)))
+    
+  )
+})
+
+plan(sequential)
+
+tau_varE <- sapply(varE_tau, FUN = function(x){
+  ifelse(is.numeric(x), x, NA)
+})
+
+
+ggplot() +
+  geom_point(aes(x = condition_combinations$CVE * (1 - condition_combinations$rel) * 10,
+                 y = tau_varE),
+             alpha = .3) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", colour = "grey") +
+  labs(title = "Scatter tau_sim - tau_varE", 
+       x = "tau_sim",
+       y = "tau_varE") +
+  theme(panel.grid.major.x = element_line("grey"),
+        panel.grid.major.y = element_line("grey"),
+        panel.grid.minor.x = element_line("lightgrey"),
+        panel.grid.minor.y = element_line("lightgrey"),
+        panel.background = element_rect("transparent"),
+        axis.line.x = element_line("grey"),
+        axis.line.y = element_line("grey"),
+        axis.ticks = element_line("grey"))
+
+
 
 chi2_fit4 <- sapply(sim_data, FUN = function(x){
   num <- tryCatch(

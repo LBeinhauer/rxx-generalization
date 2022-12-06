@@ -426,18 +426,19 @@ sim_het_VC <- function(j, n, k, reliability = 0.5, mean_score = 0, mean_observed
     
     sim_data <- obs_scores
     
-    rel <- spsUtil::quiet(psych::alpha(sim_data, warnings = FALSE))
+    # rel <- spsUtil::quiet(psych::alpha(sim_data, warnings = FALSE))
     
-    return(list(reliability = rel$total$raw_alpha,
-                StandardError = rel$total$ase,
+    return(list(# reliability = rel$total$raw_alpha,
+                # StandardError = rel$total$ase,
                 data = sim_data))
   })
   
   sim_data.L <- lapply(sim_d.L, FUN = function(x){x$data})
   
-  sim_d.df <- data.frame(Reliability = sapply(sim_d.L, FUN = function(x){x$reliability}),
-                         StandardError = sapply(sim_d.L, FUN = function(x){x$StandardError}))
+  # sim_d.df <- data.frame(Reliability = sapply(sim_d.L, FUN = function(x){x$reliability}),
+  #                        StandardError = sapply(sim_d.L, FUN = function(x){x$StandardError}))
   
-  return(list(sim_data.L = sim_data.L,
-              reliability.df = sim_d.df))
+  return(list(sim_data.L = sim_data.L #,
+              # reliability.df = sim_d.df
+              ))
 }
