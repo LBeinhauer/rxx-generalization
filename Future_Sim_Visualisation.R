@@ -20,8 +20,23 @@ apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
 
 
 
+CVT <- seq(from = 0, to = .3, by = .1)
+CVE <- seq(from = 0, to = .3, by = .1)
+rel <- seq(from = .1, to = .9, by = .2)
 
-Large_Sim_Data <- readRDS(file = here("Notes/Sim_80000_conditions.RData"))
+# combine 4*4*5 conditions
+condition_combinations <- expand.grid(CVT, CVE, rel)
+names(condition_combinations) <- c("CVT", "CVE", "rel")
+
+# repeat 80 conditions, each 500 times
+all_conditions <- NULL
+# Large-Scale Simulation Scheme
+for(i in 1:500){
+  all_conditions <- rbind(all_conditions, condition_combinations)
+}
+
+
+Large_Sim_Data <- readRDS(file = here("Notes/Sim_40000_conditions.RData"))
 
 
 Large_Sim_Data_RMA <- lapply(Large_Sim_Data, FUN = function(x){

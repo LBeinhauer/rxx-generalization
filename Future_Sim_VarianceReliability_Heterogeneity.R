@@ -157,14 +157,12 @@ for(i in 1:1000){
 plan(multisession, workers = 7)
 
 
-# iteration counter
-it <- 0
 
 set.seed(050922)
 
 
 
-# time for 160 replications at n = 100, k = 100, R = 3000 using 7 cores
+# time for 20 replications at n = 100, k = 100, R = 3000 using 7 cores: 280 seconds
 
 
 # sim_apply_boot <- function(condition_row, seed)
@@ -215,9 +213,6 @@ system.time(
                      rel = rel,
                      ase = ase)
     
-    # print current iteration nr.
-    it <<- it + 1
-    cat(paste0(it, "\n"))
     
     # write.csv(df, here(paste0("Notes/Simulation_sub_files/sim", it, ".csv")), row.names = FALSE)
     
