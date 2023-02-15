@@ -78,7 +78,7 @@ saveRDS(long_test_E, file = here("Notes/bootstrapped_varT.RData"))
 
 varT_rma.list <- lapply(seq_along(long_test_T), FUN = function(x){
   tryCatch(metafor::rma(measure = "GEN", method = "REML", 
-                        yi = long_test_T[[x]]$boot.mean, 
+                        yi = long_test_T[[x]]$var.est, 
                         sei = long_test_T[[x]]$SE),
            error = function(e)(cat("ERROR: ", conditionMessage(e), " - ",
                                    substr(names(data.list), 
@@ -96,7 +96,7 @@ saveRDS(varT_rma.list, file = here("Notes/bootstrapped_varT_rma.RData"))
 
 varE_rma.list <- lapply(seq_along(long_test_E), FUN = function(x){
   tryCatch(metafor::rma(measure = "GEN", method = "REML", 
-                        yi = long_test_E[[x]]$boot.mean, 
+                        yi = long_test_E[[x]]$var.est, 
                         sei = long_test_E[[x]]$SE),
            error = function(e)(cat("ERROR: ", conditionMessage(e), " - ",
                                    substr(names(data.list), 
@@ -113,7 +113,7 @@ saveRDS(varE_rma.list, file = here("Notes/bootstrapped_varE_rma.RData"))
 
 
 
-# boót.function for observed variance
+# bo?t.function for observed variance
 bootstrap_SE_varX <- function(data, indices){
   
   d <- data[indices,]

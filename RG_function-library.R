@@ -233,18 +233,38 @@ apply_Bootstrap_SE_Project.specific <- function(data, var.component = c("TRUE", 
   }
   suppressMessages(
   df <- apply(as.matrix(seq_along(unique(data$source))), MARGIN = 1, FUN = function(x){
-    bvar <- boot(data = data[data$source == unique(data$source)[x],-grep("source", names(data))],
+    bvar <- boot(data = na.omit(data[data$source == unique(data$source)[x],-grep("source", names(data))]),
                  statistic = stat.f,
                  stat = "ALPHA",
                  R = R)
     
+    d <- data[data$source == unique(data$source)[x],-grep("source", names(data))]
+    
+    D <- na.omit(d)
+    
+    C <- cov(D)
+    n <- dim(C)[1]
+    
+    alpha <- (1 - sum(diag(C))/sum(C)) * (n/(n - 1))
+    
+    varX <- var(rowMeans(D))
+    
+    if(var.component == "TRUE"){
+      var_est <- as.numeric(varX * alpha )
+    }
+    if(var.component == "ERROR"){
+      var_est <- as.numeric(varX * (1-alpha))
+    }
+    
     return(data.frame(SE = sd(bvar$t), 
-                      boot.mean = mean(bvar$t)))
+                      boot.mean = mean(bvar$t),
+                      var.emp = var_est))
   })
   )
   
   df.formatted <- data.frame(SE = sapply(df, FUN = function(x){x$SE}),
                              boot.mean = sapply(df, FUN = function(x){x$boot.mean}),
+                             var.est = sapply(df, FUN = function(x){x$var.emp}),
                              source = unique(data$source))
   
 }
@@ -271,13 +291,31 @@ apply_Bootstrap_SE_nonspecific <- function(data.L, var.component = c("TRUE", "ER
                    stat = "ALPHA",
                    R = R)
       
+      
+      C <- cov(x[,-grep("source", names(x))])
+      n <- dim(C)[1]
+      
+      alpha <- (1 - sum(diag(C))/sum(C)) * (n/(n - 1))
+      
+      varX <- var(rowMeans(x[,-"source"]))
+      
+      if(var.component == "TRUE"){
+        var_est <- varX * alpha 
+      }
+      if(var.component == "ERROR"){
+        var_est <- varX * (1-alpha)
+      }
+      
+      
       return(list(SE = sd(bvar$t), 
-                  boot.mean = mean(bvar$t)))
+                  boot.mean = mean(bvar$t),
+                  var.emp = var_est))
     })
   )
   
   df.formatted <- data.frame(SE = sapply(vboot.L, FUN = function(x){x$SE}),
-                             boot.mean = sapply(vboot.L, FUN = function(x){x$boot.mean}))
+                             boot.mean = sapply(vboot.L, FUN = function(x){x$boot.mean}),
+                             var.est = sapply(vboot.L, FUN = function(x){x$var.emp}))
   
 }
 
@@ -302,13 +340,29 @@ future_apply_Bootstrap_SE_nonspecific <- function(data.L, var.component = c("TRU
                    stat = "ALPHA",
                    R = R)
       
+      C <- cov(x[,-grep("source", names(x))])
+      j <- dim(C)[1]
+      
+      alpha <- (1 - sum(diag(C))/sum(C)) * (j/(j - 1))
+      
+      varX <- var(rowMeans(x[,-"source"]))
+      
+      if(var.component == "TRUE"){
+       var_est <- varX * alpha 
+      }
+      if(var.component == "ERROR"){
+        var_est <- varX * (1-alpha)
+      }
+      
       return(list(SE = sd(bvar$t), 
-                  boot.mean = mean(bvar$t)))
+                  boot.mean = mean(bvar$t),
+                  var.emp = var_est))
     })
   )
   
   df.formatted <- data.frame(SE = sapply(vboot.L, FUN = function(x){x$SE}),
-                             boot.mean = sapply(vboot.L, FUN = function(x){x$boot.mean}))
+                             boot.mean = sapply(vboot.L, FUN = function(x){x$boot.mean}),
+                             var.est = sapply(vboot.L, FUN = function(x){x$var.emp}))
   
 }
 
