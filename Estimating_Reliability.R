@@ -41,8 +41,8 @@ path_data <- list.files(here("Data/Extracted (Project) Data"), full.names = TRUE
 
 data.list <- lapply(path_data, read.csv)
 
-names(data.list) <- substr(list.files(here("Data/Extracted (Project) Data"), full.names = FALSE)[-7],
-                           1, (nchar(list.files(here("Data/Extracted (Project) Data"), full.names = FALSE)[-7])-4))
+names(data.list) <- substr(list.files(here("Data/Extracted (Project) Data"), full.names = FALSE),
+                           1, (nchar(list.files(here("Data/Extracted (Project) Data"), full.names = FALSE))-4))
 
 
 

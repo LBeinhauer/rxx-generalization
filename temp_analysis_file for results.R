@@ -37,7 +37,7 @@ summary(varT_rma.list$Cacioppo_Need_Cognition$yi)
 varE_rma.list$Cacioppo_Need_Cognition$yi
 sqrt(varE_rma.list$Cacioppo_Need_Cognition$vi)
 
-
+summary(varE_rma.list$Cacioppo_Need_Cognition$yi)
 
 
 

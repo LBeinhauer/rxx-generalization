@@ -128,16 +128,20 @@ boot.estimates_varX <- lapply(seq_along(data.list), FUN = function(x){
   data <- data.list[[x]]
   
   df <- apply(as.matrix(seq_along(unique(data$source))), MARGIN = 1, FUN = function(x){
-    bvar <- boot(data = data[data$source == unique(data$source)[x],-grep("source", names(data))],
+    bvar <- boot(data = na.omit(data[data$source == unique(data$source)[x],-grep("source", names(data))]),
                  statistic = bootstrap_SE_varX,
                  R = 100)
     
+    varX <- var(rowMeans(na.omit(data[data$source == unique(data$source)[x],-grep("source", names(data))])))
+    
     return(data.frame(SE = sd(bvar$t), 
+                      var.est = varX,
                       boot.mean = mean(bvar$t)))
   })
   
   df.formatted <- data.frame(SE = sapply(df, FUN = function(x){x$SE}),
                              boot.mean = sapply(df, FUN = function(x){x$boot.mean}),
+                             var.est = sapply(df, FUN = function(x){x$var.est}),
                              source = unique(data$source))
   
 })
@@ -145,7 +149,7 @@ boot.estimates_varX <- lapply(seq_along(data.list), FUN = function(x){
 varX_rma.list <- lapply(seq_along(boot.estimates_varX), FUN = function(x){
   data <- boot.estimates_varX[[x]]
   
-  metafor::rma(data = data, method = "REML", measure = "GEN", yi = boot.mean, sei = SE)
+  metafor::rma(data = data, method = "REML", measure = "GEN", yi = var.est, sei = SE)
 })
 
 names(varX_rma.list) <- names(data.list)
