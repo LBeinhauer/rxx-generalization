@@ -1,0 +1,179 @@
+---
+title: "Results Reliability Generalization and Variance Decomposition"
+author: "Lukas Beinhauer"
+format: html
+editor: visual
+---
+
+
+```{r}
+
+paths_rel <- list.files(file.path("Data/Reliability Estimates"), full.names = TRUE)
+
+paths_alpha <- paths_rel[grep("_Alpha.csv$", paths_rel)]
+
+alpha_estimates.list <- lapply(paths_alpha, FUN = function(x){read.csv(x)})
+
+
+
+Alpha_rma.list <- readRDS(file.path("Data/Shiny Data/Alpha_rma.list.RData"))
+Bonett.Alpha_rma.list <- readRDS(file.path("Data/Shiny Data/Bonett.Alpha_rma.list.RData"))
+
+varT_est.list <- readRDS(file.path("Notes/bootstrapped_varT.RData"))
+varE_est.list <- readRDS(file.path("Notes/bootstrapped_varE.RData"))
+
+varT_rma.list <- readRDS(file.path("Notes/bootstrapped_varT_rma.RData"))
+varE_rma.list <- readRDS(file.path("Notes/bootstrapped_varE_rma.RData"))
+
+
+
+```
+
+```{r}
+
+s_Caciop_Alpha <- summary(alpha_estimates.list[[1]]$Reliability)
+
+r.dec <- 3
+
+s_Caciop_Alpha_rma <- Alpha_rma.list[[1]]
+s_Caciop_B.Alpha_rma <- Bonett.Alpha_rma.list[[1]]
+
+s_Caciop_varT <- summary(varT_est.list[[1]]$var.est)
+s_Caciop_varE <- summary(varE_est.list[[1]]$var.est)
+
+s_Caciop_varT_rma <- varT_rma.list[[1]]
+s_Caciop_varE_rma <- varE_rma.list[[1]]
+
+
+
+
+
+s_ShnabelRPP_Alpha <- summary(alpha_estimates.list[[9]]$Reliability)
+
+s_ShnabelRPP_Alpha_rma <- Alpha_rma.list[[9]]
+s_ShnabelRPP_B.Alpha_rma <- Bonett.Alpha_rma.list[[9]]
+
+s_ShnabelRPP_varT <- summary(varT_est.list[[9]]$var.est)
+s_ShnabelRPP_varE <- summary(varE_est.list[[9]]$var.est)
+
+s_ShnabelRPP_varT_rma <- varT_rma.list[[9]]
+s_ShnabelRPP_varE_rma <- varE_rma.list[[9]]
+
+
+
+
+s_ShnabelRev_Alpha <- summary(alpha_estimates.list[[8]]$Reliability)
+
+s_ShnabelRev_Alpha_rma <- Alpha_rma.list[[8]]
+s_ShnabelRev_B.Alpha_rma <- Bonett.Alpha_rma.list[[8]]
+
+s_ShnabelRev_varT <- summary(varT_est.list[[8]]$var.est)
+s_ShnabelRev_varE <- summary(varE_est.list[[8]]$var.est)
+
+s_ShnabelRev_varT_rma <- varT_rma.list[[8]]
+s_ShnabelRev_varE_rma <- varE_rma.list[[8]]
+
+```
+
+## Results Reliability Generalization and Variance Decomposition
+
+### Cacioppo
+
+Data set 1 concerned the scale of Need for Cognition (Cacioppo & Petty, 1982), consisting of 6 Likert-stye items (5-point scale). Measured across 21 labs in Ebersole et al. (2016), using Cronbach’s Alpha, score reliability varied between `r round(s_Caciop_Alpha[1], r.dec)` and `r round(s_Caciop_Alpha[6], r.dec)`, with a mean value of `r round(s_Caciop_Alpha[4], r.dec)` and median value `r round(s_Caciop_Alpha[3], r.dec)`. Performing a random-effects meta-analysis on the untransformed Cronbach’s Alpha estimates, we find a meta-analytic mean estimate of `r round(s_Caciop_Alpha_rma$b[1], r.dec)` (`r round(s_Caciop_Alpha_rma$ci.lb, r.dec)` : `r round(s_Caciop_Alpha_rma$ci.ub, r.dec)`). Additionally, we find a significant degree of heterogeneity in score reliability, at Q(`r s_Caciop_Alpha_rma$k - 1`) = `r round(s_Caciop_Alpha_rma$QE, r.dec)`, p `r ifelse(s_Caciop_Alpha_rma$QEp < .001, "<.001", paste0("= ", round(s_Caciop_Alpha_rma$QEp, r.dec)))`. In terms of I^2, heterogeneity is `r round(s_Caciop_Alpha_rma$I2, r.dec)`%, which, according to XXX constitutes a large level of heterogeneity. In terms of tau, we find a standard deviation of `r round(sqrt(s_Caciop_Alpha_rma$tau2), r.dec)` in true values of Cronbach’s Alpha. Similarly, when assessing Bonett-transformed Cronbach’s Alpha estimates, we find a meta-analytic mean of `r round(s_Caciop_B.Alpha_rma$b[1], r.dec)`. Back-transformed this constitutes a Cronbach’s Alpha of `r round(1-exp(s_Caciop_B.Alpha_rma$b[1]), r.dec)` (CI: `r round(1-exp(s_Caciop_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_Caciop_B.Alpha_rma$ci.lb), r.dec)`) (difference in MA-est. emerges at the 3rd decimal). Heterogeneity in Bonett-transformed estimates of Cronbach’s Alpha is also of statistically significant degree: Q(`r s_Caciop_Alpha_rma$k - 1`) = `r round(s_Caciop_B.Alpha_rma$QE, r.dec)`, p `r ifelse(s_Caciop_B.Alpha_rma$QEp < .001, "<.001", paste0("= ", round(s_Caciop_B.Alpha_rma$QEp, r.dec)))`. Standardized heterogeneity estimates of I^2 = `r round(s_Caciop_B.Alpha_rma$I2, r.dec)`% and H^2 = `r round(s_Caciop_B.Alpha_rma$H2, r.dec)` display highly similar amounts of heterogeneity. When using McDonald’s Omega to estimate score reliability, the results change only to a very small degree. Therefore, estimates using McDonald’s Omega can be found in the supplemental materials.
+
+
+Also, we use Cronbach's Alpha to decompose the observed variance into its true and error score variance components:
+
+{}  | True Score Variance | Error Score Variance
+-- | -- | --: 
+Min | `r round(s_Caciop_varT[1], r.dec)` | `r round(s_Caciop_varE[1], r.dec)`
+Q1  | `r round(s_Caciop_varT[2], r.dec)` | `r round(s_Caciop_varE[2], r.dec)`
+Median| `r round(s_Caciop_varT[3], r.dec)` | `r round(s_Caciop_varE[3], r.dec)`
+Q3  | `r round(s_Caciop_varT[4], r.dec)` | `r round(s_Caciop_varE[4], r.dec)`
+Max | `r round(s_Caciop_varT[5], r.dec)` | `r round(s_Caciop_varE[5], r.dec)`
+Mean| `r round(s_Caciop_varT[6], r.dec)` | `r round(s_Caciop_varE[6], r.dec)`
+
+Performing a random-effects meta-analysis on the components directly leads to:
+
+{} | True Score Variance | Error Score Variance
+-- | -- | --:
+Meta-Analytic Mean Estimate | `r round(s_Caciop_varT_rma$b[1], r.dec)` | `r round(s_Caciop_varE_rma$b[1], r.dec)`
+Confidence Interval | `r round(s_Caciop_varT_rma$ci.lb, r.dec)` : `r round(s_Caciop_varT_rma$ci.ub, r.dec)` | `r round(s_Caciop_varE_rma$ci.lb, r.dec)` : `r round(s_Caciop_varE_rma$ci.ub, r.dec)`
+Heterogeneity tau | `r round(sqrt(s_Caciop_varT_rma$tau2), r.dec)` | `r round(sqrt(s_Caciop_varE_rma$tau2), r.dec)`
+Heterogeneity I^2 | `r round(s_Caciop_varT_rma$I2, r.dec)` | `r round(s_Caciop_varE_rma$I2, r.dec)`
+Heterogeneity H^2 | `r round(s_Caciop_varT_rma$H2, r.dec)` | `r round(s_Caciop_varE_rma$H2, r.dec)`
+Q(`r s_Caciop_varT_rma$k - 1`) | `r round(s_Caciop_varT_rma$QE, r.dec)` | `r round(s_Caciop_varE_rma$QE, r.dec)`
+p-value QE | `r ifelse(s_Caciop_varT_rma$QEp < .001, "<.001", round(s_Caciop_varT_rma$QEp, r.dec))` | `r ifelse(s_Caciop_varE_rma$QEp < .001, "<.001", round(s_Caciop_varE_rma$QEp, r.dec))`
+
+
+
+### Shnabel Sense of Power (RPP)
+
+
+Data set 2 concerned the scale of Sense of Power (Shnabel & Nadler, 2008), consisting of 3 Likert-stye items (7-point scale). Measured across 8 labs in Baranski et al. (2020), using Cronbach’s Alpha, specifically for those labs following the RPP-protocol, score reliability varied between `r round(s_ShnabelRPP_Alpha[1], r.dec)` and `r round(s_ShnabelRPP_Alpha[6], r.dec)`, with a mean value of `r round(s_ShnabelRPP_Alpha[4], r.dec)` and median value `r round(s_ShnabelRPP_Alpha[3], r.dec)`. Performing a random-effects meta-analysis on the untransformed Cronbach’s Alpha estimates, we find a meta-analytic mean estimate of `r round(s_ShnabelRPP_Alpha_rma$b[1], r.dec)` (`r round(s_ShnabelRPP_Alpha_rma$ci.lb, r.dec)` : `r round(s_ShnabelRPP_Alpha_rma$ci.ub, r.dec)`). Additionally, we find a significant degree of heterogeneity in score reliability, at Q(`r s_ShnabelRPP_Alpha_rma$k - 1`) = `r round(s_ShnabelRPP_Alpha_rma$QE, r.dec)`, p `r ifelse(s_ShnabelRPP_Alpha_rma$QEp < .001, "<.001", paste0("= ", round(s_ShnabelRPP_Alpha_rma$QEp, r.dec)))`. In terms of I^2, heterogeneity is `r round(s_ShnabelRPP_Alpha_rma$I2, r.dec)`%, which, according to XXX constitutes a medium level of heterogeneity. In terms of tau, we find a standard deviation of `r round(sqrt(s_ShnabelRPP_Alpha_rma$tau2), r.dec)` in true values of Cronbach’s Alpha. Similarly, when assessing Bonett-transformed Cronbach’s Alpha estimates, we find a meta-analytic mean of `r round(s_ShnabelRPP_B.Alpha_rma$b[1], r.dec)`. Back-transformed this constitutes a Cronbach’s Alpha of `r round(1-exp(s_ShnabelRPP_B.Alpha_rma$b[1]), r.dec)` (CI: `r round(1-exp(s_ShnabelRPP_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_ShnabelRPP_B.Alpha_rma$ci.lb), r.dec)`) (difference in MA-est. emerges at the 3rd decimal). Heterogeneity in Bonett-transformed estimates of Cronbach’s Alpha is also of statistically significant degree: Q(`r s_ShnabelRPP_Alpha_rma$k - 1`) = `r round(s_ShnabelRPP_B.Alpha_rma$QE, r.dec)`, p `r ifelse(s_ShnabelRPP_B.Alpha_rma$QEp < .001, "<.001", paste0("= ", round(s_ShnabelRPP_B.Alpha_rma$QEp, r.dec)))`. Standardized heterogeneity estimates of I^2 = `r round(s_ShnabelRPP_B.Alpha_rma$I2, r.dec)`% and H^2 = `r round(s_ShnabelRPP_B.Alpha_rma$H2, r.dec)` display highly similar amounts of heterogeneity. 
+
+
+Also, we use Cronbach's Alpha to decompose the observed variance into its true and error score variance components:
+
+{}  | True Score Variance | Error Score Variance
+-- | -- | --: 
+Min | `r round(s_ShnabelRPP_varT[1], r.dec)` | `r round(s_ShnabelRPP_varE[1], r.dec)`
+Q1  | `r round(s_ShnabelRPP_varT[2], r.dec)` | `r round(s_ShnabelRPP_varE[2], r.dec)`
+Median| `r round(s_ShnabelRPP_varT[3], r.dec)` | `r round(s_ShnabelRPP_varE[3], r.dec)`
+Q3  | `r round(s_ShnabelRPP_varT[4], r.dec)` | `r round(s_ShnabelRPP_varE[4], r.dec)`
+Max | `r round(s_ShnabelRPP_varT[5], r.dec)` | `r round(s_ShnabelRPP_varE[5], r.dec)`
+Mean| `r round(s_ShnabelRPP_varT[6], r.dec)` | `r round(s_ShnabelRPP_varE[6], r.dec)`
+
+Performing a random-effects meta-analysis on the components directly leads to:
+
+{} | True Score Variance | Error Score Variance
+-- | -- | --:
+Meta-Analytic Mean Estimate | `r round(s_ShnabelRPP_varT_rma$b[1], r.dec)` | `r round(s_ShnabelRPP_varE_rma$b[1], r.dec)`
+Confidence Interval | `r round(s_ShnabelRPP_varT_rma$ci.lb, r.dec)` : `r round(s_ShnabelRPP_varT_rma$ci.ub, r.dec)` | `r round(s_ShnabelRPP_varE_rma$ci.lb, r.dec)` : `r round(s_ShnabelRPP_varE_rma$ci.ub, r.dec)`
+Heterogeneity tau | `r round(sqrt(s_ShnabelRPP_varT_rma$tau2), r.dec)` | `r round(sqrt(s_ShnabelRPP_varE_rma$tau2), r.dec)`
+Heterogeneity I^2 | `r round(s_ShnabelRPP_varT_rma$I2, r.dec)` | `r round(s_ShnabelRPP_varE_rma$I2, r.dec)`
+Heterogeneity H^2 | `r round(s_ShnabelRPP_varT_rma$H2, r.dec)` | `r round(s_ShnabelRPP_varE_rma$H2, r.dec)`
+Q(`r s_ShnabelRPP_varT_rma$k - 1`) | `r round(s_ShnabelRPP_varT_rma$QE, r.dec)` | `r round(s_ShnabelRPP_varE_rma$QE, r.dec)`
+p-value QE | `r ifelse(s_ShnabelRPP_varT_rma$QEp < .001, "<.001", round(s_ShnabelRPP_varT_rma$QEp, r.dec))` | `r ifelse(s_ShnabelRPP_varE_rma$QEp < .001, "<.001", round(s_ShnabelRPP_varE_rma$QEp, r.dec))`
+
+
+
+
+
+
+
+
+
+
+### Shnabel Sense of Power (Rev)
+
+
+Comparing those results to the labs employing the revised protocol, score reliability varied between `r round(s_ShnabelRev_Alpha[1], r.dec)` and `r round(s_ShnabelRev_Alpha[6], r.dec)`, with a mean value of `r round(s_ShnabelRev_Alpha[4], r.dec)` and median value `r round(s_ShnabelRev_Alpha[3], r.dec)`. Performing a random-effects meta-analysis on the untransformed Cronbach’s Alpha estimates, we find a meta-analytic mean estimate of `r round(s_ShnabelRev_Alpha_rma$b[1], r.dec)` (`r round(s_ShnabelRev_Alpha_rma$ci.lb, r.dec)` : `r round(s_ShnabelRev_Alpha_rma$ci.ub, r.dec)`). Additionally, we find no significant degree of heterogeneity in score reliability, at Q(`r s_ShnabelRev_Alpha_rma$k - 1`) = `r round(s_ShnabelRev_Alpha_rma$QE, r.dec)`, p `r ifelse(s_ShnabelRev_Alpha_rma$QEp < .001, "<.001", paste0("= ", round(s_ShnabelRev_Alpha_rma$QEp, r.dec)))`. In terms of I^2, heterogeneity is `r round(s_ShnabelRev_Alpha_rma$I2, r.dec)`%, which, according to XXX constitutes a low to medium level of heterogeneity. In terms of tau, we find a standard deviation of `r round(sqrt(s_ShnabelRev_Alpha_rma$tau2), r.dec)` in true values of Cronbach’s Alpha. Similarly, when assessing Bonett-transformed Cronbach’s Alpha estimates, we find a meta-analytic mean of `r round(s_ShnabelRev_B.Alpha_rma$b[1], r.dec)`. Back-transformed this constitutes a Cronbach’s Alpha of `r round(1-exp(s_ShnabelRev_B.Alpha_rma$b[1]), r.dec)` (CI: `r round(1-exp(s_ShnabelRev_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_ShnabelRev_B.Alpha_rma$ci.lb), r.dec)`) (difference in MA-est. emerges at the 3rd decimal). Heterogeneity in Bonett-transformed estimates of Cronbach’s Alpha is of statistically significant degree: Q(`r s_ShnabelRev_Alpha_rma$k - 1`) = `r round(s_ShnabelRev_B.Alpha_rma$QE, r.dec)`, p `r ifelse(s_ShnabelRev_B.Alpha_rma$QEp < .001, "<.001", paste0("= ", round(s_ShnabelRev_B.Alpha_rma$QEp, r.dec)))`. Standardized heterogeneity estimates of I^2 = `r round(s_ShnabelRev_B.Alpha_rma$I2, r.dec)`% and H^2 = `r round(s_ShnabelRev_B.Alpha_rma$H2, r.dec)` display highly similar amounts of heterogeneity. 
+
+
+Also, we use Cronbach's Alpha to decompose the observed variance into its true and error score variance components:
+
+{}  | True Score Variance | Error Score Variance
+-- | -- | --: 
+Min | `r round(s_ShnabelRev_varT[1], r.dec)` | `r round(s_ShnabelRev_varE[1], r.dec)`
+Q1  | `r round(s_ShnabelRev_varT[2], r.dec)` | `r round(s_ShnabelRev_varE[2], r.dec)`
+Median| `r round(s_ShnabelRev_varT[3], r.dec)` | `r round(s_ShnabelRev_varE[3], r.dec)`
+Q3  | `r round(s_ShnabelRev_varT[4], r.dec)` | `r round(s_ShnabelRev_varE[4], r.dec)`
+Max | `r round(s_ShnabelRev_varT[5], r.dec)` | `r round(s_ShnabelRev_varE[5], r.dec)`
+Mean| `r round(s_ShnabelRev_varT[6], r.dec)` | `r round(s_ShnabelRev_varE[6], r.dec)`
+
+Performing a random-effects meta-analysis on the components directly leads to:
+
+{} | True Score Variance | Error Score Variance
+-- | -- | --:
+Meta-Analytic Mean Estimate | `r round(s_ShnabelRev_varT_rma$b[1], r.dec)` | `r round(s_ShnabelRev_varE_rma$b[1], r.dec)`
+Confidence Interval | `r round(s_ShnabelRev_varT_rma$ci.lb, r.dec)` : `r round(s_ShnabelRev_varT_rma$ci.ub, r.dec)` | `r round(s_ShnabelRev_varE_rma$ci.lb, r.dec)` : `r round(s_ShnabelRev_varE_rma$ci.ub, r.dec)`
+Heterogeneity tau | `r round(sqrt(s_ShnabelRev_varT_rma$tau2), r.dec)` | `r round(sqrt(s_ShnabelRev_varE_rma$tau2), r.dec)`
+Heterogeneity I^2 | `r round(s_ShnabelRev_varT_rma$I2, r.dec)` | `r round(s_ShnabelRev_varE_rma$I2, r.dec)`
+Heterogeneity H^2 | `r round(s_ShnabelRev_varT_rma$H2, r.dec)` | `r round(s_ShnabelRev_varE_rma$H2, r.dec)`
+Q(`r s_ShnabelRev_varT_rma$k - 1`) | `r round(s_ShnabelRev_varT_rma$QE, r.dec)` | `r round(s_ShnabelRev_varE_rma$QE, r.dec)`
+p-value QE | `r ifelse(s_ShnabelRev_varT_rma$QEp < .001, "<.001", round(s_ShnabelRev_varT_rma$QEp, r.dec))` | `r ifelse(s_ShnabelRev_varE_rma$QEp < .001, "<.001", round(s_ShnabelRev_varE_rma$QEp, r.dec))`
+
+
+
+

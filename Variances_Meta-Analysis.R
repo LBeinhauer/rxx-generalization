@@ -69,7 +69,7 @@ long_test_E <- lapply(seq_along(data.list), FUN = function(x){
                                    " - ", x, "\n")))
 })
 
-saveRDS(long_test_E, file = here("Notes/bootstrapped_varT.RData"))
+saveRDS(long_test_E, file = here("Notes/bootstrapped_varE.RData"))
 
 
 
