@@ -73,6 +73,96 @@ s_ShnabelRev_varE <- summary(varE_est.list[[8]]$var.est)
 s_ShnabelRev_varT_rma <- varT_rma.list[[8]]
 s_ShnabelRev_varE_rma <- varE_rma.list[[8]]
 
+
+
+
+
+s_HexHH_Alpha <- summary(alpha_estimates.list[[6]]$Reliability)
+
+s_HexHH_Alpha_rma <- Alpha_rma.list[[6]]
+s_HexHH_B.Alpha_rma <- Bonett.Alpha_rma.list[[6]]
+
+s_HexHH_varT <- summary(varT_est.list[[6]]$var.est)
+s_HexHH_varE <- summary(varE_est.list[[6]]$var.est)
+
+s_HexHH_varT_rma <- varT_rma.list[[6]]
+s_HexHH_varE_rma <- varE_rma.list[[6]]
+
+
+
+
+s_HexEM_Alpha <- summary(alpha_estimates.list[[4]]$Reliability)
+
+s_HexEM_Alpha_rma <- Alpha_rma.list[[4]]
+s_HexEM_B.Alpha_rma <- Bonett.Alpha_rma.list[[4]]
+
+s_HexEM_varT <- summary(varT_est.list[[4]]$var.est)
+s_HexEM_varE <- summary(varE_est.list[[4]]$var.est)
+
+s_HexEM_varT_rma <- varT_rma.list[[4]]
+s_HexEM_varE_rma <- varE_rma.list[[4]]
+
+
+
+
+
+s_HexEX_Alpha <- summary(alpha_estimates.list[[5]]$Reliability)
+
+s_HexEX_Alpha_rma <- Alpha_rma.list[[5]]
+s_HexEX_B.Alpha_rma <- Bonett.Alpha_rma.list[[5]]
+
+s_HexEX_varT <- summary(varT_est.list[[5]]$var.est)
+s_HexEX_varE <- summary(varE_est.list[[5]]$var.est)
+
+s_HexEX_varT_rma <- varT_rma.list[[5]]
+s_HexEX_varE_rma <- varE_rma.list[[5]]
+
+
+
+
+
+s_HexAG_Alpha <- summary(alpha_estimates.list[[2]]$Reliability)
+
+s_HexAG_Alpha_rma <- Alpha_rma.list[[2]]
+s_HexAG_B.Alpha_rma <- Bonett.Alpha_rma.list[[2]]
+
+s_HexAG_varT <- summary(varT_est.list[[2]]$var.est)
+s_HexAG_varE <- summary(varE_est.list[[2]]$var.est)
+
+s_HexAG_varT_rma <- varT_rma.list[[2]]
+s_HexAG_varE_rma <- varE_rma.list[[2]]
+
+
+
+
+
+s_HexCO_Alpha <- summary(alpha_estimates.list[[3]]$Reliability)
+
+s_HexCO_Alpha_rma <- Alpha_rma.list[[3]]
+s_HexCO_B.Alpha_rma <- Bonett.Alpha_rma.list[[3]]
+
+s_HexCO_varT <- summary(varT_est.list[[3]]$var.est)
+s_HexCO_varE <- summary(varE_est.list[[3]]$var.est)
+
+s_HexCO_varT_rma <- varT_rma.list[[3]]
+s_HexCO_varE_rma <- varE_rma.list[[3]]
+
+
+
+
+
+s_HexOX_Alpha <- summary(alpha_estimates.list[[7]]$Reliability)
+
+s_HexOX_Alpha_rma <- Alpha_rma.list[[7]]
+s_HexOX_B.Alpha_rma <- Bonett.Alpha_rma.list[[7]]
+
+s_HexOX_varT <- summary(varT_est.list[[7]]$var.est)
+s_HexOX_varE <- summary(varE_est.list[[7]]$var.est)
+
+s_HexOX_varT_rma <- varT_rma.list[[7]]
+s_HexOX_varE_rma <- varE_rma.list[[7]]
+
+
 ```
 
 ## Results Reliability Generalization and Variance Decomposition
@@ -176,4 +266,95 @@ p-value QE | `r ifelse(s_ShnabelRev_varT_rma$QEp < .001, "<.001", round(s_Shnabe
 
 
 
+
+
+
+### HEXACO
+
+
+#### Cronbach's Alpha
+
+Scale | HH | EM | EX | AG | CO | OX
+-- | -- | -- | -- | -- | --:
+Meta-analytic mean estimate | `r round(s_HexHH_Alpha_rma$b[1], r.dec)` | `r round(s_HexEM_Alpha_rma$b[1], r.dec)` | `r round(s_HexEX_Alpha_rma$b[1], r.dec)` | `r round(s_HexAG_Alpha_rma$b[1], r.dec)` | `r round(s_HexCO_Alpha_rma$b[1], r.dec)` | `r round(s_HexOX_Alpha_rma$b[1], r.dec)`
+Confidence Interval | `r round(s_HexHH_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexHH_Alpha_rma$ci.ub, r.dec)` | `r round(s_HexEM_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexEM_Alpha_rma$ci.ub, r.dec)` | `r round(s_HexEX_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexEX_Alpha_rma$ci.ub, r.dec)` | `r round(s_HexAG_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexAG_Alpha_rma$ci.ub, r.dec)` | `r round(s_HexCO_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexCO_Alpha_rma$ci.ub, r.dec)` | `r round(s_HexOX_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexOX_Alpha_rma$ci.ub, r.dec)` 
+Heterogeneity tau | `r round(sqrt(s_HexHH_Alpha_rma$tau2), r.dec)` | `r round(sqrt(s_HexEM_Alpha_rma$tau2), r.dec)` | `r round(sqrt(s_HexEX_Alpha_rma$tau2), r.dec)` | `r round(sqrt(s_HexAG_Alpha_rma$tau2), r.dec)` | `r round(sqrt(s_HexCO_Alpha_rma$tau2), r.dec)` | `r round(sqrt(s_HexOX_Alpha_rma$tau2), r.dec)` 
+Heteroeneity I^2 | `r round(s_HexHH_Alpha_rma$I2, r.dec)` | `r round(s_HexEM_Alpha_rma$I2, r.dec)` | `r round(s_HexEX_Alpha_rma$I2, r.dec)` | `r round(s_HexAG_Alpha_rma$I2, r.dec)` | `r round(s_HexCO_Alpha_rma$I2, r.dec)` | `r round(s_HexOX_Alpha_rma$I2, r.dec)`
+Heterogeneity H^2 | `r round(s_HexHH_Alpha_rma$H2, r.dec)` | `r round(s_HexEM_Alpha_rma$H2, r.dec)` | `r round(s_HexEX_Alpha_rma$H2, r.dec)` | `r round(s_HexAG_Alpha_rma$H2, r.dec)` | `r round(s_HexCO_Alpha_rma$H2, r.dec)` | `r round(s_HexOX_Alpha_rma$H2, r.dec)`
+Q(`r s_HexHH_Alpha_rma$k-1`) | `r round(s_HexHH_Alpha_rma$QE, r.dec)` | `r round(s_HexEM_Alpha_rma$QE, r.dec)` | `r round(s_HexEX_Alpha_rma$QE, r.dec)` | `r round(s_HexAG_Alpha_rma$QE, r.dec)` | `r round(s_HexCO_Alpha_rma$QE, r.dec)` | `r round(s_HexOX_Alpha_rma$QE, r.dec)` 
+P-value QE | `r ifelse(s_HexHH_Alpha_rma$QEp < .001, "<.001", round(s_HexHH_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexEM_Alpha_rma$QEp < .001, "<.001", round(s_HexEM_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexEX_Alpha_rma$QEp < .001, "<.001", round(s_HexEX_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexAG_Alpha_rma$QEp < .001, "<.001", round(s_HexAG_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexCO_Alpha_rma$QEp < .001, "<.001", round(s_HexCO_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexOX_Alpha_rma$QEp < .001, "<.001", round(s_HexOX_Alpha_rma$QEp, r.dec))` 
+
+
+
+
+
+Scale | HH | EM | EX | AG | CO | OX
+-- | -- | -- | -- | -- | --:
+Min | `r round(s_HexHH_Alpha[1], r.dec)` | `r round(s_HexEM_Alpha[1], r.dec)` | `r round(s_HexEX_Alpha[1], r.dec)` | `r round(s_HexAG_Alpha[1], r.dec)` | `r round(s_HexCO_Alpha[1], r.dec)` | `r round(s_HexOX_Alpha[1], r.dec)`
+Q1 | `r round(s_HexHH_Alpha[2], r.dec)` | `r round(s_HexEM_Alpha[2], r.dec)` | `r round(s_HexEX_Alpha[2], r.dec)` | `r round(s_HexAG_Alpha[2], r.dec)` | `r round(s_HexCO_Alpha[2], r.dec)` | `r round(s_HexOX_Alpha[2], r.dec)`
+Median | `r round(s_HexHH_Alpha[3], r.dec)` | `r round(s_HexEM_Alpha[3], r.dec)` | `r round(s_HexEX_Alpha[3], r.dec)` | `r round(s_HexAG_Alpha[3], r.dec)` | `r round(s_HexCO_Alpha[3], r.dec)` | `r round(s_HexOX_Alpha[3], r.dec)`
+Q3 | `r round(s_HexHH_Alpha[4], r.dec)` | `r round(s_HexEM_Alpha[4], r.dec)` | `r round(s_HexEX_Alpha[4], r.dec)` | `r round(s_HexAG_Alpha[4], r.dec)` | `r round(s_HexCO_Alpha[4], r.dec)` | `r round(s_HexOX_Alpha[4], r.dec)`
+Max | `r round(s_HexHH_Alpha[5], r.dec)` | `r round(s_HexEM_Alpha[5], r.dec)` | `r round(s_HexEX_Alpha[5], r.dec)` | `r round(s_HexAG_Alpha[5], r.dec)` | `r round(s_HexCO_Alpha[5], r.dec)` | `r round(s_HexOX_Alpha[5], r.dec)`
+Mean | `r round(s_HexHH_Alpha[6], r.dec)` | `r round(s_HexEM_Alpha[6], r.dec)` | `r round(s_HexEX_Alpha[6], r.dec)` | `r round(s_HexAG_Alpha[6], r.dec)` | `r round(s_HexCO_Alpha[6], r.dec)` | `r round(s_HexOX_Alpha[6], r.dec)`
+
+
+##### Back-transformed Bonett-estimates (meta-analytic results)
+
+Scale | HH | EM | EX | AG | CO | OX
+-- | -- | -- | -- | -- | --:
+Meta-analytic mean estimate | `r round(1-exp(s_HexHH_B.Alpha_rma$b[1]), r.dec)` | `r round(1-exp(s_HexEM_B.Alpha_rma$b[1]), r.dec)` | `r round(1-exp(s_HexEX_B.Alpha_rma$b[1]), r.dec)` | `r round(1-exp(s_HexAG_B.Alpha_rma$b[1]), r.dec)` | `r round(1-exp(s_HexCO_B.Alpha_rma$b[1]), r.dec)` | `r round(1-exp(s_HexOX_B.Alpha_rma$b[1]), r.dec)`
+Confidence Interval | `r round(1-exp(s_HexHH_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexHH_B.Alpha_rma$ci.lb), r.dec)` | `r round(1-exp(s_HexEM_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexEM_B.Alpha_rma$ci.lb), r.dec)` | `r round(1-exp(s_HexEX_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexEX_B.Alpha_rma$ci.lb), r.dec)` | `r round(1-exp(s_HexAG_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexAG_B.Alpha_rma$ci.lb), r.dec)` | `r round(1-exp(s_HexCO_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexCO_B.Alpha_rma$ci.lb), r.dec)` | `r round(1-exp(s_HexOX_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexOX_B.Alpha_rma$ci.lb), r.dec)` 
+Heteroeneity I^2 | `r round(s_HexHH_B.Alpha_rma$I2, r.dec)` | `r round(s_HexEM_B.Alpha_rma$I2, r.dec)` | `r round(s_HexEX_B.Alpha_rma$I2, r.dec)` | `r round(s_HexAG_B.Alpha_rma$I2, r.dec)` | `r round(s_HexCO_B.Alpha_rma$I2, r.dec)` | `r round(s_HexOX_B.Alpha_rma$I2, r.dec)`
+Heterogeneity H^2 | `r round(s_HexHH_B.Alpha_rma$H2, r.dec)` | `r round(s_HexEM_B.Alpha_rma$H2, r.dec)` | `r round(s_HexEX_B.Alpha_rma$H2, r.dec)` | `r round(s_HexAG_B.Alpha_rma$H2, r.dec)` | `r round(s_HexCO_B.Alpha_rma$H2, r.dec)` | `r round(s_HexOX_B.Alpha_rma$H2, r.dec)`
+Q(`r s_HexHH_B.Alpha_rma$k-1`) | `r round(s_HexHH_B.Alpha_rma$QE, r.dec)` | `r round(s_HexEM_B.Alpha_rma$QE, r.dec)` | `r round(s_HexEX_B.Alpha_rma$QE, r.dec)` | `r round(s_HexAG_B.Alpha_rma$QE, r.dec)` | `r round(s_HexCO_B.Alpha_rma$QE, r.dec)` | `r round(s_HexOX_B.Alpha_rma$QE, r.dec)` 
+P-value QE | `r ifelse(s_HexHH_B.Alpha_rma$QEp < .001, "<.001", round(s_HexHH_B.Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexEM_B.Alpha_rma$QEp < .001, "<.001", round(s_HexEM_B.Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexEX_B.Alpha_rma$QEp < .001, "<.001", round(s_HexEX_B.Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexAG_B.Alpha_rma$QEp < .001, "<.001", round(s_HexAG_B.Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexCO_B.Alpha_rma$QEp < .001, "<.001", round(s_HexCO_B.Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexOX_B.Alpha_rma$QEp < .001, "<.001", round(s_HexOX_B.Alpha_rma$QEp, r.dec))` 
+
+#### True Score Variance
+
+Scale | HH | EM | EX | AG | CO | OX
+-- | -- | -- | -- | -- | --:
+Min | `r round(s_HexHH_varT[1], r.dec)` | `r round(s_HexEM_varT[1], r.dec)` | `r round(s_HexEX_varT[1], r.dec)` | `r round(s_HexAG_varT[1], r.dec)` | `r round(s_HexCO_varT[1], r.dec)` | `r round(s_HexOX_varT[1], r.dec)`
+Q1 | `r round(s_HexHH_varT[2], r.dec)` | `r round(s_HexEM_varT[2], r.dec)` | `r round(s_HexEX_varT[2], r.dec)` | `r round(s_HexAG_varT[2], r.dec)` | `r round(s_HexCO_varT[2], r.dec)` | `r round(s_HexOX_varT[2], r.dec)`
+Median | `r round(s_HexHH_varT[3], r.dec)` | `r round(s_HexEM_varT[3], r.dec)` | `r round(s_HexEX_varT[3], r.dec)` | `r round(s_HexAG_varT[3], r.dec)` | `r round(s_HexCO_varT[3], r.dec)` | `r round(s_HexOX_varT[3], r.dec)`
+Q3 | `r round(s_HexHH_varT[4], r.dec)` | `r round(s_HexEM_varT[4], r.dec)` | `r round(s_HexEX_varT[4], r.dec)` | `r round(s_HexAG_varT[4], r.dec)` | `r round(s_HexCO_varT[4], r.dec)` | `r round(s_HexOX_varT[4], r.dec)`
+Max | `r round(s_HexHH_varT[5], r.dec)` | `r round(s_HexEM_varT[5], r.dec)` | `r round(s_HexEX_varT[5], r.dec)` | `r round(s_HexAG_varT[5], r.dec)` | `r round(s_HexCO_varT[5], r.dec)` | `r round(s_HexOX_varT[5], r.dec)`
+Mean | `r round(s_HexHH_varT[6], r.dec)` | `r round(s_HexEM_varT[6], r.dec)` | `r round(s_HexEX_varT[6], r.dec)` | `r round(s_HexAG_varT[6], r.dec)` | `r round(s_HexCO_varT[6], r.dec)` | `r round(s_HexOX_varT[6], r.dec)`
+
+
+
+Scale | HH | EM | EX | AG | CO | OX
+-- | -- | -- | -- | -- | --:
+Meta-analytic mean estimate | `r round(s_HexHH_varT_rma$b[1], r.dec)` | `r round(s_HexEM_varT_rma$b[1], r.dec)` | `r round(s_HexEX_varT_rma$b[1], r.dec)` | `r round(s_HexAG_varT_rma$b[1], r.dec)` | `r round(s_HexCO_varT_rma$b[1], r.dec)` | `r round(s_HexOX_varT_rma$b[1], r.dec)`
+Confidence Interval | `r round(s_HexHH_varT_rma$ci.lb, r.dec)` : `r round(s_HexHH_varT_rma$ci.ub, r.dec)` | `r round(s_HexEM_varT_rma$ci.lb, r.dec)` : `r round(s_HexEM_varT_rma$ci.ub, r.dec)` | `r round(s_HexEX_varT_rma$ci.lb, r.dec)` : `r round(s_HexEX_varT_rma$ci.ub, r.dec)` | `r round(s_HexAG_varT_rma$ci.lb, r.dec)` : `r round(s_HexAG_varT_rma$ci.ub, r.dec)` | `r round(s_HexCO_varT_rma$ci.lb, r.dec)` : `r round(s_HexCO_varT_rma$ci.ub, r.dec)` | `r round(s_HexOX_varT_rma$ci.lb, r.dec)` : `r round(s_HexOX_varT_rma$ci.ub, r.dec)` 
+Heterogeneity tau | `r round(sqrt(s_HexHH_varT_rma$tau2), r.dec)` | `r round(sqrt(s_HexEM_varT_rma$tau2), r.dec)` | `r round(sqrt(s_HexEX_varT_rma$tau2), r.dec)` | `r round(sqrt(s_HexAG_varT_rma$tau2), r.dec)` | `r round(sqrt(s_HexCO_varT_rma$tau2), r.dec)` | `r round(sqrt(s_HexOX_varT_rma$tau2), r.dec)` 
+Heteroeneity I^2 | `r round(s_HexHH_varT_rma$I2, r.dec)` | `r round(s_HexEM_varT_rma$I2, r.dec)` | `r round(s_HexEX_varT_rma$I2, r.dec)` | `r round(s_HexAG_varT_rma$I2, r.dec)` | `r round(s_HexCO_varT_rma$I2, r.dec)` | `r round(s_HexOX_varT_rma$I2, r.dec)`
+Heterogeneity H^2 | `r round(s_HexHH_varT_rma$H2, r.dec)` | `r round(s_HexEM_varT_rma$H2, r.dec)` | `r round(s_HexEX_varT_rma$H2, r.dec)` | `r round(s_HexAG_varT_rma$H2, r.dec)` | `r round(s_HexCO_varT_rma$H2, r.dec)` | `r round(s_HexOX_varT_rma$H2, r.dec)`
+Q(`r s_HexHH_varT_rma$k-1`) | `r round(s_HexHH_varT_rma$QE, r.dec)` | `r round(s_HexEM_varT_rma$QE, r.dec)` | `r round(s_HexEX_varT_rma$QE, r.dec)` | `r round(s_HexAG_varT_rma$QE, r.dec)` | `r round(s_HexCO_varT_rma$QE, r.dec)` | `r round(s_HexOX_varT_rma$QE, r.dec)`
+P-value QE | `r ifelse(s_HexHH_varT_rma$QEp < .001, "<.001", round(s_HexHH_varT_rma$QEp, r.dec))` | `r ifelse(s_HexEM_varT_rma$QEp < .001, "<.001", round(s_HexEM_varT_rma$QEp, r.dec))` | `r ifelse(s_HexEX_varT_rma$QEp < .001, "<.001", round(s_HexEX_varT_rma$QEp, r.dec))` | `r ifelse(s_HexAG_varT_rma$QEp < .001, "<.001", round(s_HexAG_varT_rma$QEp, r.dec))` | `r ifelse(s_HexCO_varT_rma$QEp < .001, "<.001", round(s_HexCO_varT_rma$QEp, r.dec))` | `r ifelse(s_HexOX_varT_rma$QEp < .001, "<.001", round(s_HexOX_varT_rma$QEp, r.dec))` 
+
+
+
+#### Error Score Variance
+
+
+Scale | HH | EM | EX | AG | CO | OX
+-- | -- | -- | -- | -- | --:
+Min | `r round(s_HexHH_varE[1], r.dec)` | `r round(s_HexEM_varE[1], r.dec)` | `r round(s_HexEX_varE[1], r.dec)` | `r round(s_HexAG_varE[1], r.dec)` | `r round(s_HexCO_varE[1], r.dec)` | `r round(s_HexOX_varE[1], r.dec)`
+Q1 | `r round(s_HexHH_varE[2], r.dec)` | `r round(s_HexEM_varE[2], r.dec)` | `r round(s_HexEX_varE[2], r.dec)` | `r round(s_HexAG_varE[2], r.dec)` | `r round(s_HexCO_varE[2], r.dec)` | `r round(s_HexOX_varE[2], r.dec)`
+Median | `r round(s_HexHH_varE[3], r.dec)` | `r round(s_HexEM_varE[3], r.dec)` | `r round(s_HexEX_varE[3], r.dec)` | `r round(s_HexAG_varE[3], r.dec)` | `r round(s_HexCO_varE[3], r.dec)` | `r round(s_HexOX_varE[3], r.dec)`
+Q3 | `r round(s_HexHH_varE[4], r.dec)` | `r round(s_HexEM_varE[4], r.dec)` | `r round(s_HexEX_varE[4], r.dec)` | `r round(s_HexAG_varE[4], r.dec)` | `r round(s_HexCO_varE[4], r.dec)` | `r round(s_HexOX_varE[4], r.dec)`
+Max | `r round(s_HexHH_varE[5], r.dec)` | `r round(s_HexEM_varE[5], r.dec)` | `r round(s_HexEX_varE[5], r.dec)` | `r round(s_HexAG_varE[5], r.dec)` | `r round(s_HexCO_varE[5], r.dec)` | `r round(s_HexOX_varE[5], r.dec)`
+Mean | `r round(s_HexHH_varE[6], r.dec)` | `r round(s_HexEM_varE[6], r.dec)` | `r round(s_HexEX_varE[6], r.dec)` | `r round(s_HexAG_varE[6], r.dec)` | `r round(s_HexCO_varE[6], r.dec)` | `r round(s_HexOX_varE[6], r.dec)`
+
+
+
+Scale | HH | EM | EX | AG | CO | OX
+-- | -- | -- | -- | -- | --:
+Meta-analytic mean estimate | `r round(s_HexHH_varE_rma$b[1], r.dec)` | `r round(s_HexEM_varE_rma$b[1], r.dec)` | `r round(s_HexEX_varE_rma$b[1], r.dec)` | `r round(s_HexAG_varE_rma$b[1], r.dec)` | `r round(s_HexCO_varE_rma$b[1], r.dec)` | `r round(s_HexOX_varE_rma$b[1], r.dec)`
+Confidence Interval | `r round(s_HexHH_varE_rma$ci.lb, r.dec)` : `r round(s_HexHH_varE_rma$ci.ub, r.dec)` | `r round(s_HexEM_varE_rma$ci.lb, r.dec)` : `r round(s_HexEM_varE_rma$ci.ub, r.dec)` | `r round(s_HexEX_varE_rma$ci.lb, r.dec)` : `r round(s_HexEX_varE_rma$ci.ub, r.dec)` | `r round(s_HexAG_varE_rma$ci.lb, r.dec)` : `r round(s_HexAG_varE_rma$ci.ub, r.dec)` | `r round(s_HexCO_varE_rma$ci.lb, r.dec)` : `r round(s_HexCO_varE_rma$ci.ub, r.dec)` | `r round(s_HexOX_varE_rma$ci.lb, r.dec)` : `r round(s_HexOX_varE_rma$ci.ub, r.dec)` 
+Heterogeneity tau | `r round(sqrt(s_HexHH_varE_rma$tau2), r.dec)` | `r round(sqrt(s_HexEM_varE_rma$tau2), r.dec)` | `r round(sqrt(s_HexEX_varE_rma$tau2), r.dec)` | `r round(sqrt(s_HexAG_varE_rma$tau2), r.dec)` | `r round(sqrt(s_HexCO_varE_rma$tau2), r.dec)` | `r round(sqrt(s_HexOX_varE_rma$tau2), r.dec)` 
+Heteroeneity I^2 | `r round(s_HexHH_varE_rma$I2, r.dec)` | `r round(s_HexEM_varE_rma$I2, r.dec)` | `r round(s_HexEX_varE_rma$I2, r.dec)` | `r round(s_HexAG_varE_rma$I2, r.dec)` | `r round(s_HexCO_varE_rma$I2, r.dec)` | `r round(s_HexOX_varE_rma$I2, r.dec)`
+Heterogeneity H^2 | `r round(s_HexHH_varE_rma$H2, r.dec)` | `r round(s_HexEM_varE_rma$H2, r.dec)` | `r round(s_HexEX_varE_rma$H2, r.dec)` | `r round(s_HexAG_varE_rma$H2, r.dec)` | `r round(s_HexCO_varE_rma$H2, r.dec)` | `r round(s_HexOX_varE_rma$H2, r.dec)`
+Q(`r s_HexHH_varE_rma$k-1`) | `r round(s_HexHH_varE_rma$QE, r.dec)` | `r round(s_HexEM_varE_rma$QE, r.dec)` | `r round(s_HexEX_varE_rma$QE, r.dec)` | `r round(s_HexAG_varE_rma$QE, r.dec)` | `r round(s_HexCO_varE_rma$QE, r.dec)` | `r round(s_HexOX_varE_rma$QE, r.dec)`
+P-value QE | `r ifelse(s_HexHH_varE_rma$QEp < .001, "<.001", round(s_HexHH_varE_rma$QEp, r.dec))` | `r ifelse(s_HexEM_varE_rma$QEp < .001, "<.001", round(s_HexEM_varE_rma$QEp, r.dec))` | `r ifelse(s_HexEX_varE_rma$QEp < .001, "<.001", round(s_HexEX_varE_rma$QEp, r.dec))` | `r ifelse(s_HexAG_varE_rma$QEp < .001, "<.001", round(s_HexAG_varE_rma$QEp, r.dec))` | `r ifelse(s_HexCO_varE_rma$QEp < .001, "<.001", round(s_HexCO_varE_rma$QEp, r.dec))` | `r ifelse(s_HexOX_varE_rma$QEp < .001, "<.001", round(s_HexOX_varE_rma$QEp, r.dec))` 
 
