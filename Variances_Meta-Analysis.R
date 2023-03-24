@@ -73,6 +73,29 @@ saveRDS(long_test_E, file = here("Notes/bootstrapped_varE.RData"))
 
 
 
+set.seed(070622)
+
+long_test_lnT <- lapply(seq_along(data.list), FUN = function(x){
+  tryCatch(apply_Bootstrap_SE_ln_Project.specific(data.list[[x]], var.component = "TRUE"),
+           error = function(e)(cat("ERROR: ", conditionMessage(e), " - ",
+                                   names(data.list)[x], 
+                                   " - ", x, "\n")))
+})
+
+saveRDS(long_test_lnT, file = here("Notes/bootstrapped_lnvarT.RData"))
+
+long_test_lnE <- lapply(seq_along(data.list), FUN = function(x){
+  tryCatch(apply_Bootstrap_SE_ln_Project.specific(data.list[[x]], var.component = "ERROR"),
+           error = function(e)(cat("ERROR: ", conditionMessage(e), " - ",
+                                   substr(names(data.list), 
+                                          (regexpr("Project) Data/", names(data.list)) + 14), 
+                                          (nchar(names(data.list))-4))[x], 
+                                   " - ", x, "\n")))
+})
+
+saveRDS(long_test_lnE, file = here("Notes/bootstrapped_lnvarE.RData"))
+
+
 
 
 
@@ -109,6 +132,47 @@ varE_rma.list <- lapply(seq_along(long_test_E), FUN = function(x){
 names(varE_rma.list) <- names(data.list)
 
 saveRDS(varE_rma.list, file = here("Notes/bootstrapped_varE_rma.RData"))
+
+
+
+
+
+
+
+lnvarT_rma.list <- lapply(seq_along(long_test_lnT), FUN = function(x){
+  tryCatch(metafor::rma(measure = "GEN", method = "REML", 
+                        yi = long_test_lnT[[x]]$ln_var.est, 
+                        sei = long_test_lnT[[x]]$SE),
+           error = function(e)(cat("ERROR: ", conditionMessage(e), " - ",
+                                   substr(names(data.list), 
+                                          (regexpr("Project) Data/", names(data.list)) + 14), 
+                                          (nchar(names(data.list))-4))[x], 
+                                   " - ", x, "\n")))
+  
+})
+
+names(lnvarT_rma.list) <- names(data.list)
+
+saveRDS(lnvarT_rma.list, file = here("Notes/bootstrapped_lnvarT_rma.RData"))
+
+
+
+lnvarE_rma.list <- lapply(seq_along(long_test_lnE), FUN = function(x){
+  tryCatch(metafor::rma(measure = "GEN", method = "REML", 
+                        yi = long_test_lnE[[x]]$ln_var.est, 
+                        sei = long_test_lnE[[x]]$SE),
+           error = function(e)(cat("ERROR: ", conditionMessage(e), " - ",
+                                   substr(names(data.list), 
+                                          (regexpr("Project) Data/", names(data.list)) + 14), 
+                                          (nchar(names(data.list))-4))[x], 
+                                   " - ", x, "\n")))
+  
+})
+
+names(lnvarE_rma.list) <- names(data.list)
+
+saveRDS(lnvarE_rma.list, file = here("Notes/bootstrapped_lnvarE_rma.RData"))
+
 
 
 

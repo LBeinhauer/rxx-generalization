@@ -126,3 +126,13 @@ plot(varT_rma.list$Cacioppo_Need_Cognition$yi + varE_rma.list$Cacioppo_Need_Cogn
 varT_rma.list$Cacioppo_Need_Cognition
 varE_rma.list$Cacioppo_Need_Cognition
 
+
+
+plot(sapply(varT_rma.list, FUN = function(x){x$I2}),
+     sapply(lnvarT_rma.list, FUN = function(x){x$I2}))
+
+
+
+plot(sapply(varE_rma.list, FUN = function(x){x$I2}),
+     sapply(lnvarE_rma.list, FUN = function(x){x$I2}))
+
