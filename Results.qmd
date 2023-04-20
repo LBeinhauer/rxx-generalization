@@ -169,192 +169,371 @@ s_HexOX_varE_rma <- varE_rma.list[[7]]
 
 ### Cacioppo
 
-Data set 1 concerned the scale of Need for Cognition (Cacioppo & Petty, 1982), consisting of 6 Likert-stye items (5-point scale). Measured across 21 labs in Ebersole et al. (2016), using Cronbach’s Alpha, score reliability varied between `r round(s_Caciop_Alpha[1], r.dec)` and `r round(s_Caciop_Alpha[6], r.dec)`, with a mean value of `r round(s_Caciop_Alpha[4], r.dec)` and median value `r round(s_Caciop_Alpha[3], r.dec)`. Performing a random-effects meta-analysis on the untransformed Cronbach’s Alpha estimates, we find a meta-analytic mean estimate of `r round(s_Caciop_Alpha_rma$b[1], r.dec)` (`r round(s_Caciop_Alpha_rma$ci.lb, r.dec)` : `r round(s_Caciop_Alpha_rma$ci.ub, r.dec)`). Additionally, we find a significant degree of heterogeneity in score reliability, at Q(`r s_Caciop_Alpha_rma$k - 1`) = `r round(s_Caciop_Alpha_rma$QE, r.dec)`, p `r ifelse(s_Caciop_Alpha_rma$QEp < .001, "<.001", paste0("= ", round(s_Caciop_Alpha_rma$QEp, r.dec)))`. In terms of I^2, heterogeneity is `r round(s_Caciop_Alpha_rma$I2, r.dec)`%, which, according to XXX constitutes a large level of heterogeneity. In terms of tau, we find a standard deviation of `r round(sqrt(s_Caciop_Alpha_rma$tau2), r.dec)` in true values of Cronbach’s Alpha. Similarly, when assessing Bonett-transformed Cronbach’s Alpha estimates, we find a meta-analytic mean of `r round(s_Caciop_B.Alpha_rma$b[1], r.dec)`. Back-transformed this constitutes a Cronbach’s Alpha of `r round(1-exp(s_Caciop_B.Alpha_rma$b[1]), r.dec)` (CI: `r round(1-exp(s_Caciop_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_Caciop_B.Alpha_rma$ci.lb), r.dec)`) (difference in MA-est. emerges at the 3rd decimal). Heterogeneity in Bonett-transformed estimates of Cronbach’s Alpha is also of statistically significant degree: Q(`r s_Caciop_Alpha_rma$k - 1`) = `r round(s_Caciop_B.Alpha_rma$QE, r.dec)`, p `r ifelse(s_Caciop_B.Alpha_rma$QEp < .001, "<.001", paste0("= ", round(s_Caciop_B.Alpha_rma$QEp, r.dec)))`. Standardized heterogeneity estimates of I^2 = `r round(s_Caciop_B.Alpha_rma$I2, r.dec)`% and H^2 = `r round(s_Caciop_B.Alpha_rma$H2, r.dec)` display highly similar amounts of heterogeneity. When using McDonald’s Omega to estimate score reliability, the results change only to a very small degree. Therefore, estimates using McDonald’s Omega can be found in the supplemental materials.
-
+Data set 1 concerned the scale of Need for Cognition (Cacioppo & Petty, 1982), consisting of 6 Likert-stye items (5-point scale). Measured across 21 labs in Ebersole et al. (2016), using Cronbach's Alpha, score reliability varied between `r round(s_Caciop_Alpha[1], r.dec)` and `r round(s_Caciop_Alpha[6], r.dec)`, with a mean value of `r round(s_Caciop_Alpha[4], r.dec)` and median value `r round(s_Caciop_Alpha[3], r.dec)`. Performing a random-effects meta-analysis on the untransformed Cronbach's Alpha estimates, we find a meta-analytic mean estimate of `r round(s_Caciop_Alpha_rma$b[1], r.dec)` (`r round(s_Caciop_Alpha_rma$ci.lb, r.dec)` : `r round(s_Caciop_Alpha_rma$ci.ub, r.dec)`). Additionally, we find a significant degree of heterogeneity in score reliability, at Q(`r s_Caciop_Alpha_rma$k - 1`) = `r round(s_Caciop_Alpha_rma$QE, r.dec)`, p `r ifelse(s_Caciop_Alpha_rma$QEp < .001, "<.001", paste0("= ", round(s_Caciop_Alpha_rma$QEp, r.dec)))`. In terms of I\^2, heterogeneity is `r round(s_Caciop_Alpha_rma$I2, r.dec)`%, which, according to XXX constitutes a large level of heterogeneity. In terms of tau, we find a standard deviation of `r round(sqrt(s_Caciop_Alpha_rma$tau2), r.dec)` in true values of Cronbach's Alpha. Similarly, when assessing Bonett-transformed Cronbach's Alpha estimates, we find a meta-analytic mean of `r round(s_Caciop_B.Alpha_rma$b[1], r.dec)`. Back-transformed this constitutes a Cronbach's Alpha of `r round(1-exp(s_Caciop_B.Alpha_rma$b[1]), r.dec)` (CI: `r round(1-exp(s_Caciop_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_Caciop_B.Alpha_rma$ci.lb), r.dec)`) (difference in MA-est. emerges at the 3rd decimal). Heterogeneity in Bonett-transformed estimates of Cronbach's Alpha is also of statistically significant degree: Q(`r s_Caciop_Alpha_rma$k - 1`) = `r round(s_Caciop_B.Alpha_rma$QE, r.dec)`, p `r ifelse(s_Caciop_B.Alpha_rma$QEp < .001, "<.001", paste0("= ", round(s_Caciop_B.Alpha_rma$QEp, r.dec)))`. Standardized heterogeneity estimates of I\^2 = `r round(s_Caciop_B.Alpha_rma$I2, r.dec)`% and H\^2 = `r round(s_Caciop_B.Alpha_rma$H2, r.dec)` display highly similar amounts of heterogeneity. When using McDonald's Omega to estimate score reliability, the results change only to a very small degree. Therefore, estimates using McDonald's Omega can be found in the supplemental materials.
 
 Also, we use Cronbach's Alpha to decompose the observed variance into its true and error score variance components:
 
-{}  | True Score Variance | Error Score Variance
--- | -- | --: 
-Min | `r round(s_Caciop_varT[1], r.dec)` | `r round(s_Caciop_varE[1], r.dec)`
-Q1  | `r round(s_Caciop_varT[2], r.dec)` | `r round(s_Caciop_varE[2], r.dec)`
-Median| `r round(s_Caciop_varT[3], r.dec)` | `r round(s_Caciop_varE[3], r.dec)`
-Q3  | `r round(s_Caciop_varT[4], r.dec)` | `r round(s_Caciop_varE[4], r.dec)`
-Max | `r round(s_Caciop_varT[5], r.dec)` | `r round(s_Caciop_varE[5], r.dec)`
-Mean| `r round(s_Caciop_varT[6], r.dec)` | `r round(s_Caciop_varE[6], r.dec)`
+| {}     | True Score Variance                |               Error Score Variance |
+|---------------------|---------------------|------------------------------:|
+| Min    | `r round(s_Caciop_varT[1], r.dec)` | `r round(s_Caciop_varE[1], r.dec)` |
+| Q1     | `r round(s_Caciop_varT[2], r.dec)` | `r round(s_Caciop_varE[2], r.dec)` |
+| Median | `r round(s_Caciop_varT[3], r.dec)` | `r round(s_Caciop_varE[3], r.dec)` |
+| Q3     | `r round(s_Caciop_varT[4], r.dec)` | `r round(s_Caciop_varE[4], r.dec)` |
+| Max    | `r round(s_Caciop_varT[5], r.dec)` | `r round(s_Caciop_varE[5], r.dec)` |
+| Mean   | `r round(s_Caciop_varT[6], r.dec)` | `r round(s_Caciop_varE[6], r.dec)` |
 
 Performing a random-effects meta-analysis on the components directly leads to:
 
-{} | True Score Variance | Error Score Variance
--- | -- | --:
-Meta-Analytic Mean Estimate | `r round(s_Caciop_varT_rma$b[1], r.dec)` | `r round(s_Caciop_varE_rma$b[1], r.dec)`
-Confidence Interval | `r round(s_Caciop_varT_rma$ci.lb, r.dec)` : `r round(s_Caciop_varT_rma$ci.ub, r.dec)` | `r round(s_Caciop_varE_rma$ci.lb, r.dec)` : `r round(s_Caciop_varE_rma$ci.ub, r.dec)`
-Heterogeneity tau | `r round(sqrt(s_Caciop_varT_rma$tau2), r.dec)` | `r round(sqrt(s_Caciop_varE_rma$tau2), r.dec)`
-Heterogeneity I^2 | `r round(s_Caciop_varT_rma$I2, r.dec)` | `r round(s_Caciop_varE_rma$I2, r.dec)`
-Heterogeneity H^2 | `r round(s_Caciop_varT_rma$H2, r.dec)` | `r round(s_Caciop_varE_rma$H2, r.dec)`
-Q(`r s_Caciop_varT_rma$k - 1`) | `r round(s_Caciop_varT_rma$QE, r.dec)` | `r round(s_Caciop_varE_rma$QE, r.dec)`
-p-value QE | `r ifelse(s_Caciop_varT_rma$QEp < .001, "<.001", round(s_Caciop_varT_rma$QEp, r.dec))` | `r ifelse(s_Caciop_varE_rma$QEp < .001, "<.001", round(s_Caciop_varE_rma$QEp, r.dec))`
-
-
+| {}                             | True Score Variance                                                                    |                                                                   Error Score Variance |
+|---------------------|---------------------|------------------------------:|
+| Meta-Analytic Mean Estimate    | `r round(s_Caciop_varT_rma$b[1], r.dec)`                                               |                                               `r round(s_Caciop_varE_rma$b[1], r.dec)` |
+| Confidence Interval            | `r round(s_Caciop_varT_rma$ci.lb, r.dec)` : `r round(s_Caciop_varT_rma$ci.ub, r.dec)`  |  `r round(s_Caciop_varE_rma$ci.lb, r.dec)` : `r round(s_Caciop_varE_rma$ci.ub, r.dec)` |
+| Heterogeneity tau              | `r round(sqrt(s_Caciop_varT_rma$tau2), r.dec)`                                         |                                         `r round(sqrt(s_Caciop_varE_rma$tau2), r.dec)` |
+| Heterogeneity I\^2             | `r round(s_Caciop_varT_rma$I2, r.dec)`                                                 |                                                 `r round(s_Caciop_varE_rma$I2, r.dec)` |
+| Heterogeneity H\^2             | `r round(s_Caciop_varT_rma$H2, r.dec)`                                                 |                                                 `r round(s_Caciop_varE_rma$H2, r.dec)` |
+| Q(`r s_Caciop_varT_rma$k - 1`) | `r round(s_Caciop_varT_rma$QE, r.dec)`                                                 |                                                 `r round(s_Caciop_varE_rma$QE, r.dec)` |
+| p-value QE                     | `r ifelse(s_Caciop_varT_rma$QEp < .001, "<.001", round(s_Caciop_varT_rma$QEp, r.dec))` | `r ifelse(s_Caciop_varE_rma$QEp < .001, "<.001", round(s_Caciop_varE_rma$QEp, r.dec))` |
 
 ### Shnabel Sense of Power (RPP)
 
-
-Data set 2 concerned the scale of Sense of Power (Shnabel & Nadler, 2008), consisting of 3 Likert-stye items (7-point scale). Measured across 8 labs in Baranski et al. (2020), using Cronbach’s Alpha, specifically for those labs following the RPP-protocol, score reliability varied between `r round(s_ShnabelRPP_Alpha[1], r.dec)` and `r round(s_ShnabelRPP_Alpha[6], r.dec)`, with a mean value of `r round(s_ShnabelRPP_Alpha[4], r.dec)` and median value `r round(s_ShnabelRPP_Alpha[3], r.dec)`. Performing a random-effects meta-analysis on the untransformed Cronbach’s Alpha estimates, we find a meta-analytic mean estimate of `r round(s_ShnabelRPP_Alpha_rma$b[1], r.dec)` (`r round(s_ShnabelRPP_Alpha_rma$ci.lb, r.dec)` : `r round(s_ShnabelRPP_Alpha_rma$ci.ub, r.dec)`). Additionally, we find a significant degree of heterogeneity in score reliability, at Q(`r s_ShnabelRPP_Alpha_rma$k - 1`) = `r round(s_ShnabelRPP_Alpha_rma$QE, r.dec)`, p `r ifelse(s_ShnabelRPP_Alpha_rma$QEp < .001, "<.001", paste0("= ", round(s_ShnabelRPP_Alpha_rma$QEp, r.dec)))`. In terms of I^2, heterogeneity is `r round(s_ShnabelRPP_Alpha_rma$I2, r.dec)`%, which, according to XXX constitutes a medium level of heterogeneity. In terms of tau, we find a standard deviation of `r round(sqrt(s_ShnabelRPP_Alpha_rma$tau2), r.dec)` in true values of Cronbach’s Alpha. Similarly, when assessing Bonett-transformed Cronbach’s Alpha estimates, we find a meta-analytic mean of `r round(s_ShnabelRPP_B.Alpha_rma$b[1], r.dec)`. Back-transformed this constitutes a Cronbach’s Alpha of `r round(1-exp(s_ShnabelRPP_B.Alpha_rma$b[1]), r.dec)` (CI: `r round(1-exp(s_ShnabelRPP_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_ShnabelRPP_B.Alpha_rma$ci.lb), r.dec)`) (difference in MA-est. emerges at the 3rd decimal). Heterogeneity in Bonett-transformed estimates of Cronbach’s Alpha is also of statistically significant degree: Q(`r s_ShnabelRPP_Alpha_rma$k - 1`) = `r round(s_ShnabelRPP_B.Alpha_rma$QE, r.dec)`, p `r ifelse(s_ShnabelRPP_B.Alpha_rma$QEp < .001, "<.001", paste0("= ", round(s_ShnabelRPP_B.Alpha_rma$QEp, r.dec)))`. Standardized heterogeneity estimates of I^2 = `r round(s_ShnabelRPP_B.Alpha_rma$I2, r.dec)`% and H^2 = `r round(s_ShnabelRPP_B.Alpha_rma$H2, r.dec)` display highly similar amounts of heterogeneity. 
-
+Data set 2 concerned the scale of Sense of Power (Shnabel & Nadler, 2008), consisting of 3 Likert-stye items (7-point scale). Measured across 8 labs in Baranski et al. (2020), using Cronbach's Alpha, specifically for those labs following the RPP-protocol, score reliability varied between `r round(s_ShnabelRPP_Alpha[1], r.dec)` and `r round(s_ShnabelRPP_Alpha[6], r.dec)`, with a mean value of `r round(s_ShnabelRPP_Alpha[4], r.dec)` and median value `r round(s_ShnabelRPP_Alpha[3], r.dec)`. Performing a random-effects meta-analysis on the untransformed Cronbach's Alpha estimates, we find a meta-analytic mean estimate of `r round(s_ShnabelRPP_Alpha_rma$b[1], r.dec)` (`r round(s_ShnabelRPP_Alpha_rma$ci.lb, r.dec)` : `r round(s_ShnabelRPP_Alpha_rma$ci.ub, r.dec)`). Additionally, we find a significant degree of heterogeneity in score reliability, at Q(`r s_ShnabelRPP_Alpha_rma$k - 1`) = `r round(s_ShnabelRPP_Alpha_rma$QE, r.dec)`, p `r ifelse(s_ShnabelRPP_Alpha_rma$QEp < .001, "<.001", paste0("= ", round(s_ShnabelRPP_Alpha_rma$QEp, r.dec)))`. In terms of I\^2, heterogeneity is `r round(s_ShnabelRPP_Alpha_rma$I2, r.dec)`%, which, according to XXX constitutes a medium level of heterogeneity. In terms of tau, we find a standard deviation of `r round(sqrt(s_ShnabelRPP_Alpha_rma$tau2), r.dec)` in true values of Cronbach's Alpha. Similarly, when assessing Bonett-transformed Cronbach's Alpha estimates, we find a meta-analytic mean of `r round(s_ShnabelRPP_B.Alpha_rma$b[1], r.dec)`. Back-transformed this constitutes a Cronbach's Alpha of `r round(1-exp(s_ShnabelRPP_B.Alpha_rma$b[1]), r.dec)` (CI: `r round(1-exp(s_ShnabelRPP_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_ShnabelRPP_B.Alpha_rma$ci.lb), r.dec)`) (difference in MA-est. emerges at the 3rd decimal). Heterogeneity in Bonett-transformed estimates of Cronbach's Alpha is also of statistically significant degree: Q(`r s_ShnabelRPP_Alpha_rma$k - 1`) = `r round(s_ShnabelRPP_B.Alpha_rma$QE, r.dec)`, p `r ifelse(s_ShnabelRPP_B.Alpha_rma$QEp < .001, "<.001", paste0("= ", round(s_ShnabelRPP_B.Alpha_rma$QEp, r.dec)))`. Standardized heterogeneity estimates of I\^2 = `r round(s_ShnabelRPP_B.Alpha_rma$I2, r.dec)`% and H\^2 = `r round(s_ShnabelRPP_B.Alpha_rma$H2, r.dec)` display highly similar amounts of heterogeneity.
 
 Also, we use Cronbach's Alpha to decompose the observed variance into its true and error score variance components:
 
-{}  | True Score Variance | Error Score Variance
--- | -- | --: 
-Min | `r round(s_ShnabelRPP_varT[1], r.dec)` | `r round(s_ShnabelRPP_varE[1], r.dec)`
-Q1  | `r round(s_ShnabelRPP_varT[2], r.dec)` | `r round(s_ShnabelRPP_varE[2], r.dec)`
-Median| `r round(s_ShnabelRPP_varT[3], r.dec)` | `r round(s_ShnabelRPP_varE[3], r.dec)`
-Q3  | `r round(s_ShnabelRPP_varT[4], r.dec)` | `r round(s_ShnabelRPP_varE[4], r.dec)`
-Max | `r round(s_ShnabelRPP_varT[5], r.dec)` | `r round(s_ShnabelRPP_varE[5], r.dec)`
-Mean| `r round(s_ShnabelRPP_varT[6], r.dec)` | `r round(s_ShnabelRPP_varE[6], r.dec)`
+| {}     | True Score Variance                    |                   Error Score Variance |
+|---------------------|---------------------|------------------------------:|
+| Min    | `r round(s_ShnabelRPP_varT[1], r.dec)` | `r round(s_ShnabelRPP_varE[1], r.dec)` |
+| Q1     | `r round(s_ShnabelRPP_varT[2], r.dec)` | `r round(s_ShnabelRPP_varE[2], r.dec)` |
+| Median | `r round(s_ShnabelRPP_varT[3], r.dec)` | `r round(s_ShnabelRPP_varE[3], r.dec)` |
+| Q3     | `r round(s_ShnabelRPP_varT[4], r.dec)` | `r round(s_ShnabelRPP_varE[4], r.dec)` |
+| Max    | `r round(s_ShnabelRPP_varT[5], r.dec)` | `r round(s_ShnabelRPP_varE[5], r.dec)` |
+| Mean   | `r round(s_ShnabelRPP_varT[6], r.dec)` | `r round(s_ShnabelRPP_varE[6], r.dec)` |
 
 Performing a random-effects meta-analysis on the components directly leads to:
 
-{} | True Score Variance | Error Score Variance
--- | -- | --:
-Meta-Analytic Mean Estimate | `r round(s_ShnabelRPP_varT_rma$b[1], r.dec)` | `r round(s_ShnabelRPP_varE_rma$b[1], r.dec)`
-Confidence Interval | `r round(s_ShnabelRPP_varT_rma$ci.lb, r.dec)` : `r round(s_ShnabelRPP_varT_rma$ci.ub, r.dec)` | `r round(s_ShnabelRPP_varE_rma$ci.lb, r.dec)` : `r round(s_ShnabelRPP_varE_rma$ci.ub, r.dec)`
-Heterogeneity tau | `r round(sqrt(s_ShnabelRPP_varT_rma$tau2), r.dec)` | `r round(sqrt(s_ShnabelRPP_varE_rma$tau2), r.dec)`
-Heterogeneity I^2 | `r round(s_ShnabelRPP_varT_rma$I2, r.dec)` | `r round(s_ShnabelRPP_varE_rma$I2, r.dec)`
-Heterogeneity H^2 | `r round(s_ShnabelRPP_varT_rma$H2, r.dec)` | `r round(s_ShnabelRPP_varE_rma$H2, r.dec)`
-Q(`r s_ShnabelRPP_varT_rma$k - 1`) | `r round(s_ShnabelRPP_varT_rma$QE, r.dec)` | `r round(s_ShnabelRPP_varE_rma$QE, r.dec)`
-p-value QE | `r ifelse(s_ShnabelRPP_varT_rma$QEp < .001, "<.001", round(s_ShnabelRPP_varT_rma$QEp, r.dec))` | `r ifelse(s_ShnabelRPP_varE_rma$QEp < .001, "<.001", round(s_ShnabelRPP_varE_rma$QEp, r.dec))`
-
-
-
-
-
-
-
-
-
+| {}                                 | True Score Variance                                                                            |                                                                           Error Score Variance |
+|---------------------|---------------------|------------------------------:|
+| Meta-Analytic Mean Estimate        | `r round(s_ShnabelRPP_varT_rma$b[1], r.dec)`                                                   |                                                   `r round(s_ShnabelRPP_varE_rma$b[1], r.dec)` |
+| Confidence Interval                | `r round(s_ShnabelRPP_varT_rma$ci.lb, r.dec)` : `r round(s_ShnabelRPP_varT_rma$ci.ub, r.dec)`  |  `r round(s_ShnabelRPP_varE_rma$ci.lb, r.dec)` : `r round(s_ShnabelRPP_varE_rma$ci.ub, r.dec)` |
+| Heterogeneity tau                  | `r round(sqrt(s_ShnabelRPP_varT_rma$tau2), r.dec)`                                             |                                             `r round(sqrt(s_ShnabelRPP_varE_rma$tau2), r.dec)` |
+| Heterogeneity I\^2                 | `r round(s_ShnabelRPP_varT_rma$I2, r.dec)`                                                     |                                                     `r round(s_ShnabelRPP_varE_rma$I2, r.dec)` |
+| Heterogeneity H\^2                 | `r round(s_ShnabelRPP_varT_rma$H2, r.dec)`                                                     |                                                     `r round(s_ShnabelRPP_varE_rma$H2, r.dec)` |
+| Q(`r s_ShnabelRPP_varT_rma$k - 1`) | `r round(s_ShnabelRPP_varT_rma$QE, r.dec)`                                                     |                                                     `r round(s_ShnabelRPP_varE_rma$QE, r.dec)` |
+| p-value QE                         | `r ifelse(s_ShnabelRPP_varT_rma$QEp < .001, "<.001", round(s_ShnabelRPP_varT_rma$QEp, r.dec))` | `r ifelse(s_ShnabelRPP_varE_rma$QEp < .001, "<.001", round(s_ShnabelRPP_varE_rma$QEp, r.dec))` |
 
 ### Shnabel Sense of Power (Rev)
 
-
-Comparing those results to the labs employing the revised protocol, score reliability varied between `r round(s_ShnabelRev_Alpha[1], r.dec)` and `r round(s_ShnabelRev_Alpha[6], r.dec)`, with a mean value of `r round(s_ShnabelRev_Alpha[4], r.dec)` and median value `r round(s_ShnabelRev_Alpha[3], r.dec)`. Performing a random-effects meta-analysis on the untransformed Cronbach’s Alpha estimates, we find a meta-analytic mean estimate of `r round(s_ShnabelRev_Alpha_rma$b[1], r.dec)` (`r round(s_ShnabelRev_Alpha_rma$ci.lb, r.dec)` : `r round(s_ShnabelRev_Alpha_rma$ci.ub, r.dec)`). Additionally, we find no significant degree of heterogeneity in score reliability, at Q(`r s_ShnabelRev_Alpha_rma$k - 1`) = `r round(s_ShnabelRev_Alpha_rma$QE, r.dec)`, p `r ifelse(s_ShnabelRev_Alpha_rma$QEp < .001, "<.001", paste0("= ", round(s_ShnabelRev_Alpha_rma$QEp, r.dec)))`. In terms of I^2, heterogeneity is `r round(s_ShnabelRev_Alpha_rma$I2, r.dec)`%, which, according to XXX constitutes a low to medium level of heterogeneity. In terms of tau, we find a standard deviation of `r round(sqrt(s_ShnabelRev_Alpha_rma$tau2), r.dec)` in true values of Cronbach’s Alpha. Similarly, when assessing Bonett-transformed Cronbach’s Alpha estimates, we find a meta-analytic mean of `r round(s_ShnabelRev_B.Alpha_rma$b[1], r.dec)`. Back-transformed this constitutes a Cronbach’s Alpha of `r round(1-exp(s_ShnabelRev_B.Alpha_rma$b[1]), r.dec)` (CI: `r round(1-exp(s_ShnabelRev_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_ShnabelRev_B.Alpha_rma$ci.lb), r.dec)`) (difference in MA-est. emerges at the 3rd decimal). Heterogeneity in Bonett-transformed estimates of Cronbach’s Alpha is of statistically significant degree: Q(`r s_ShnabelRev_Alpha_rma$k - 1`) = `r round(s_ShnabelRev_B.Alpha_rma$QE, r.dec)`, p `r ifelse(s_ShnabelRev_B.Alpha_rma$QEp < .001, "<.001", paste0("= ", round(s_ShnabelRev_B.Alpha_rma$QEp, r.dec)))`. Standardized heterogeneity estimates of I^2 = `r round(s_ShnabelRev_B.Alpha_rma$I2, r.dec)`% and H^2 = `r round(s_ShnabelRev_B.Alpha_rma$H2, r.dec)` display highly similar amounts of heterogeneity. 
-
+Comparing those results to the labs employing the revised protocol, score reliability varied between `r round(s_ShnabelRev_Alpha[1], r.dec)` and `r round(s_ShnabelRev_Alpha[6], r.dec)`, with a mean value of `r round(s_ShnabelRev_Alpha[4], r.dec)` and median value `r round(s_ShnabelRev_Alpha[3], r.dec)`. Performing a random-effects meta-analysis on the untransformed Cronbach's Alpha estimates, we find a meta-analytic mean estimate of `r round(s_ShnabelRev_Alpha_rma$b[1], r.dec)` (`r round(s_ShnabelRev_Alpha_rma$ci.lb, r.dec)` : `r round(s_ShnabelRev_Alpha_rma$ci.ub, r.dec)`). Additionally, we find no significant degree of heterogeneity in score reliability, at Q(`r s_ShnabelRev_Alpha_rma$k - 1`) = `r round(s_ShnabelRev_Alpha_rma$QE, r.dec)`, p `r ifelse(s_ShnabelRev_Alpha_rma$QEp < .001, "<.001", paste0("= ", round(s_ShnabelRev_Alpha_rma$QEp, r.dec)))`. In terms of I\^2, heterogeneity is `r round(s_ShnabelRev_Alpha_rma$I2, r.dec)`%, which, according to XXX constitutes a low to medium level of heterogeneity. In terms of tau, we find a standard deviation of `r round(sqrt(s_ShnabelRev_Alpha_rma$tau2), r.dec)` in true values of Cronbach's Alpha. Similarly, when assessing Bonett-transformed Cronbach's Alpha estimates, we find a meta-analytic mean of `r round(s_ShnabelRev_B.Alpha_rma$b[1], r.dec)`. Back-transformed this constitutes a Cronbach's Alpha of `r round(1-exp(s_ShnabelRev_B.Alpha_rma$b[1]), r.dec)` (CI: `r round(1-exp(s_ShnabelRev_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_ShnabelRev_B.Alpha_rma$ci.lb), r.dec)`) (difference in MA-est. emerges at the 3rd decimal). Heterogeneity in Bonett-transformed estimates of Cronbach's Alpha is of statistically significant degree: Q(`r s_ShnabelRev_Alpha_rma$k - 1`) = `r round(s_ShnabelRev_B.Alpha_rma$QE, r.dec)`, p `r ifelse(s_ShnabelRev_B.Alpha_rma$QEp < .001, "<.001", paste0("= ", round(s_ShnabelRev_B.Alpha_rma$QEp, r.dec)))`. Standardized heterogeneity estimates of I\^2 = `r round(s_ShnabelRev_B.Alpha_rma$I2, r.dec)`% and H\^2 = `r round(s_ShnabelRev_B.Alpha_rma$H2, r.dec)` display highly similar amounts of heterogeneity.
 
 Also, we use Cronbach's Alpha to decompose the observed variance into its true and error score variance components:
 
-{}  | True Score Variance | Error Score Variance
--- | -- | --: 
-Min | `r round(s_ShnabelRev_varT[1], r.dec)` | `r round(s_ShnabelRev_varE[1], r.dec)`
-Q1  | `r round(s_ShnabelRev_varT[2], r.dec)` | `r round(s_ShnabelRev_varE[2], r.dec)`
-Median| `r round(s_ShnabelRev_varT[3], r.dec)` | `r round(s_ShnabelRev_varE[3], r.dec)`
-Q3  | `r round(s_ShnabelRev_varT[4], r.dec)` | `r round(s_ShnabelRev_varE[4], r.dec)`
-Max | `r round(s_ShnabelRev_varT[5], r.dec)` | `r round(s_ShnabelRev_varE[5], r.dec)`
-Mean| `r round(s_ShnabelRev_varT[6], r.dec)` | `r round(s_ShnabelRev_varE[6], r.dec)`
+| {}     | True Score Variance                    |                   Error Score Variance |
+|---------------------|---------------------|------------------------------:|
+| Min    | `r round(s_ShnabelRev_varT[1], r.dec)` | `r round(s_ShnabelRev_varE[1], r.dec)` |
+| Q1     | `r round(s_ShnabelRev_varT[2], r.dec)` | `r round(s_ShnabelRev_varE[2], r.dec)` |
+| Median | `r round(s_ShnabelRev_varT[3], r.dec)` | `r round(s_ShnabelRev_varE[3], r.dec)` |
+| Q3     | `r round(s_ShnabelRev_varT[4], r.dec)` | `r round(s_ShnabelRev_varE[4], r.dec)` |
+| Max    | `r round(s_ShnabelRev_varT[5], r.dec)` | `r round(s_ShnabelRev_varE[5], r.dec)` |
+| Mean   | `r round(s_ShnabelRev_varT[6], r.dec)` | `r round(s_ShnabelRev_varE[6], r.dec)` |
 
 Performing a random-effects meta-analysis on the components directly leads to:
 
-{} | True Score Variance | Error Score Variance
--- | -- | --:
-Meta-Analytic Mean Estimate | `r round(s_ShnabelRev_varT_rma$b[1], r.dec)` | `r round(s_ShnabelRev_varE_rma$b[1], r.dec)`
-Confidence Interval | `r round(s_ShnabelRev_varT_rma$ci.lb, r.dec)` : `r round(s_ShnabelRev_varT_rma$ci.ub, r.dec)` | `r round(s_ShnabelRev_varE_rma$ci.lb, r.dec)` : `r round(s_ShnabelRev_varE_rma$ci.ub, r.dec)`
-Heterogeneity tau | `r round(sqrt(s_ShnabelRev_varT_rma$tau2), r.dec)` | `r round(sqrt(s_ShnabelRev_varE_rma$tau2), r.dec)`
-Heterogeneity I^2 | `r round(s_ShnabelRev_varT_rma$I2, r.dec)` | `r round(s_ShnabelRev_varE_rma$I2, r.dec)`
-Heterogeneity H^2 | `r round(s_ShnabelRev_varT_rma$H2, r.dec)` | `r round(s_ShnabelRev_varE_rma$H2, r.dec)`
-Q(`r s_ShnabelRev_varT_rma$k - 1`) | `r round(s_ShnabelRev_varT_rma$QE, r.dec)` | `r round(s_ShnabelRev_varE_rma$QE, r.dec)`
-p-value QE | `r ifelse(s_ShnabelRev_varT_rma$QEp < .001, "<.001", round(s_ShnabelRev_varT_rma$QEp, r.dec))` | `r ifelse(s_ShnabelRev_varE_rma$QEp < .001, "<.001", round(s_ShnabelRev_varE_rma$QEp, r.dec))`
-
-
-
-
-
+| {}                                 | True Score Variance                                                                            |                                                                           Error Score Variance |
+|---------------------|---------------------|------------------------------:|
+| Meta-Analytic Mean Estimate        | `r round(s_ShnabelRev_varT_rma$b[1], r.dec)`                                                   |                                                   `r round(s_ShnabelRev_varE_rma$b[1], r.dec)` |
+| Confidence Interval                | `r round(s_ShnabelRev_varT_rma$ci.lb, r.dec)` : `r round(s_ShnabelRev_varT_rma$ci.ub, r.dec)`  |  `r round(s_ShnabelRev_varE_rma$ci.lb, r.dec)` : `r round(s_ShnabelRev_varE_rma$ci.ub, r.dec)` |
+| Heterogeneity tau                  | `r round(sqrt(s_ShnabelRev_varT_rma$tau2), r.dec)`                                             |                                             `r round(sqrt(s_ShnabelRev_varE_rma$tau2), r.dec)` |
+| Heterogeneity I\^2                 | `r round(s_ShnabelRev_varT_rma$I2, r.dec)`                                                     |                                                     `r round(s_ShnabelRev_varE_rma$I2, r.dec)` |
+| Heterogeneity H\^2                 | `r round(s_ShnabelRev_varT_rma$H2, r.dec)`                                                     |                                                     `r round(s_ShnabelRev_varE_rma$H2, r.dec)` |
+| Q(`r s_ShnabelRev_varT_rma$k - 1`) | `r round(s_ShnabelRev_varT_rma$QE, r.dec)`                                                     |                                                     `r round(s_ShnabelRev_varE_rma$QE, r.dec)` |
+| p-value QE                         | `r ifelse(s_ShnabelRev_varT_rma$QEp < .001, "<.001", round(s_ShnabelRev_varT_rma$QEp, r.dec))` | `r ifelse(s_ShnabelRev_varE_rma$QEp < .001, "<.001", round(s_ShnabelRev_varE_rma$QEp, r.dec))` |
 
 ### HEXACO
 
-
 #### Cronbach's Alpha
 
-Scale | HH | EM | EX | AG | CO | OX
--- | -- | -- | -- | -- | --:
-Meta-analytic mean estimate | `r round(s_HexHH_Alpha_rma$b[1], r.dec)` | `r round(s_HexEM_Alpha_rma$b[1], r.dec)` | `r round(s_HexEX_Alpha_rma$b[1], r.dec)` | `r round(s_HexAG_Alpha_rma$b[1], r.dec)` | `r round(s_HexCO_Alpha_rma$b[1], r.dec)` | `r round(s_HexOX_Alpha_rma$b[1], r.dec)`
-Confidence Interval | `r round(s_HexHH_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexHH_Alpha_rma$ci.ub, r.dec)` | `r round(s_HexEM_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexEM_Alpha_rma$ci.ub, r.dec)` | `r round(s_HexEX_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexEX_Alpha_rma$ci.ub, r.dec)` | `r round(s_HexAG_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexAG_Alpha_rma$ci.ub, r.dec)` | `r round(s_HexCO_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexCO_Alpha_rma$ci.ub, r.dec)` | `r round(s_HexOX_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexOX_Alpha_rma$ci.ub, r.dec)` 
-Heterogeneity tau | `r round(sqrt(s_HexHH_Alpha_rma$tau2), r.dec)` | `r round(sqrt(s_HexEM_Alpha_rma$tau2), r.dec)` | `r round(sqrt(s_HexEX_Alpha_rma$tau2), r.dec)` | `r round(sqrt(s_HexAG_Alpha_rma$tau2), r.dec)` | `r round(sqrt(s_HexCO_Alpha_rma$tau2), r.dec)` | `r round(sqrt(s_HexOX_Alpha_rma$tau2), r.dec)` 
-Heteroeneity I^2 | `r round(s_HexHH_Alpha_rma$I2, r.dec)` | `r round(s_HexEM_Alpha_rma$I2, r.dec)` | `r round(s_HexEX_Alpha_rma$I2, r.dec)` | `r round(s_HexAG_Alpha_rma$I2, r.dec)` | `r round(s_HexCO_Alpha_rma$I2, r.dec)` | `r round(s_HexOX_Alpha_rma$I2, r.dec)`
-Heterogeneity H^2 | `r round(s_HexHH_Alpha_rma$H2, r.dec)` | `r round(s_HexEM_Alpha_rma$H2, r.dec)` | `r round(s_HexEX_Alpha_rma$H2, r.dec)` | `r round(s_HexAG_Alpha_rma$H2, r.dec)` | `r round(s_HexCO_Alpha_rma$H2, r.dec)` | `r round(s_HexOX_Alpha_rma$H2, r.dec)`
-Q(`r s_HexHH_Alpha_rma$k-1`) | `r round(s_HexHH_Alpha_rma$QE, r.dec)` | `r round(s_HexEM_Alpha_rma$QE, r.dec)` | `r round(s_HexEX_Alpha_rma$QE, r.dec)` | `r round(s_HexAG_Alpha_rma$QE, r.dec)` | `r round(s_HexCO_Alpha_rma$QE, r.dec)` | `r round(s_HexOX_Alpha_rma$QE, r.dec)` 
-P-value QE | `r ifelse(s_HexHH_Alpha_rma$QEp < .001, "<.001", round(s_HexHH_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexEM_Alpha_rma$QEp < .001, "<.001", round(s_HexEM_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexEX_Alpha_rma$QEp < .001, "<.001", round(s_HexEX_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexAG_Alpha_rma$QEp < .001, "<.001", round(s_HexAG_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexCO_Alpha_rma$QEp < .001, "<.001", round(s_HexCO_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexOX_Alpha_rma$QEp < .001, "<.001", round(s_HexOX_Alpha_rma$QEp, r.dec))` 
+| Scale                        | HH                                                                                     | EM                                                                                     | EX                                                                                     | AG                                                                                     |                                                                                     CO |
+|------------|------------|------------|------------|------------|-----------:|
+| Meta-analytic mean estimate  | `r round(s_HexHH_Alpha_rma$b[1], r.dec)`                                               | `r round(s_HexEM_Alpha_rma$b[1], r.dec)`                                               | `r round(s_HexEX_Alpha_rma$b[1], r.dec)`                                               | `r round(s_HexAG_Alpha_rma$b[1], r.dec)`                                               |                                               `r round(s_HexCO_Alpha_rma$b[1], r.dec)` |
+| Confidence Interval          | `r round(s_HexHH_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexHH_Alpha_rma$ci.ub, r.dec)`  | `r round(s_HexEM_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexEM_Alpha_rma$ci.ub, r.dec)`  | `r round(s_HexEX_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexEX_Alpha_rma$ci.ub, r.dec)`  | `r round(s_HexAG_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexAG_Alpha_rma$ci.ub, r.dec)`  |  `r round(s_HexCO_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexCO_Alpha_rma$ci.ub, r.dec)` |
+| Heterogeneity tau            | `r round(sqrt(s_HexHH_Alpha_rma$tau2), r.dec)`                                         | `r round(sqrt(s_HexEM_Alpha_rma$tau2), r.dec)`                                         | `r round(sqrt(s_HexEX_Alpha_rma$tau2), r.dec)`                                         | `r round(sqrt(s_HexAG_Alpha_rma$tau2), r.dec)`                                         |                                         `r round(sqrt(s_HexCO_Alpha_rma$tau2), r.dec)` |
+| Heteroeneity I\^2            | `r round(s_HexHH_Alpha_rma$I2, r.dec)`                                                 | `r round(s_HexEM_Alpha_rma$I2, r.dec)`                                                 | `r round(s_HexEX_Alpha_rma$I2, r.dec)`                                                 | `r round(s_HexAG_Alpha_rma$I2, r.dec)`                                                 |                                                 `r round(s_HexCO_Alpha_rma$I2, r.dec)` |
+| Heterogeneity H\^2           | `r round(s_HexHH_Alpha_rma$H2, r.dec)`                                                 | `r round(s_HexEM_Alpha_rma$H2, r.dec)`                                                 | `r round(s_HexEX_Alpha_rma$H2, r.dec)`                                                 | `r round(s_HexAG_Alpha_rma$H2, r.dec)`                                                 |                                                 `r round(s_HexCO_Alpha_rma$H2, r.dec)` |
+| Q(`r s_HexHH_Alpha_rma$k-1`) | `r round(s_HexHH_Alpha_rma$QE, r.dec)`                                                 | `r round(s_HexEM_Alpha_rma$QE, r.dec)`                                                 | `r round(s_HexEX_Alpha_rma$QE, r.dec)`                                                 | `r round(s_HexAG_Alpha_rma$QE, r.dec)`                                                 |                                                 `r round(s_HexCO_Alpha_rma$QE, r.dec)` |
+| P-value QE                   | `r ifelse(s_HexHH_Alpha_rma$QEp < .001, "<.001", round(s_HexHH_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexEM_Alpha_rma$QEp < .001, "<.001", round(s_HexEM_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexEX_Alpha_rma$QEp < .001, "<.001", round(s_HexEX_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexAG_Alpha_rma$QEp < .001, "<.001", round(s_HexAG_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexCO_Alpha_rma$QEp < .001, "<.001", round(s_HexCO_Alpha_rma$QEp, r.dec))` |
 
-
-
-
-
-Scale | HH | EM | EX | AG | CO | OX
--- | -- | -- | -- | -- | --:
-Min | `r round(s_HexHH_Alpha[1], r.dec)` | `r round(s_HexEM_Alpha[1], r.dec)` | `r round(s_HexEX_Alpha[1], r.dec)` | `r round(s_HexAG_Alpha[1], r.dec)` | `r round(s_HexCO_Alpha[1], r.dec)` | `r round(s_HexOX_Alpha[1], r.dec)`
-Q1 | `r round(s_HexHH_Alpha[2], r.dec)` | `r round(s_HexEM_Alpha[2], r.dec)` | `r round(s_HexEX_Alpha[2], r.dec)` | `r round(s_HexAG_Alpha[2], r.dec)` | `r round(s_HexCO_Alpha[2], r.dec)` | `r round(s_HexOX_Alpha[2], r.dec)`
-Median | `r round(s_HexHH_Alpha[3], r.dec)` | `r round(s_HexEM_Alpha[3], r.dec)` | `r round(s_HexEX_Alpha[3], r.dec)` | `r round(s_HexAG_Alpha[3], r.dec)` | `r round(s_HexCO_Alpha[3], r.dec)` | `r round(s_HexOX_Alpha[3], r.dec)`
-Q3 | `r round(s_HexHH_Alpha[4], r.dec)` | `r round(s_HexEM_Alpha[4], r.dec)` | `r round(s_HexEX_Alpha[4], r.dec)` | `r round(s_HexAG_Alpha[4], r.dec)` | `r round(s_HexCO_Alpha[4], r.dec)` | `r round(s_HexOX_Alpha[4], r.dec)`
-Max | `r round(s_HexHH_Alpha[5], r.dec)` | `r round(s_HexEM_Alpha[5], r.dec)` | `r round(s_HexEX_Alpha[5], r.dec)` | `r round(s_HexAG_Alpha[5], r.dec)` | `r round(s_HexCO_Alpha[5], r.dec)` | `r round(s_HexOX_Alpha[5], r.dec)`
-Mean | `r round(s_HexHH_Alpha[6], r.dec)` | `r round(s_HexEM_Alpha[6], r.dec)` | `r round(s_HexEX_Alpha[6], r.dec)` | `r round(s_HexAG_Alpha[6], r.dec)` | `r round(s_HexCO_Alpha[6], r.dec)` | `r round(s_HexOX_Alpha[6], r.dec)`
-
+| Scale  | HH                                 | EM                                 | EX                                 | AG                                 |                                 CO |
+|------------|------------|------------|------------|------------|-----------:|
+| Min    | `r round(s_HexHH_Alpha[1], r.dec)` | `r round(s_HexEM_Alpha[1], r.dec)` | `r round(s_HexEX_Alpha[1], r.dec)` | `r round(s_HexAG_Alpha[1], r.dec)` | `r round(s_HexCO_Alpha[1], r.dec)` |
+| Q1     | `r round(s_HexHH_Alpha[2], r.dec)` | `r round(s_HexEM_Alpha[2], r.dec)` | `r round(s_HexEX_Alpha[2], r.dec)` | `r round(s_HexAG_Alpha[2], r.dec)` | `r round(s_HexCO_Alpha[2], r.dec)` |
+| Median | `r round(s_HexHH_Alpha[3], r.dec)` | `r round(s_HexEM_Alpha[3], r.dec)` | `r round(s_HexEX_Alpha[3], r.dec)` | `r round(s_HexAG_Alpha[3], r.dec)` | `r round(s_HexCO_Alpha[3], r.dec)` |
+| Q3     | `r round(s_HexHH_Alpha[4], r.dec)` | `r round(s_HexEM_Alpha[4], r.dec)` | `r round(s_HexEX_Alpha[4], r.dec)` | `r round(s_HexAG_Alpha[4], r.dec)` | `r round(s_HexCO_Alpha[4], r.dec)` |
+| Max    | `r round(s_HexHH_Alpha[5], r.dec)` | `r round(s_HexEM_Alpha[5], r.dec)` | `r round(s_HexEX_Alpha[5], r.dec)` | `r round(s_HexAG_Alpha[5], r.dec)` | `r round(s_HexCO_Alpha[5], r.dec)` |
+| Mean   | `r round(s_HexHH_Alpha[6], r.dec)` | `r round(s_HexEM_Alpha[6], r.dec)` | `r round(s_HexEX_Alpha[6], r.dec)` | `r round(s_HexAG_Alpha[6], r.dec)` | `r round(s_HexCO_Alpha[6], r.dec)` |
 
 ##### Back-transformed Bonett-estimates (meta-analytic results)
 
-Scale | HH | EM | EX | AG | CO | OX
--- | -- | -- | -- | -- | --:
-Meta-analytic mean estimate | `r round(1-exp(s_HexHH_B.Alpha_rma$b[1]), r.dec)` | `r round(1-exp(s_HexEM_B.Alpha_rma$b[1]), r.dec)` | `r round(1-exp(s_HexEX_B.Alpha_rma$b[1]), r.dec)` | `r round(1-exp(s_HexAG_B.Alpha_rma$b[1]), r.dec)` | `r round(1-exp(s_HexCO_B.Alpha_rma$b[1]), r.dec)` | `r round(1-exp(s_HexOX_B.Alpha_rma$b[1]), r.dec)`
-Confidence Interval | `r round(1-exp(s_HexHH_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexHH_B.Alpha_rma$ci.lb), r.dec)` | `r round(1-exp(s_HexEM_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexEM_B.Alpha_rma$ci.lb), r.dec)` | `r round(1-exp(s_HexEX_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexEX_B.Alpha_rma$ci.lb), r.dec)` | `r round(1-exp(s_HexAG_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexAG_B.Alpha_rma$ci.lb), r.dec)` | `r round(1-exp(s_HexCO_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexCO_B.Alpha_rma$ci.lb), r.dec)` | `r round(1-exp(s_HexOX_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexOX_B.Alpha_rma$ci.lb), r.dec)` 
-Heteroeneity I^2 | `r round(s_HexHH_B.Alpha_rma$I2, r.dec)` | `r round(s_HexEM_B.Alpha_rma$I2, r.dec)` | `r round(s_HexEX_B.Alpha_rma$I2, r.dec)` | `r round(s_HexAG_B.Alpha_rma$I2, r.dec)` | `r round(s_HexCO_B.Alpha_rma$I2, r.dec)` | `r round(s_HexOX_B.Alpha_rma$I2, r.dec)`
-Heterogeneity H^2 | `r round(s_HexHH_B.Alpha_rma$H2, r.dec)` | `r round(s_HexEM_B.Alpha_rma$H2, r.dec)` | `r round(s_HexEX_B.Alpha_rma$H2, r.dec)` | `r round(s_HexAG_B.Alpha_rma$H2, r.dec)` | `r round(s_HexCO_B.Alpha_rma$H2, r.dec)` | `r round(s_HexOX_B.Alpha_rma$H2, r.dec)`
-Q(`r s_HexHH_B.Alpha_rma$k-1`) | `r round(s_HexHH_B.Alpha_rma$QE, r.dec)` | `r round(s_HexEM_B.Alpha_rma$QE, r.dec)` | `r round(s_HexEX_B.Alpha_rma$QE, r.dec)` | `r round(s_HexAG_B.Alpha_rma$QE, r.dec)` | `r round(s_HexCO_B.Alpha_rma$QE, r.dec)` | `r round(s_HexOX_B.Alpha_rma$QE, r.dec)` 
-P-value QE | `r ifelse(s_HexHH_B.Alpha_rma$QEp < .001, "<.001", round(s_HexHH_B.Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexEM_B.Alpha_rma$QEp < .001, "<.001", round(s_HexEM_B.Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexEX_B.Alpha_rma$QEp < .001, "<.001", round(s_HexEX_B.Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexAG_B.Alpha_rma$QEp < .001, "<.001", round(s_HexAG_B.Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexCO_B.Alpha_rma$QEp < .001, "<.001", round(s_HexCO_B.Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexOX_B.Alpha_rma$QEp < .001, "<.001", round(s_HexOX_B.Alpha_rma$QEp, r.dec))` 
+| Scale                          | HH                                                                                                      | EM                                                                                                      | EX                                                                                                      | AG                                                                                                      |                                                                                                      CO |
+|------------|------------|------------|------------|------------|-----------:|
+| Meta-analytic mean estimate    | `r round(1-exp(s_HexHH_B.Alpha_rma$b[1]), r.dec)`                                                       | `r round(1-exp(s_HexEM_B.Alpha_rma$b[1]), r.dec)`                                                       | `r round(1-exp(s_HexEX_B.Alpha_rma$b[1]), r.dec)`                                                       | `r round(1-exp(s_HexAG_B.Alpha_rma$b[1]), r.dec)`                                                       |                                                       `r round(1-exp(s_HexCO_B.Alpha_rma$b[1]), r.dec)` |
+| Confidence Interval            | `r round(1-exp(s_HexHH_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexHH_B.Alpha_rma$ci.lb), r.dec)` | `r round(1-exp(s_HexEM_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexEM_B.Alpha_rma$ci.lb), r.dec)` | `r round(1-exp(s_HexEX_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexEX_B.Alpha_rma$ci.lb), r.dec)` | `r round(1-exp(s_HexAG_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexAG_B.Alpha_rma$ci.lb), r.dec)` | `r round(1-exp(s_HexCO_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexCO_B.Alpha_rma$ci.lb), r.dec)` |
+| Heteroeneity I\^2              | `r round(s_HexHH_B.Alpha_rma$I2, r.dec)`                                                                | `r round(s_HexEM_B.Alpha_rma$I2, r.dec)`                                                                | `r round(s_HexEX_B.Alpha_rma$I2, r.dec)`                                                                | `r round(s_HexAG_B.Alpha_rma$I2, r.dec)`                                                                |                                                                `r round(s_HexCO_B.Alpha_rma$I2, r.dec)` |
+| Heterogeneity H\^2             | `r round(s_HexHH_B.Alpha_rma$H2, r.dec)`                                                                | `r round(s_HexEM_B.Alpha_rma$H2, r.dec)`                                                                | `r round(s_HexEX_B.Alpha_rma$H2, r.dec)`                                                                | `r round(s_HexAG_B.Alpha_rma$H2, r.dec)`                                                                |                                                                `r round(s_HexCO_B.Alpha_rma$H2, r.dec)` |
+| Q(`r s_HexHH_B.Alpha_rma$k-1`) | `r round(s_HexHH_B.Alpha_rma$QE, r.dec)`                                                                | `r round(s_HexEM_B.Alpha_rma$QE, r.dec)`                                                                | `r round(s_HexEX_B.Alpha_rma$QE, r.dec)`                                                                | `r round(s_HexAG_B.Alpha_rma$QE, r.dec)`                                                                |                                                                `r round(s_HexCO_B.Alpha_rma$QE, r.dec)` |
+| P-value QE                     | `r ifelse(s_HexHH_B.Alpha_rma$QEp < .001, "<.001", round(s_HexHH_B.Alpha_rma$QEp, r.dec))`              | `r ifelse(s_HexEM_B.Alpha_rma$QEp < .001, "<.001", round(s_HexEM_B.Alpha_rma$QEp, r.dec))`              | `r ifelse(s_HexEX_B.Alpha_rma$QEp < .001, "<.001", round(s_HexEX_B.Alpha_rma$QEp, r.dec))`              | `r ifelse(s_HexAG_B.Alpha_rma$QEp < .001, "<.001", round(s_HexAG_B.Alpha_rma$QEp, r.dec))`              |              `r ifelse(s_HexCO_B.Alpha_rma$QEp < .001, "<.001", round(s_HexCO_B.Alpha_rma$QEp, r.dec))` |
 
 #### True Score Variance
 
-Scale | HH | EM | EX | AG | CO | OX
--- | -- | -- | -- | -- | --:
-Min | `r round(s_HexHH_varT[1], r.dec)` | `r round(s_HexEM_varT[1], r.dec)` | `r round(s_HexEX_varT[1], r.dec)` | `r round(s_HexAG_varT[1], r.dec)` | `r round(s_HexCO_varT[1], r.dec)` | `r round(s_HexOX_varT[1], r.dec)`
-Q1 | `r round(s_HexHH_varT[2], r.dec)` | `r round(s_HexEM_varT[2], r.dec)` | `r round(s_HexEX_varT[2], r.dec)` | `r round(s_HexAG_varT[2], r.dec)` | `r round(s_HexCO_varT[2], r.dec)` | `r round(s_HexOX_varT[2], r.dec)`
-Median | `r round(s_HexHH_varT[3], r.dec)` | `r round(s_HexEM_varT[3], r.dec)` | `r round(s_HexEX_varT[3], r.dec)` | `r round(s_HexAG_varT[3], r.dec)` | `r round(s_HexCO_varT[3], r.dec)` | `r round(s_HexOX_varT[3], r.dec)`
-Q3 | `r round(s_HexHH_varT[4], r.dec)` | `r round(s_HexEM_varT[4], r.dec)` | `r round(s_HexEX_varT[4], r.dec)` | `r round(s_HexAG_varT[4], r.dec)` | `r round(s_HexCO_varT[4], r.dec)` | `r round(s_HexOX_varT[4], r.dec)`
-Max | `r round(s_HexHH_varT[5], r.dec)` | `r round(s_HexEM_varT[5], r.dec)` | `r round(s_HexEX_varT[5], r.dec)` | `r round(s_HexAG_varT[5], r.dec)` | `r round(s_HexCO_varT[5], r.dec)` | `r round(s_HexOX_varT[5], r.dec)`
-Mean | `r round(s_HexHH_varT[6], r.dec)` | `r round(s_HexEM_varT[6], r.dec)` | `r round(s_HexEX_varT[6], r.dec)` | `r round(s_HexAG_varT[6], r.dec)` | `r round(s_HexCO_varT[6], r.dec)` | `r round(s_HexOX_varT[6], r.dec)`
+| Scale  | HH                                | EM                                | EX                                | AG                                |                                CO |
+|------------|------------|------------|------------|------------|-----------:|
+| Min    | `r round(s_HexHH_varT[1], r.dec)` | `r round(s_HexEM_varT[1], r.dec)` | `r round(s_HexEX_varT[1], r.dec)` | `r round(s_HexAG_varT[1], r.dec)` | `r round(s_HexCO_varT[1], r.dec)` |
+| Q1     | `r round(s_HexHH_varT[2], r.dec)` | `r round(s_HexEM_varT[2], r.dec)` | `r round(s_HexEX_varT[2], r.dec)` | `r round(s_HexAG_varT[2], r.dec)` | `r round(s_HexCO_varT[2], r.dec)` |
+| Median | `r round(s_HexHH_varT[3], r.dec)` | `r round(s_HexEM_varT[3], r.dec)` | `r round(s_HexEX_varT[3], r.dec)` | `r round(s_HexAG_varT[3], r.dec)` | `r round(s_HexCO_varT[3], r.dec)` |
+| Q3     | `r round(s_HexHH_varT[4], r.dec)` | `r round(s_HexEM_varT[4], r.dec)` | `r round(s_HexEX_varT[4], r.dec)` | `r round(s_HexAG_varT[4], r.dec)` | `r round(s_HexCO_varT[4], r.dec)` |
+| Max    | `r round(s_HexHH_varT[5], r.dec)` | `r round(s_HexEM_varT[5], r.dec)` | `r round(s_HexEX_varT[5], r.dec)` | `r round(s_HexAG_varT[5], r.dec)` | `r round(s_HexCO_varT[5], r.dec)` |
+| Mean   | `r round(s_HexHH_varT[6], r.dec)` | `r round(s_HexEM_varT[6], r.dec)` | `r round(s_HexEX_varT[6], r.dec)` | `r round(s_HexAG_varT[6], r.dec)` | `r round(s_HexCO_varT[6], r.dec)` |
 
-
-
-Scale | HH | EM | EX | AG | CO | OX
--- | -- | -- | -- | -- | --:
-Meta-analytic mean estimate | `r round(s_HexHH_varT_rma$b[1], r.dec)` | `r round(s_HexEM_varT_rma$b[1], r.dec)` | `r round(s_HexEX_varT_rma$b[1], r.dec)` | `r round(s_HexAG_varT_rma$b[1], r.dec)` | `r round(s_HexCO_varT_rma$b[1], r.dec)` | `r round(s_HexOX_varT_rma$b[1], r.dec)`
-Confidence Interval | `r round(s_HexHH_varT_rma$ci.lb, r.dec)` : `r round(s_HexHH_varT_rma$ci.ub, r.dec)` | `r round(s_HexEM_varT_rma$ci.lb, r.dec)` : `r round(s_HexEM_varT_rma$ci.ub, r.dec)` | `r round(s_HexEX_varT_rma$ci.lb, r.dec)` : `r round(s_HexEX_varT_rma$ci.ub, r.dec)` | `r round(s_HexAG_varT_rma$ci.lb, r.dec)` : `r round(s_HexAG_varT_rma$ci.ub, r.dec)` | `r round(s_HexCO_varT_rma$ci.lb, r.dec)` : `r round(s_HexCO_varT_rma$ci.ub, r.dec)` | `r round(s_HexOX_varT_rma$ci.lb, r.dec)` : `r round(s_HexOX_varT_rma$ci.ub, r.dec)` 
-Heterogeneity tau | `r round(sqrt(s_HexHH_varT_rma$tau2), r.dec)` | `r round(sqrt(s_HexEM_varT_rma$tau2), r.dec)` | `r round(sqrt(s_HexEX_varT_rma$tau2), r.dec)` | `r round(sqrt(s_HexAG_varT_rma$tau2), r.dec)` | `r round(sqrt(s_HexCO_varT_rma$tau2), r.dec)` | `r round(sqrt(s_HexOX_varT_rma$tau2), r.dec)` 
-Heteroeneity I^2 | `r round(s_HexHH_varT_rma$I2, r.dec)` | `r round(s_HexEM_varT_rma$I2, r.dec)` | `r round(s_HexEX_varT_rma$I2, r.dec)` | `r round(s_HexAG_varT_rma$I2, r.dec)` | `r round(s_HexCO_varT_rma$I2, r.dec)` | `r round(s_HexOX_varT_rma$I2, r.dec)`
-Heterogeneity H^2 | `r round(s_HexHH_varT_rma$H2, r.dec)` | `r round(s_HexEM_varT_rma$H2, r.dec)` | `r round(s_HexEX_varT_rma$H2, r.dec)` | `r round(s_HexAG_varT_rma$H2, r.dec)` | `r round(s_HexCO_varT_rma$H2, r.dec)` | `r round(s_HexOX_varT_rma$H2, r.dec)`
-Q(`r s_HexHH_varT_rma$k-1`) | `r round(s_HexHH_varT_rma$QE, r.dec)` | `r round(s_HexEM_varT_rma$QE, r.dec)` | `r round(s_HexEX_varT_rma$QE, r.dec)` | `r round(s_HexAG_varT_rma$QE, r.dec)` | `r round(s_HexCO_varT_rma$QE, r.dec)` | `r round(s_HexOX_varT_rma$QE, r.dec)`
-P-value QE | `r ifelse(s_HexHH_varT_rma$QEp < .001, "<.001", round(s_HexHH_varT_rma$QEp, r.dec))` | `r ifelse(s_HexEM_varT_rma$QEp < .001, "<.001", round(s_HexEM_varT_rma$QEp, r.dec))` | `r ifelse(s_HexEX_varT_rma$QEp < .001, "<.001", round(s_HexEX_varT_rma$QEp, r.dec))` | `r ifelse(s_HexAG_varT_rma$QEp < .001, "<.001", round(s_HexAG_varT_rma$QEp, r.dec))` | `r ifelse(s_HexCO_varT_rma$QEp < .001, "<.001", round(s_HexCO_varT_rma$QEp, r.dec))` | `r ifelse(s_HexOX_varT_rma$QEp < .001, "<.001", round(s_HexOX_varT_rma$QEp, r.dec))` 
-
-
+| Scale                       | HH                                                                                   | EM                                                                                   | EX                                                                                   | AG                                                                                   |                                                                                   CO |
+|------------|------------|------------|------------|------------|-----------:|
+| Meta-analytic mean estimate | `r round(s_HexHH_varT_rma$b[1], r.dec)`                                              | `r round(s_HexEM_varT_rma$b[1], r.dec)`                                              | `r round(s_HexEX_varT_rma$b[1], r.dec)`                                              | `r round(s_HexAG_varT_rma$b[1], r.dec)`                                              |                                              `r round(s_HexCO_varT_rma$b[1], r.dec)` |
+| Confidence Interval         | `r round(s_HexHH_varT_rma$ci.lb, r.dec)` : `r round(s_HexHH_varT_rma$ci.ub, r.dec)`  | `r round(s_HexEM_varT_rma$ci.lb, r.dec)` : `r round(s_HexEM_varT_rma$ci.ub, r.dec)`  | `r round(s_HexEX_varT_rma$ci.lb, r.dec)` : `r round(s_HexEX_varT_rma$ci.ub, r.dec)`  | `r round(s_HexAG_varT_rma$ci.lb, r.dec)` : `r round(s_HexAG_varT_rma$ci.ub, r.dec)`  |  `r round(s_HexCO_varT_rma$ci.lb, r.dec)` : `r round(s_HexCO_varT_rma$ci.ub, r.dec)` |
+| Heterogeneity tau           | `r round(sqrt(s_HexHH_varT_rma$tau2), r.dec)`                                        | `r round(sqrt(s_HexEM_varT_rma$tau2), r.dec)`                                        | `r round(sqrt(s_HexEX_varT_rma$tau2), r.dec)`                                        | `r round(sqrt(s_HexAG_varT_rma$tau2), r.dec)`                                        |                                        `r round(sqrt(s_HexCO_varT_rma$tau2), r.dec)` |
+| Heteroeneity I\^2           | `r round(s_HexHH_varT_rma$I2, r.dec)`                                                | `r round(s_HexEM_varT_rma$I2, r.dec)`                                                | `r round(s_HexEX_varT_rma$I2, r.dec)`                                                | `r round(s_HexAG_varT_rma$I2, r.dec)`                                                |                                                `r round(s_HexCO_varT_rma$I2, r.dec)` |
+| Heterogeneity H\^2          | `r round(s_HexHH_varT_rma$H2, r.dec)`                                                | `r round(s_HexEM_varT_rma$H2, r.dec)`                                                | `r round(s_HexEX_varT_rma$H2, r.dec)`                                                | `r round(s_HexAG_varT_rma$H2, r.dec)`                                                |                                                `r round(s_HexCO_varT_rma$H2, r.dec)` |
+| Q(`r s_HexHH_varT_rma$k-1`) | `r round(s_HexHH_varT_rma$QE, r.dec)`                                                | `r round(s_HexEM_varT_rma$QE, r.dec)`                                                | `r round(s_HexEX_varT_rma$QE, r.dec)`                                                | `r round(s_HexAG_varT_rma$QE, r.dec)`                                                |                                                `r round(s_HexCO_varT_rma$QE, r.dec)` |
+| P-value QE                  | `r ifelse(s_HexHH_varT_rma$QEp < .001, "<.001", round(s_HexHH_varT_rma$QEp, r.dec))` | `r ifelse(s_HexEM_varT_rma$QEp < .001, "<.001", round(s_HexEM_varT_rma$QEp, r.dec))` | `r ifelse(s_HexEX_varT_rma$QEp < .001, "<.001", round(s_HexEX_varT_rma$QEp, r.dec))` | `r ifelse(s_HexAG_varT_rma$QEp < .001, "<.001", round(s_HexAG_varT_rma$QEp, r.dec))` | `r ifelse(s_HexCO_varT_rma$QEp < .001, "<.001", round(s_HexCO_varT_rma$QEp, r.dec))` |
 
 #### Error Score Variance
 
+| Scale  | HH                                | EM                                | EX                                | AG                                |                                CO |
+|------------|------------|------------|------------|------------|-----------:|
+| Min    | `r round(s_HexHH_varE[1], r.dec)` | `r round(s_HexEM_varE[1], r.dec)` | `r round(s_HexEX_varE[1], r.dec)` | `r round(s_HexAG_varE[1], r.dec)` | `r round(s_HexCO_varE[1], r.dec)` |
+| Q1     | `r round(s_HexHH_varE[2], r.dec)` | `r round(s_HexEM_varE[2], r.dec)` | `r round(s_HexEX_varE[2], r.dec)` | `r round(s_HexAG_varE[2], r.dec)` | `r round(s_HexCO_varE[2], r.dec)` |
+| Median | `r round(s_HexHH_varE[3], r.dec)` | `r round(s_HexEM_varE[3], r.dec)` | `r round(s_HexEX_varE[3], r.dec)` | `r round(s_HexAG_varE[3], r.dec)` | `r round(s_HexCO_varE[3], r.dec)` |
+| Q3     | `r round(s_HexHH_varE[4], r.dec)` | `r round(s_HexEM_varE[4], r.dec)` | `r round(s_HexEX_varE[4], r.dec)` | `r round(s_HexAG_varE[4], r.dec)` | `r round(s_HexCO_varE[4], r.dec)` |
+| Max    | `r round(s_HexHH_varE[5], r.dec)` | `r round(s_HexEM_varE[5], r.dec)` | `r round(s_HexEX_varE[5], r.dec)` | `r round(s_HexAG_varE[5], r.dec)` | `r round(s_HexCO_varE[5], r.dec)` |
+| Mean   | `r round(s_HexHH_varE[6], r.dec)` | `r round(s_HexEM_varE[6], r.dec)` | `r round(s_HexEX_varE[6], r.dec)` | `r round(s_HexAG_varE[6], r.dec)` | `r round(s_HexCO_varE[6], r.dec)` |
 
-Scale | HH | EM | EX | AG | CO | OX
--- | -- | -- | -- | -- | --:
-Min | `r round(s_HexHH_varE[1], r.dec)` | `r round(s_HexEM_varE[1], r.dec)` | `r round(s_HexEX_varE[1], r.dec)` | `r round(s_HexAG_varE[1], r.dec)` | `r round(s_HexCO_varE[1], r.dec)` | `r round(s_HexOX_varE[1], r.dec)`
-Q1 | `r round(s_HexHH_varE[2], r.dec)` | `r round(s_HexEM_varE[2], r.dec)` | `r round(s_HexEX_varE[2], r.dec)` | `r round(s_HexAG_varE[2], r.dec)` | `r round(s_HexCO_varE[2], r.dec)` | `r round(s_HexOX_varE[2], r.dec)`
-Median | `r round(s_HexHH_varE[3], r.dec)` | `r round(s_HexEM_varE[3], r.dec)` | `r round(s_HexEX_varE[3], r.dec)` | `r round(s_HexAG_varE[3], r.dec)` | `r round(s_HexCO_varE[3], r.dec)` | `r round(s_HexOX_varE[3], r.dec)`
-Q3 | `r round(s_HexHH_varE[4], r.dec)` | `r round(s_HexEM_varE[4], r.dec)` | `r round(s_HexEX_varE[4], r.dec)` | `r round(s_HexAG_varE[4], r.dec)` | `r round(s_HexCO_varE[4], r.dec)` | `r round(s_HexOX_varE[4], r.dec)`
-Max | `r round(s_HexHH_varE[5], r.dec)` | `r round(s_HexEM_varE[5], r.dec)` | `r round(s_HexEX_varE[5], r.dec)` | `r round(s_HexAG_varE[5], r.dec)` | `r round(s_HexCO_varE[5], r.dec)` | `r round(s_HexOX_varE[5], r.dec)`
-Mean | `r round(s_HexHH_varE[6], r.dec)` | `r round(s_HexEM_varE[6], r.dec)` | `r round(s_HexEX_varE[6], r.dec)` | `r round(s_HexAG_varE[6], r.dec)` | `r round(s_HexCO_varE[6], r.dec)` | `r round(s_HexOX_varE[6], r.dec)`
+| Scale                       | HH                                                                                   | EM                                                                                   | EX                                                                                   | AG                                                                                   |                                                                                   CO |
+|------------|------------|------------|------------|------------|-----------:|
+| Meta-analytic mean estimate | `r round(s_HexHH_varE_rma$b[1], r.dec)`                                              | `r round(s_HexEM_varE_rma$b[1], r.dec)`                                              | `r round(s_HexEX_varE_rma$b[1], r.dec)`                                              | `r round(s_HexAG_varE_rma$b[1], r.dec)`                                              |                                              `r round(s_HexCO_varE_rma$b[1], r.dec)` |
+| Confidence Interval         | `r round(s_HexHH_varE_rma$ci.lb, r.dec)` : `r round(s_HexHH_varE_rma$ci.ub, r.dec)`  | `r round(s_HexEM_varE_rma$ci.lb, r.dec)` : `r round(s_HexEM_varE_rma$ci.ub, r.dec)`  | `r round(s_HexEX_varE_rma$ci.lb, r.dec)` : `r round(s_HexEX_varE_rma$ci.ub, r.dec)`  | `r round(s_HexAG_varE_rma$ci.lb, r.dec)` : `r round(s_HexAG_varE_rma$ci.ub, r.dec)`  |  `r round(s_HexCO_varE_rma$ci.lb, r.dec)` : `r round(s_HexCO_varE_rma$ci.ub, r.dec)` |
+| Heterogeneity tau           | `r round(sqrt(s_HexHH_varE_rma$tau2), r.dec)`                                        | `r round(sqrt(s_HexEM_varE_rma$tau2), r.dec)`                                        | `r round(sqrt(s_HexEX_varE_rma$tau2), r.dec)`                                        | `r round(sqrt(s_HexAG_varE_rma$tau2), r.dec)`                                        |                                        `r round(sqrt(s_HexCO_varE_rma$tau2), r.dec)` |
+| Heteroeneity I\^2           | `r round(s_HexHH_varE_rma$I2, r.dec)`                                                | `r round(s_HexEM_varE_rma$I2, r.dec)`                                                | `r round(s_HexEX_varE_rma$I2, r.dec)`                                                | `r round(s_HexAG_varE_rma$I2, r.dec)`                                                |                                                `r round(s_HexCO_varE_rma$I2, r.dec)` |
+| Heterogeneity H\^2          | `r round(s_HexHH_varE_rma$H2, r.dec)`                                                | `r round(s_HexEM_varE_rma$H2, r.dec)`                                                | `r round(s_HexEX_varE_rma$H2, r.dec)`                                                | `r round(s_HexAG_varE_rma$H2, r.dec)`                                                |                                                `r round(s_HexCO_varE_rma$H2, r.dec)` |
+| Q(`r s_HexHH_varE_rma$k-1`) | `r round(s_HexHH_varE_rma$QE, r.dec)`                                                | `r round(s_HexEM_varE_rma$QE, r.dec)`                                                | `r round(s_HexEX_varE_rma$QE, r.dec)`                                                | `r round(s_HexAG_varE_rma$QE, r.dec)`                                                |                                                `r round(s_HexCO_varE_rma$QE, r.dec)` |
+| P-value QE                  | `r ifelse(s_HexHH_varE_rma$QEp < .001, "<.001", round(s_HexHH_varE_rma$QEp, r.dec))` | `r ifelse(s_HexEM_varE_rma$QEp < .001, "<.001", round(s_HexEM_varE_rma$QEp, r.dec))` | `r ifelse(s_HexEX_varE_rma$QEp < .001, "<.001", round(s_HexEX_varE_rma$QEp, r.dec))` | `r ifelse(s_HexAG_varE_rma$QEp < .001, "<.001", round(s_HexAG_varE_rma$QEp, r.dec))` | `r ifelse(s_HexCO_varE_rma$QEp < .001, "<.001", round(s_HexCO_varE_rma$QEp, r.dec))` |
+
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+### Simulation Results
+
+vis.df_empF <- read.csv(file.path("Notes/vis_df.csv"), sep = " ")
+vis.df_empT <- read.csv(file.path("Notes/vis_df_empT.csv"), sep = " ")
+
+vis.df_summarised_empF <- vis.df_empF %>% 
+  group_by(CVT, CVE, rel) %>%
+  summarise(T_m = mean(tau_T, na.rm = T),
+            E_m = mean(tau_E, na.rm = T),
+            T_sd = sd(tau_T, na.rm = T),
+            E_sd = sd(tau_E, na.rm = T),
+            T_ll = quantile(tau_T, .025, na.rm = T),
+            T_ul = quantile(tau_T, .975, na.rm = T),
+            E_ll = quantile(tau_E, .025, na.rm = T),
+            E_ul = quantile(tau_E, .975, na.rm = T),
+            VT.MAE_m = mean(varT.MAE, na.rm = T),
+            VE.MAE_m = mean(varE.MAE, na.rm = T),
+            VT.MAE_ll = quantile(varT.MAE, .025, na.rm = T),
+            VT.MAE_ul = quantile(varT.MAE, .975, na.rm = T),
+            VE.MAE_ll = quantile(varE.MAE, .025, na.rm = T),
+            VE.MAE_ul = quantile(varE.MAE, .975, na.rm = T),
+            VT.M_m = mean(varT.M, na.rm = T),
+            VE.M_m = mean(varE.M, na.rm = T),
+            VT.M_ll = quantile(varT.M, .025, na.rm = T),
+            VT.M_ul = quantile(varT.M, .975, na.rm = T),
+            VE.M_ll = quantile(varE.M, .025, na.rm = T),
+            VE.M_ul = quantile(varE.M, .975, na.rm = T),
+            rel.M_m = mean(rel.M, na.rm = T),
+            rel.M_ll = quantile(rel.M, .025, na.rm = T),
+            rel.M_ul = quantile(rel.M, .975, na.rm = T),
+            rel.MAE_m = mean(rel.MAE, na.rm = T),
+            rel.MAE_ll = quantile(rel.MAE, .025, na.rm = T),
+            rel.MAE_ul = quantile(rel.MAE, .975, na.rm = T),
+            tau_rel_m = mean(tau_rel, na.rm = T),
+            tau_rel_ll = quantile(tau_rel, .025, na.rm = T),
+            tau_rel_ul = quantile(tau_rel, .975, na.rm = T),
+            tau_rel_cT_m = mean(tau_rel_cT, na.rm = T),
+            tau_rel_cT_ll = quantile(tau_rel_cT, .025, na.rm = T),
+            tau_rel_cT_ul = quantile(tau_rel_cT, .975, na.rm = T),
+            tau_rel_cE_m = mean(tau_rel_cE, na.rm = T),
+            tau_rel_cE_ll = quantile(tau_rel_cE, .025, na.rm = T),
+            tau_rel_cE_ul = quantile(tau_rel_cE, .975, na.rm = T),
+            tau_rel_cTE_m = mean(tau_rel_cTE, na.rm = T),
+            tau_rel_cTE_ll = quantile(tau_rel_cTE, .025, na.rm = T),
+            tau_rel_cTE_ul = quantile(tau_rel_cTE, .975, na.rm = T))
+
+vis.df_summarised_empT <- vis.df_empT %>% 
+  group_by(CVT, CVE, rel) %>%
+  summarise(T_m = mean(tau_T, na.rm = T),
+            E_m = mean(tau_E, na.rm = T),
+            T_sd = sd(tau_T, na.rm = T),
+            E_sd = sd(tau_E, na.rm = T),
+            T_ll = quantile(tau_T, .025, na.rm = T),
+            T_ul = quantile(tau_T, .975, na.rm = T),
+            E_ll = quantile(tau_E, .025, na.rm = T),
+            E_ul = quantile(tau_E, .975, na.rm = T),
+            VT.MAE_m = mean(varT.MAE, na.rm = T),
+            VE.MAE_m = mean(varE.MAE, na.rm = T),
+            VT.MAE_ll = quantile(varT.MAE, .025, na.rm = T),
+            VT.MAE_ul = quantile(varT.MAE, .975, na.rm = T),
+            VE.MAE_ll = quantile(varE.MAE, .025, na.rm = T),
+            VE.MAE_ul = quantile(varE.MAE, .975, na.rm = T),
+            VT.M_m = mean(varT.M, na.rm = T),
+            VE.M_m = mean(varE.M, na.rm = T),
+            VT.M_ll = quantile(varT.M, .025, na.rm = T),
+            VT.M_ul = quantile(varT.M, .975, na.rm = T),
+            VE.M_ll = quantile(varE.M, .025, na.rm = T),
+            VE.M_ul = quantile(varE.M, .975, na.rm = T),
+            rel.M_m = mean(rel.M, na.rm = T),
+            rel.M_ll = quantile(rel.M, .025, na.rm = T),
+            rel.M_ul = quantile(rel.M, .975, na.rm = T),
+            rel.MAE_m = mean(rel.MAE, na.rm = T),
+            rel.MAE_ll = quantile(rel.MAE, .025, na.rm = T),
+            rel.MAE_ul = quantile(rel.MAE, .975, na.rm = T),
+            tau_rel_m = mean(tau_rel, na.rm = T),
+            tau_rel_ll = quantile(tau_rel, .025, na.rm = T),
+            tau_rel_ul = quantile(tau_rel, .975, na.rm = T),
+            tau_rel_cT_m = mean(tau_rel_cT, na.rm = T),
+            tau_rel_cT_ll = quantile(tau_rel_cT, .025, na.rm = T),
+            tau_rel_cT_ul = quantile(tau_rel_cT, .975, na.rm = T),
+            tau_rel_cE_m = mean(tau_rel_cE, na.rm = T),
+            tau_rel_cE_ll = quantile(tau_rel_cE, .025, na.rm = T),
+            tau_rel_cE_ul = quantile(tau_rel_cE, .975, na.rm = T),
+            tau_rel_cTE_m = mean(tau_rel_cTE, na.rm = T),
+            tau_rel_cTE_ll = quantile(tau_rel_cTE, .025, na.rm = T),
+            tau_rel_cTE_ul = quantile(tau_rel_cTE, .975, na.rm = T))
 
 
 
-Scale | HH | EM | EX | AG | CO | OX
--- | -- | -- | -- | -- | --:
-Meta-analytic mean estimate | `r round(s_HexHH_varE_rma$b[1], r.dec)` | `r round(s_HexEM_varE_rma$b[1], r.dec)` | `r round(s_HexEX_varE_rma$b[1], r.dec)` | `r round(s_HexAG_varE_rma$b[1], r.dec)` | `r round(s_HexCO_varE_rma$b[1], r.dec)` | `r round(s_HexOX_varE_rma$b[1], r.dec)`
-Confidence Interval | `r round(s_HexHH_varE_rma$ci.lb, r.dec)` : `r round(s_HexHH_varE_rma$ci.ub, r.dec)` | `r round(s_HexEM_varE_rma$ci.lb, r.dec)` : `r round(s_HexEM_varE_rma$ci.ub, r.dec)` | `r round(s_HexEX_varE_rma$ci.lb, r.dec)` : `r round(s_HexEX_varE_rma$ci.ub, r.dec)` | `r round(s_HexAG_varE_rma$ci.lb, r.dec)` : `r round(s_HexAG_varE_rma$ci.ub, r.dec)` | `r round(s_HexCO_varE_rma$ci.lb, r.dec)` : `r round(s_HexCO_varE_rma$ci.ub, r.dec)` | `r round(s_HexOX_varE_rma$ci.lb, r.dec)` : `r round(s_HexOX_varE_rma$ci.ub, r.dec)` 
-Heterogeneity tau | `r round(sqrt(s_HexHH_varE_rma$tau2), r.dec)` | `r round(sqrt(s_HexEM_varE_rma$tau2), r.dec)` | `r round(sqrt(s_HexEX_varE_rma$tau2), r.dec)` | `r round(sqrt(s_HexAG_varE_rma$tau2), r.dec)` | `r round(sqrt(s_HexCO_varE_rma$tau2), r.dec)` | `r round(sqrt(s_HexOX_varE_rma$tau2), r.dec)` 
-Heteroeneity I^2 | `r round(s_HexHH_varE_rma$I2, r.dec)` | `r round(s_HexEM_varE_rma$I2, r.dec)` | `r round(s_HexEX_varE_rma$I2, r.dec)` | `r round(s_HexAG_varE_rma$I2, r.dec)` | `r round(s_HexCO_varE_rma$I2, r.dec)` | `r round(s_HexOX_varE_rma$I2, r.dec)`
-Heterogeneity H^2 | `r round(s_HexHH_varE_rma$H2, r.dec)` | `r round(s_HexEM_varE_rma$H2, r.dec)` | `r round(s_HexEX_varE_rma$H2, r.dec)` | `r round(s_HexAG_varE_rma$H2, r.dec)` | `r round(s_HexCO_varE_rma$H2, r.dec)` | `r round(s_HexOX_varE_rma$H2, r.dec)`
-Q(`r s_HexHH_varE_rma$k-1`) | `r round(s_HexHH_varE_rma$QE, r.dec)` | `r round(s_HexEM_varE_rma$QE, r.dec)` | `r round(s_HexEX_varE_rma$QE, r.dec)` | `r round(s_HexAG_varE_rma$QE, r.dec)` | `r round(s_HexCO_varE_rma$QE, r.dec)` | `r round(s_HexOX_varE_rma$QE, r.dec)`
-P-value QE | `r ifelse(s_HexHH_varE_rma$QEp < .001, "<.001", round(s_HexHH_varE_rma$QEp, r.dec))` | `r ifelse(s_HexEM_varE_rma$QEp < .001, "<.001", round(s_HexEM_varE_rma$QEp, r.dec))` | `r ifelse(s_HexEX_varE_rma$QEp < .001, "<.001", round(s_HexEX_varE_rma$QEp, r.dec))` | `r ifelse(s_HexAG_varE_rma$QEp < .001, "<.001", round(s_HexAG_varE_rma$QEp, r.dec))` | `r ifelse(s_HexCO_varE_rma$QEp < .001, "<.001", round(s_HexCO_varE_rma$QEp, r.dec))` | `r ifelse(s_HexOX_varE_rma$QEp < .001, "<.001", round(s_HexOX_varE_rma$QEp, r.dec))` 
+
+vis.df_summarized2_empF <- vis.df_empF %>%
+  group_by(CVT, CVE, rel) %>%
+  summarise(bias_varT.M = mean(varT.M - rel*10, na.rm = T),
+            bias_varT.MAE = mean(varT.MAE - rel*10, na.rm = T),
+            bias_varE.M = mean(varE.M - (1-rel)*10, na.rm = T),
+            bias_varE.MAE = mean(varE.MAE - (1-rel)*10, na.rm = T),
+            bias_rel.M = mean(rel.M - rel, na.rm = T),
+            bias_rel.MAE = mean(rel.MAE-rel, na.rm = T),
+            bias_tauT = mean(tau_T - CVT*rel*10, na.rm = T),
+            bias_tauE = mean(tau_E - CVE*(1-rel)*10, na.rm = T),
+            MSE_varT.M = mean((varT.M - rel*10)^2, na.rm = T),
+            MSE_varT.MAE = mean((varT.MAE - rel*10)^2, na.rm = T),
+            MSE_varE.M = mean((varE.M - (1-rel)*10)^2, na.rm = T),
+            MSE_varE.MAE = mean((varE.MAE - (1-rel)*10)^2, na.rm = T),
+            MSE_rel.M = mean((rel.M - rel)^2, na.rm = T),
+            MSE_rel.MAE = mean((rel.MAE-rel)^2, na.rm = T),
+            MSE_tauT = mean((tau_T - CVT*rel*10)^2, na.rm = T),
+            MSE_tauE = mean((tau_E - CVE*(1-rel)*10)^2, na.rm = T),
+            RMSE_varT.M = sqrt(mean((varT.M - rel*10)^2, na.rm = T)),
+            RMSE_varT.MAE = sqrt(mean((varT.MAE - rel*10)^2, na.rm = T)),
+            RMSE_varE.M = sqrt(mean((varE.M - (1-rel)*10)^2, na.rm = T)),
+            RMSE_varE.MAE = sqrt(mean((varE.MAE - (1-rel)*10)^2, na.rm = T)),
+            RMSE_rel.M = sqrt(mean((rel.M - rel)^2, na.rm = T)),
+            RMSE_rel.MAE = sqrt(mean((rel.MAE-rel)^2, na.rm = T)),
+            RMSE_tauT = sqrt(mean((tau_T - CVT*rel*10)^2, na.rm = T)),
+            RMSE_tauE = sqrt(mean((tau_E - CVE*(1-rel)*10)^2, na.rm = T)))
+
+
+
+vis.df_summarized2_empT <- vis.df_empT %>%
+  group_by(CVT, CVE, rel) %>%
+  summarise(bias_varT.M = mean(varT.M - rel*10, na.rm = T),
+            bias_varT.MAE = mean(varT.MAE - rel*10, na.rm = T),
+            bias_varE.M = mean(varE.M - (1-rel)*10, na.rm = T),
+            bias_varE.MAE = mean(varE.MAE - (1-rel)*10, na.rm = T),
+            bias_rel.M = mean(rel.M - rel, na.rm = T),
+            bias_rel.MAE = mean(rel.MAE-rel, na.rm = T),
+            bias_tauT = mean(tau_T - CVT*rel*10, na.rm = T),
+            bias_tauE = mean(tau_E - CVE*(1-rel)*10, na.rm = T),
+            MSE_varT.M = mean((varT.M - rel*10)^2, na.rm = T),
+            MSE_varT.MAE = mean((varT.MAE - rel*10)^2, na.rm = T),
+            MSE_varE.M = mean((varE.M - (1-rel)*10)^2, na.rm = T),
+            MSE_varE.MAE = mean((varE.MAE - (1-rel)*10)^2, na.rm = T),
+            MSE_rel.M = mean((rel.M - rel)^2, na.rm = T),
+            MSE_rel.MAE = mean((rel.MAE-rel)^2, na.rm = T),
+            MSE_tauT = mean((tau_T - CVT*rel*10)^2, na.rm = T),
+            MSE_tauE = mean((tau_E - CVE*(1-rel)*10), na.rm = T)^2,
+            RMSE_varT.M = sqrt(mean((varT.M - rel*10)^2, na.rm = T)),
+            RMSE_varT.MAE = sqrt(mean((varT.MAE - rel*10)^2, na.rm = T)),
+            RMSE_varE.M = sqrt(mean((varE.M - (1-rel)*10)^2, na.rm = T)),
+            RMSE_varE.MAE = sqrt(mean((varE.MAE - (1-rel)*10)^2, na.rm = T)),
+            RMSE_rel.M = sqrt(mean((rel.M - rel)^2, na.rm = T)),
+            RMSE_rel.MAE = sqrt(mean((rel.MAE-rel)^2, na.rm = T)),
+            RMSE_tauT = sqrt(mean((tau_T - CVT*rel*10)^2, na.rm = T)),
+            RMSE_tauE = sqrt(mean((tau_E - CVE*(1-rel)*10), na.rm = T)^2)
+            )
+
+
+vis.df2_empF <- vis.df_empF %>%
+  mutate(bias_varT.M = (varT.M - rel*10),
+         bias_varT.MAE = (varT.MAE - rel*10),
+         bias_varE.M = (varE.M - (1-rel)*10),
+         bias_varE.MAE = (varE.MAE - (1-rel)*10),
+         bias_rel.M = (rel.M - rel),
+         bias_rel.MAE = (rel.MAE-rel),
+         bias_tauT = (tau_T - CVT*rel*10),
+         bias_tauE = (tau_E - CVE*(1-rel)*10)
+  )
+
+vis.df2_empT <- vis.df_empT %>%
+  mutate(bias_varT.M = (varT.M - rel*10),
+         bias_varT.MAE = (varT.MAE - rel*10),
+         bias_varE.M = (varE.M - (1-rel)*10),
+         bias_varE.MAE = (varE.MAE - (1-rel)*10),
+         bias_rel.M = (rel.M - rel),
+         bias_rel.MAE = (rel.MAE-rel),
+         bias_tauT = (tau_T - CVT*rel*10),
+         bias_tauE = (tau_E - CVE*(1-rel)*10)
+  )
+
+
+
+colnames(vis.df_empT) <- paste0(colnames(vis.df_empF), "_empT")
+colnames(vis.df_summarised_empT) <- paste0(colnames(vis.df_summarised_empF), "_empT")
+colnames(vis.df_summarized2_empT) <- paste0(colnames(vis.df_summarized2_empF), "_empT")
+colnames(vis.df2_empT) <- paste0(colnames(vis.df2_empF), "_empT")
+
+vis.df <- cbind(vis.df_empF, vis.df_empT)
+vis.df_summarised <- cbind(vis.df_summarised_empF, vis.df_summarised_empT)
+vis.df_summarized2 <- cbind(vis.df_summarized2_empF, vis.df_summarized2_empT)
+vis.df2 <- cbind(vis.df2_empF, vis.df2_empT)
+
+
+```
+
+
+```{r}
+
+
+vis.df_summarized2
+
+vis.df_summarised$T_ul - vis.df_summarised$T_ll
+
+
+```
+
+Simulating data under seemingly ideal circumstances – normal distribution of random true and error score variances, tau-equivalence of scores , …? – has shown that an analysis of score variance components is not without its flaws.
+
+Concerning the heterogeneity in true score variance, the simulation demonstrates that degrees of uncertainty remain, surrounding the estimates of heterogeneity. In total, the size of confidence intervals varied between `r round(min(vis.df_summarised$T_ul - vis.df_summarised$T_ll), r.dec)` and `r round(max(vis.df_summarised$T_ul - vis.df_summarised$T_ll), r.dec)`. Across conditions, RMSE varied between `r round(min(vis.df_summarized2$RMSE_tauT), r.dec)` and `r round(max(vis.df_summarized2$RMSE_tauT), r.dec)`. As demonstrated in figure X, these seem positively related to the degree of score reliability. However, even at the highest level of reliability, uncertainty in estimated true score variance heterogeneity remained between `r round(min(vis.df_summarised$T_ul[vis.df_summarised$rel == .9] - vis.df_summarised$T_ll[vis.df_summarised$rel == .9]), r.dec)` and `r round(max(vis.df_summarised$T_ul[vis.df_summarised$rel == .9] - vis.df_summarised$T_ll[vis.df_summarised$rel == .9]), r.dec)`. In terms of RMSE, uncertainty in estimated true score variance hetergeneity remained between `r round(min(vis.df_summarized2$RMSE_tauT[vis.df_summarised$rel == .9]), r.dec)` and `r round(max(vis.df_summarized2$RMSE_tauT[vis.df_summarised$rel == .9]), r.dec)` at score reliability of .9. Uncertainty is also related to the degree of true score variance heterogeneity, at higher degrees of heterogeneity the uncertainty seems to fall. For example, at score reliability of .7, average confidence interval size falls from `r round(mean(vis.df_summarised$T_ul[vis.df_summarised$rel == .7 & vis.df_summarised$CVT == 0] - vis.df_summarised$T_ll[vis.df_summarised$rel == .7 & vis.df_summarised$CVT == 0]), r.dec)` at CV_T of 0, to `r round(mean(vis.df_summarised$T_ul[vis.df_summarised$rel == .7 & vis.df_summarised$CVT == .3] - vis.df_summarised$T_ll[vis.df_summarised$rel == .7 & vis.df_summarised$CVT == .3]), r.dec)` at CV_T of .3. Similarly, at score reliability of .7, mean RMSE falls from `r round(mean(vis.df_summarized2$RMSE_tauT[vis.df_summarized2$rel == .7 & vis.df_summarized2$CVT == 0]), r.dec)` at CV_T of 0, to `r round(mean(vis.df_summarized2$RMSE_tauT[vis.df_summarized2$rel == .7 & vis.df_summarized2$CVT == .3]), r.dec)` at CV_T of .3.
+
+  More importantly, heterogeneity in true score variance estimates is highly overestimated at low degrees of reliability and low degrees of simulated heterogeneity. Average bias across all conditions was `r round(mean(vis.df_summarized2$bias_tauT), r.dec)`. In figure X, we can see that this overestimation falls with increasing heterogeneity in true score variance, as well as larger degree of score reliability. For example, at a reliability of .7, we see that average bias in heterogeneity in true score variance drops from `r round(mean(vis.df_summarized2$bias_tauT[which(vis.df_summarized2$rel == .7 & vis.df_summarized2$CVT == 0)]), r.dec)` at CV_T = 0, to `r round(mean(vis.df_summarized2$bias_tauT[which(vis.df_summarized2$rel == .7 & vis.df_summarized2$CVT == .3)]), r.dec)` at CV_T = .3. If anything, we seem to observe some degree of underestimation of heterogeneity in true score variance, if reliability is larger than .5 and heterogeneity is large. On the other hand, the simulated heterogeneity in error score variances seems to have no obvious effect on the estimates of true score variance heterogeneity.
+
+  Compared to the estimation of heterogeneity in true score variance, estimation of error score variance heterogeneity is more precise and accurate. The size of confidence intervals varied more strongly between `r round(min(vis.df_summarised$E_ul - vis.df_summarised$E_ll), r.dec)` and `r round(max(vis.df_summarised$E_ul - vis.df_summarised$E_ll), r.dec)`, see figure X. Similarly, across all conditions, RMSE varied between `r round(min(vis.df_summarized2$RMSE_tauE), r.dec)` and `r round(max(vis.df_summarized2$RMSE_tauE), r.dec)`. Overall, it appears estimation was more precise at all levels of score reliability and degree of heterogeneity. Similarly to true score variance, for error score variance heterogeneity, we observed that its uncertainty in estimation fell an increase in score reliability. For example, average confidence interval size drops from `r round(mean(vis.df_summarised$E_ul[vis.df_summarised$rel == .1] - vis.df_summarised$E_ll[vis.df_summarised$rel == .1]), r.dec)` at score reliability of .1, to `r round(mean(vis.df_summarised$E_ul[vis.df_summarised$rel == .9] - vis.df_summarised$E_ll[vis.df_summarised$rel == .9]), r.dec)` at score reliability of .9. Similary, mean RMSE drops from `r round(mean(vis.df_summarized2$RMSE_tauE[vis.df_summarized2$rel == .1]), r.dec)` to `r round(mean(vis.df_summarized2$RMSE_tauE[vis.df_summarized2$rel == .9]), r.dec)`, as score reliability rises from .1 to .9. At the same time, uncertainty in the esimtation of error score variance heterogeneity rises, as heterogeneity grows, across all levels of score reliability. For example, at score reliability of .7, average confidence interval size rises from `r round(mean(vis.df_summarised$E_ul[vis.df_summarised$rel == .7 & vis.df_summarised$CVE == 0] - vis.df_summarised$E_ll[vis.df_summarised$rel == .7 & vis.df_summarised$CVE == 0]), r.dec)` at CV_E of 0, to `r round(mean(vis.df_summarised$E_ul[vis.df_summarised$rel == .7 & vis.df_summarised$CVE == .3] - vis.df_summarised$E_ll[vis.df_summarised$rel == .7 & vis.df_summarised$CVE == .3]), r.dec)` at CV_E of .3. Similarly, at score reliability of .7, mean RMSE rises from `r round(mean(vis.df_summarized2$RMSE_tauE[vis.df_summarized2$rel == .7 & vis.df_summarized2$CVE == 0]), r.dec)` at CV_E of 0, to `r round(mean(vis.df_summarized2$RMSE_tauE[vis.df_summarized2$rel == .7 & vis.df_summarized2$CVE == .3]), r.dec)` at CV_E of .3. Concerning the relationship between score variance heterogeneity in uncertainty in its estimation, it appears that relationship is inverse for error score variance, compared to true score variance. While estimation of true score variance heterogeneity gets more precise as heterogeneity rises, estimation of error score variance gets more imprecise.
+
+While we observed some overestimation in true score variance heterogeneity, we seem to find less so for error score variance heterogeneity. On average, across all conditions, bias was `r round(mean(vis.df_summarized2$bias_tauT), r.dec)`. When score reliability and error score variance heterogeneity is low, from figure X it become clear that we still find some overestimation. For example, at a reliability of .7, we see that average bias in heterogeneity in error score variance drops from `r round(mean(vis.df_summarized2$bias_tauE[which(vis.df_summarized2$rel == .7 & vis.df_summarized2$CVE == 0)]), r.dec)` at CV_E = 0, to `r round(mean(vis.df_summarized2$bias_tauE[which(vis.df_summarized2$rel == .7 & vis.df_summarized2$CVE == .3)]), r.dec)` at CV_T = .3. While over- and underestimation of error score variance heterogeneity follows the same pattern as that of true score variance heterogeneity, from a comparison of figures X and X it becomes clear that this pattern is less strongly pronounced for heterogeneity in error score variance.
 

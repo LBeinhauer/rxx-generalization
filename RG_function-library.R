@@ -14,7 +14,7 @@
 
 # library loading and installing as necessary
 
-packages <- c("tidyverse", "here", "psych", "coefficientalpha", "spsUtil", "future.apply")
+packages <- c("tidyverse", "here", "psych", "coefficientalpha", "spsUtil", "future.apply", "boot")
 
 # check, whether library already installed or not - install and load as needed:
 apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
@@ -340,12 +340,14 @@ apply_Bootstrap_SE_nonspecific <- function(data.L, var.component = c("TRUE", "ER
                    R = R)
       
       
-      C <- cov(x[,-grep("source", names(x))])
+      #C <- cov(x[,-grep("source", names(x))])
+      C <- cov(x)
       n <- dim(C)[1]
       
       alpha <- (1 - sum(diag(C))/sum(C)) * (n/(n - 1))
       
-      varX <- var(rowMeans(x[,-"source"]))
+      #varX <- var(rowMeans(x[,-"source"]))
+      varX <- var(rowMeans(x))
       
       if(var.component == "TRUE"){
         var_est <- varX * alpha 
@@ -357,13 +359,17 @@ apply_Bootstrap_SE_nonspecific <- function(data.L, var.component = c("TRUE", "ER
       
       return(list(SE = sd(bvar$t), 
                   boot.mean = mean(bvar$t),
-                  var.emp = var_est))
+                  var.emp = var_est,
+                  boot.est = bvar$t))
     })
   )
   
   df.formatted <- data.frame(SE = sapply(vboot.L, FUN = function(x){x$SE}),
                              boot.mean = sapply(vboot.L, FUN = function(x){x$boot.mean}),
                              var.est = sapply(vboot.L, FUN = function(x){x$var.emp}))
+  
+  return(list(df.formatted = df.formatted,
+              boot.est = lapply(vboot.L, FUN = function(x){x$boot.est})))
   
 }
 
