@@ -280,844 +280,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-129"><a href="#cb2-129" aria-hidden="true" tabindex="-1"></a>s_HexOX_varT_rma <span class="ot">&lt;-</span> varT_rma.list[[<span class="dv">7</span>]]</span>
 <span id="cb2-130"><a href="#cb2-130" aria-hidden="true" tabindex="-1"></a>s_HexOX_varE_rma <span class="ot">&lt;-</span> varE_rma.list[[<span class="dv">7</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<section id="results-reliability-generalization-and-variance-decomposition" class="level2">
-<h2 class="anchored" data-anchor-id="results-reliability-generalization-and-variance-decomposition">Results Reliability Generalization and Variance Decomposition</h2>
-<section id="cacioppo" class="level3">
-<h3 class="anchored" data-anchor-id="cacioppo">Cacioppo</h3>
-<p>Data set 1 concerned the scale of Need for Cognition (Cacioppo &amp; Petty, 1982), consisting of 6 Likert-stye items (5-point scale). Measured across 21 labs in Ebersole et al.&nbsp;(2016), using Cronbach’s Alpha, score reliability varied between 0.406 and 0.819, with a mean value of 0.586 and median value 0.578. Performing a random-effects meta-analysis on the untransformed Cronbach’s Alpha estimates, we find a meta-analytic mean estimate of 0.601 (0.558 : 0.644). Additionally, we find a significant degree of heterogeneity in score reliability, at Q(20) = 192.728, p &lt;.001. In terms of I^2, heterogeneity is 77.075%, which, according to XXX constitutes a large level of heterogeneity. In terms of tau, we find a standard deviation of 0.082 in true values of Cronbach’s Alpha. Similarly, when assessing Bonett-transformed Cronbach’s Alpha estimates, we find a meta-analytic mean of -0.906. Back-transformed this constitutes a Cronbach’s Alpha of 0.596 (CI: 0.549 : 0.638) (difference in MA-est. emerges at the 3rd decimal). Heterogeneity in Bonett-transformed estimates of Cronbach’s Alpha is also of statistically significant degree: Q(20) = 80.554, p &lt;.001. Standardized heterogeneity estimates of I^2 = 77.298% and H^2 = 4.405 display highly similar amounts of heterogeneity. When using McDonald’s Omega to estimate score reliability, the results change only to a very small degree. Therefore, estimates using McDonald’s Omega can be found in the supplemental materials.</p>
-<p>Also, we use Cronbach’s Alpha to decompose the observed variance into its true and error score variance components:</p>
-<table class="table">
-<colgroup>
-<col style="width: 28%">
-<col style="width: 28%">
-<col style="width: 42%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>{}</th>
-<th>True Score Variance</th>
-<th style="text-align: right;">Error Score Variance</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Min</td>
-<td>0.101</td>
-<td style="text-align: right;">0.111</td>
-</tr>
-<tr class="even">
-<td>Q1</td>
-<td>0.153</td>
-<td style="text-align: right;">0.126</td>
-</tr>
-<tr class="odd">
-<td>Median</td>
-<td>0.169</td>
-<td style="text-align: right;">0.13</td>
-</tr>
-<tr class="even">
-<td>Q3</td>
-<td>0.203</td>
-<td style="text-align: right;">0.131</td>
-</tr>
-<tr class="odd">
-<td>Max</td>
-<td>0.238</td>
-<td style="text-align: right;">0.134</td>
-</tr>
-<tr class="even">
-<td>Mean</td>
-<td>0.555</td>
-<td style="text-align: right;">0.15</td>
-</tr>
-</tbody>
-</table>
-<p>Performing a random-effects meta-analysis on the components directly leads to:</p>
-<table class="table">
-<colgroup>
-<col style="width: 28%">
-<col style="width: 28%">
-<col style="width: 42%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>{}</th>
-<th>True Score Variance</th>
-<th style="text-align: right;">Error Score Variance</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Meta-Analytic Mean Estimate</td>
-<td>0.201</td>
-<td style="text-align: right;">0.127</td>
-</tr>
-<tr class="even">
-<td>Confidence Interval</td>
-<td>0.159 : 0.243</td>
-<td style="text-align: right;">0.124 : 0.131</td>
-</tr>
-<tr class="odd">
-<td>Heterogeneity tau</td>
-<td>0.089</td>
-<td style="text-align: right;">0.003</td>
-</tr>
-<tr class="even">
-<td>Heterogeneity I^2</td>
-<td>83.888</td>
-<td style="text-align: right;">9.444</td>
-</tr>
-<tr class="odd">
-<td>Heterogeneity H^2</td>
-<td>6.206</td>
-<td style="text-align: right;">1.104</td>
-</tr>
-<tr class="even">
-<td>Q(20)</td>
-<td>129.574</td>
-<td style="text-align: right;">22.735</td>
-</tr>
-<tr class="odd">
-<td>p-value QE</td>
-<td>&lt;.001</td>
-<td style="text-align: right;">0.302</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="shnabel-sense-of-power-rpp" class="level3">
-<h3 class="anchored" data-anchor-id="shnabel-sense-of-power-rpp">Shnabel Sense of Power (RPP)</h3>
-<p>Data set 2 concerned the scale of Sense of Power (Shnabel &amp; Nadler, 2008), consisting of 3 Likert-stye items (7-point scale). Measured across 8 labs in Baranski et al.&nbsp;(2020), using Cronbach’s Alpha, specifically for those labs following the RPP-protocol, score reliability varied between 0.723 and 0.828, with a mean value of 0.763 and median value 0.752. Performing a random-effects meta-analysis on the untransformed Cronbach’s Alpha estimates, we find a meta-analytic mean estimate of 0.769 (0.739 : 0.799). Additionally, we find a significant degree of heterogeneity in score reliability, at Q(7) = 15.851, p = 0.027. In terms of I^2, heterogeneity is 55.557%, which, according to XXX constitutes a medium level of heterogeneity. In terms of tau, we find a standard deviation of 0.031 in true values of Cronbach’s Alpha. Similarly, when assessing Bonett-transformed Cronbach’s Alpha estimates, we find a meta-analytic mean of -1.458. Back-transformed this constitutes a Cronbach’s Alpha of 0.767 (CI: 0.736 : 0.795) (difference in MA-est. emerges at the 3rd decimal). Heterogeneity in Bonett-transformed estimates of Cronbach’s Alpha is also of statistically significant degree: Q(7) = 16.013, p = 0.025. Standardized heterogeneity estimates of I^2 = 56.122% and H^2 = 2.279 display highly similar amounts of heterogeneity.</p>
-<p>Also, we use Cronbach’s Alpha to decompose the observed variance into its true and error score variance components:</p>
-<table class="table">
-<colgroup>
-<col style="width: 28%">
-<col style="width: 28%">
-<col style="width: 42%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>{}</th>
-<th>True Score Variance</th>
-<th style="text-align: right;">Error Score Variance</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Min</td>
-<td>0.67</td>
-<td style="text-align: right;">0.204</td>
-</tr>
-<tr class="even">
-<td>Q1</td>
-<td>0.755</td>
-<td style="text-align: right;">0.256</td>
-</tr>
-<tr class="odd">
-<td>Median</td>
-<td>0.81</td>
-<td style="text-align: right;">0.263</td>
-</tr>
-<tr class="even">
-<td>Q3</td>
-<td>0.864</td>
-<td style="text-align: right;">0.262</td>
-</tr>
-<tr class="odd">
-<td>Max</td>
-<td>0.935</td>
-<td style="text-align: right;">0.277</td>
-</tr>
-<tr class="even">
-<td>Mean</td>
-<td>1.236</td>
-<td style="text-align: right;">0.296</td>
-</tr>
-</tbody>
-</table>
-<p>Performing a random-effects meta-analysis on the components directly leads to:</p>
-<table class="table">
-<colgroup>
-<col style="width: 28%">
-<col style="width: 28%">
-<col style="width: 42%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>{}</th>
-<th>True Score Variance</th>
-<th style="text-align: right;">Error Score Variance</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Meta-Analytic Mean Estimate</td>
-<td>0.829</td>
-<td style="text-align: right;">0.26</td>
-</tr>
-<tr class="even">
-<td>Confidence Interval</td>
-<td>0.726 : 0.931</td>
-<td style="text-align: right;">0.238 : 0.281</td>
-</tr>
-<tr class="odd">
-<td>Heterogeneity tau</td>
-<td>0.063</td>
-<td style="text-align: right;">0.025</td>
-</tr>
-<tr class="even">
-<td>Heterogeneity I^2</td>
-<td>18.662</td>
-<td style="text-align: right;">66.311</td>
-</tr>
-<tr class="odd">
-<td>Heterogeneity H^2</td>
-<td>1.229</td>
-<td style="text-align: right;">2.968</td>
-</tr>
-<tr class="even">
-<td>Q(7)</td>
-<td>9.723</td>
-<td style="text-align: right;">24.052</td>
-</tr>
-<tr class="odd">
-<td>p-value QE</td>
-<td>0.205</td>
-<td style="text-align: right;">0.001</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="shnabel-sense-of-power-rev" class="level3">
-<h3 class="anchored" data-anchor-id="shnabel-sense-of-power-rev">Shnabel Sense of Power (Rev)</h3>
-<p>Comparing those results to the labs employing the revised protocol, score reliability varied between 0.603 and 0.757, with a mean value of 0.696 and median value 0.701. Performing a random-effects meta-analysis on the untransformed Cronbach’s Alpha estimates, we find a meta-analytic mean estimate of 0.706 (0.672 : 0.74). Additionally, we find no significant degree of heterogeneity in score reliability, at Q(7) = 13.045, p = 0.071. In terms of I^2, heterogeneity is 47.571%, which, according to XXX constitutes a low to medium level of heterogeneity. In terms of tau, we find a standard deviation of 0.033 in true values of Cronbach’s Alpha. Similarly, when assessing Bonett-transformed Cronbach’s Alpha estimates, we find a meta-analytic mean of -1.209. Back-transformed this constitutes a Cronbach’s Alpha of 0.701 (CI: 0.663 : 0.736) (difference in MA-est. emerges at the 3rd decimal). Heterogeneity in Bonett-transformed estimates of Cronbach’s Alpha is of statistically significant degree: Q(7) = 14.839, p = 0.038. Standardized heterogeneity estimates of I^2 = 53.705% and H^2 = 2.16 display highly similar amounts of heterogeneity.</p>
-<p>Also, we use Cronbach’s Alpha to decompose the observed variance into its true and error score variance components:</p>
-<table class="table">
-<colgroup>
-<col style="width: 28%">
-<col style="width: 28%">
-<col style="width: 42%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>{}</th>
-<th>True Score Variance</th>
-<th style="text-align: right;">Error Score Variance</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Min</td>
-<td>0.541</td>
-<td style="text-align: right;">0.231</td>
-</tr>
-<tr class="even">
-<td>Q1</td>
-<td>0.604</td>
-<td style="text-align: right;">0.289</td>
-</tr>
-<tr class="odd">
-<td>Median</td>
-<td>0.679</td>
-<td style="text-align: right;">0.304</td>
-</tr>
-<tr class="even">
-<td>Q3</td>
-<td>0.705</td>
-<td style="text-align: right;">0.301</td>
-</tr>
-<tr class="odd">
-<td>Max</td>
-<td>0.821</td>
-<td style="text-align: right;">0.322</td>
-</tr>
-<tr class="even">
-<td>Mean</td>
-<td>0.914</td>
-<td style="text-align: right;">0.355</td>
-</tr>
-</tbody>
-</table>
-<p>Performing a random-effects meta-analysis on the components directly leads to:</p>
-<table class="table">
-<colgroup>
-<col style="width: 28%">
-<col style="width: 28%">
-<col style="width: 42%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>{}</th>
-<th>True Score Variance</th>
-<th style="text-align: right;">Error Score Variance</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Meta-Analytic Mean Estimate</td>
-<td>0.689</td>
-<td style="text-align: right;">0.299</td>
-</tr>
-<tr class="even">
-<td>Confidence Interval</td>
-<td>0.584 : 0.794</td>
-<td style="text-align: right;">0.27 : 0.328</td>
-</tr>
-<tr class="odd">
-<td>Heterogeneity tau</td>
-<td>0.101</td>
-<td style="text-align: right;">0.036</td>
-</tr>
-<tr class="even">
-<td>Heterogeneity I^2</td>
-<td>45.728</td>
-<td style="text-align: right;">75.265</td>
-</tr>
-<tr class="odd">
-<td>Heterogeneity H^2</td>
-<td>1.843</td>
-<td style="text-align: right;">4.043</td>
-</tr>
-<tr class="even">
-<td>Q(7)</td>
-<td>12.528</td>
-<td style="text-align: right;">36.801</td>
-</tr>
-<tr class="odd">
-<td>p-value QE</td>
-<td>0.084</td>
-<td style="text-align: right;">&lt;.001</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="hexaco" class="level3">
-<h3 class="anchored" data-anchor-id="hexaco">HEXACO</h3>
-<section id="cronbachs-alpha" class="level4">
-<h4 class="anchored" data-anchor-id="cronbachs-alpha">Cronbach’s Alpha</h4>
-<table class="table">
-<colgroup>
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Scale</th>
-<th>HH</th>
-<th>EM</th>
-<th>EX</th>
-<th>AG</th>
-<th style="text-align: right;">CO</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Meta-analytic mean estimate</td>
-<td>0.706</td>
-<td>0.767</td>
-<td>0.798</td>
-<td>0.735</td>
-<td style="text-align: right;">0.756</td>
-</tr>
-<tr class="even">
-<td>Confidence Interval</td>
-<td>0.68 : 0.731</td>
-<td>0.746 : 0.788</td>
-<td>0.773 : 0.822</td>
-<td>0.712 : 0.758</td>
-<td style="text-align: right;">0.727 : 0.785</td>
-</tr>
-<tr class="odd">
-<td>Heterogeneity tau</td>
-<td>0.039</td>
-<td>0.033</td>
-<td>0.046</td>
-<td>0.036</td>
-<td style="text-align: right;">0.054</td>
-</tr>
-<tr class="even">
-<td>Heteroeneity I^2</td>
-<td>50.048</td>
-<td>52.721</td>
-<td>75.37</td>
-<td>50.528</td>
-<td style="text-align: right;">75.125</td>
-</tr>
-<tr class="odd">
-<td>Heterogeneity H^2</td>
-<td>2.002</td>
-<td>2.115</td>
-<td>4.06</td>
-<td>2.021</td>
-<td style="text-align: right;">4.02</td>
-</tr>
-<tr class="even">
-<td>Q(18)</td>
-<td>39.346</td>
-<td>44.673</td>
-<td>64.587</td>
-<td>44.159</td>
-<td style="text-align: right;">57.724</td>
-</tr>
-<tr class="odd">
-<td>P-value QE</td>
-<td>0.003</td>
-<td>&lt;.001</td>
-<td>&lt;.001</td>
-<td>&lt;.001</td>
-<td style="text-align: right;">&lt;.001</td>
-</tr>
-</tbody>
-</table>
-<table class="table">
-<colgroup>
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Scale</th>
-<th>HH</th>
-<th>EM</th>
-<th>EX</th>
-<th>AG</th>
-<th style="text-align: right;">CO</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Min</td>
-<td>0.433</td>
-<td>0.461</td>
-<td>0.65</td>
-<td>0.377</td>
-<td style="text-align: right;">0.521</td>
-</tr>
-<tr class="even">
-<td>Q1</td>
-<td>0.662</td>
-<td>0.745</td>
-<td>0.75</td>
-<td>0.709</td>
-<td style="text-align: right;">0.701</td>
-</tr>
-<tr class="odd">
-<td>Median</td>
-<td>0.715</td>
-<td>0.763</td>
-<td>0.803</td>
-<td>0.739</td>
-<td style="text-align: right;">0.784</td>
-</tr>
-<tr class="even">
-<td>Q3</td>
-<td>0.689</td>
-<td>0.75</td>
-<td>0.788</td>
-<td>0.716</td>
-<td style="text-align: right;">0.741</td>
-</tr>
-<tr class="odd">
-<td>Max</td>
-<td>0.745</td>
-<td>0.803</td>
-<td>0.836</td>
-<td>0.763</td>
-<td style="text-align: right;">0.796</td>
-</tr>
-<tr class="even">
-<td>Mean</td>
-<td>0.773</td>
-<td>0.826</td>
-<td>0.879</td>
-<td>0.801</td>
-<td style="text-align: right;">0.826</td>
-</tr>
-</tbody>
-</table>
-<section id="back-transformed-bonett-estimates-meta-analytic-results" class="level5">
-<h5 class="anchored" data-anchor-id="back-transformed-bonett-estimates-meta-analytic-results">Back-transformed Bonett-estimates (meta-analytic results)</h5>
-<table class="table">
-<colgroup>
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Scale</th>
-<th>HH</th>
-<th>EM</th>
-<th>EX</th>
-<th>AG</th>
-<th style="text-align: right;">CO</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Meta-analytic mean estimate</td>
-<td>0.696</td>
-<td>0.759</td>
-<td>0.796</td>
-<td>0.726</td>
-<td style="text-align: right;">0.751</td>
-</tr>
-<tr class="even">
-<td>Confidence Interval</td>
-<td>0.663 : 0.726</td>
-<td>0.729 : 0.786</td>
-<td>0.769 : 0.82</td>
-<td>0.692 : 0.757</td>
-<td style="text-align: right;">0.717 : 0.782</td>
-</tr>
-<tr class="odd">
-<td>Heteroeneity I^2</td>
-<td>66.793</td>
-<td>74.745</td>
-<td>77.198</td>
-<td>73.843</td>
-<td style="text-align: right;">78.945</td>
-</tr>
-<tr class="even">
-<td>Heterogeneity H^2</td>
-<td>3.011</td>
-<td>3.96</td>
-<td>4.386</td>
-<td>3.823</td>
-<td style="text-align: right;">4.75</td>
-</tr>
-<tr class="odd">
-<td>Q(18)</td>
-<td>55.265</td>
-<td>74.094</td>
-<td>78.648</td>
-<td>69.962</td>
-<td style="text-align: right;">90.827</td>
-</tr>
-<tr class="even">
-<td>P-value QE</td>
-<td>&lt;.001</td>
-<td>&lt;.001</td>
-<td>&lt;.001</td>
-<td>&lt;.001</td>
-<td style="text-align: right;">&lt;.001</td>
-</tr>
-</tbody>
-</table>
-</section>
-</section>
-<section id="true-score-variance" class="level4">
-<h4 class="anchored" data-anchor-id="true-score-variance">True Score Variance</h4>
-<table class="table">
-<colgroup>
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Scale</th>
-<th>HH</th>
-<th>EM</th>
-<th>EX</th>
-<th>AG</th>
-<th style="text-align: right;">CO</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Min</td>
-<td>0.077</td>
-<td>0.086</td>
-<td>0.144</td>
-<td>0.052</td>
-<td style="text-align: right;">0.102</td>
-</tr>
-<tr class="even">
-<td>Q1</td>
-<td>0.204</td>
-<td>0.287</td>
-<td>0.272</td>
-<td>0.239</td>
-<td style="text-align: right;">0.219</td>
-</tr>
-<tr class="odd">
-<td>Median</td>
-<td>0.258</td>
-<td>0.319</td>
-<td>0.307</td>
-<td>0.256</td>
-<td style="text-align: right;">0.268</td>
-</tr>
-<tr class="even">
-<td>Q3</td>
-<td>0.241</td>
-<td>0.318</td>
-<td>0.337</td>
-<td>0.253</td>
-<td style="text-align: right;">0.268</td>
-</tr>
-<tr class="odd">
-<td>Max</td>
-<td>0.279</td>
-<td>0.391</td>
-<td>0.409</td>
-<td>0.292</td>
-<td style="text-align: right;">0.326</td>
-</tr>
-<tr class="even">
-<td>Mean</td>
-<td>0.336</td>
-<td>0.44</td>
-<td>0.525</td>
-<td>0.383</td>
-<td style="text-align: right;">0.43</td>
-</tr>
-</tbody>
-</table>
-<table class="table">
-<colgroup>
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Scale</th>
-<th>HH</th>
-<th>EM</th>
-<th>EX</th>
-<th>AG</th>
-<th style="text-align: right;">CO</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Meta-analytic mean estimate</td>
-<td>0.235</td>
-<td>0.308</td>
-<td>0.327</td>
-<td>0.245</td>
-<td style="text-align: right;">0.26</td>
-</tr>
-<tr class="even">
-<td>Confidence Interval</td>
-<td>0.204 : 0.265</td>
-<td>0.265 : 0.351</td>
-<td>0.283 : 0.372</td>
-<td>0.208 : 0.282</td>
-<td style="text-align: right;">0.223 : 0.296</td>
-</tr>
-<tr class="odd">
-<td>Heterogeneity tau</td>
-<td>0.049</td>
-<td>0.08</td>
-<td>0.083</td>
-<td>0.069</td>
-<td style="text-align: right;">0.068</td>
-</tr>
-<tr class="even">
-<td>Heteroeneity I^2</td>
-<td>52.902</td>
-<td>72.703</td>
-<td>72.339</td>
-<td>76.582</td>
-<td style="text-align: right;">74.663</td>
-</tr>
-<tr class="odd">
-<td>Heterogeneity H^2</td>
-<td>2.123</td>
-<td>3.663</td>
-<td>3.615</td>
-<td>4.27</td>
-<td style="text-align: right;">3.947</td>
-</tr>
-<tr class="even">
-<td>Q(18)</td>
-<td>39.551</td>
-<td>90.652</td>
-<td>64.645</td>
-<td>120.464</td>
-<td style="text-align: right;">80.405</td>
-</tr>
-<tr class="odd">
-<td>P-value QE</td>
-<td>0.002</td>
-<td>&lt;.001</td>
-<td>&lt;.001</td>
-<td>&lt;.001</td>
-<td style="text-align: right;">&lt;.001</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="error-score-variance" class="level4">
-<h4 class="anchored" data-anchor-id="error-score-variance">Error Score Variance</h4>
-<table class="table">
-<colgroup>
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Scale</th>
-<th>HH</th>
-<th>EM</th>
-<th>EX</th>
-<th>AG</th>
-<th style="text-align: right;">CO</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Min</td>
-<td>0.085</td>
-<td>0.086</td>
-<td>0.071</td>
-<td>0.079</td>
-<td style="text-align: right;">0.074</td>
-</tr>
-<tr class="even">
-<td>Q1</td>
-<td>0.095</td>
-<td>0.092</td>
-<td>0.075</td>
-<td>0.085</td>
-<td style="text-align: right;">0.078</td>
-</tr>
-<tr class="odd">
-<td>Median</td>
-<td>0.104</td>
-<td>0.095</td>
-<td>0.081</td>
-<td>0.09</td>
-<td style="text-align: right;">0.084</td>
-</tr>
-<tr class="even">
-<td>Q3</td>
-<td>0.102</td>
-<td>0.097</td>
-<td>0.084</td>
-<td>0.092</td>
-<td style="text-align: right;">0.086</td>
-</tr>
-<tr class="odd">
-<td>Max</td>
-<td>0.108</td>
-<td>0.102</td>
-<td>0.094</td>
-<td>0.096</td>
-<td style="text-align: right;">0.089</td>
-</tr>
-<tr class="even">
-<td>Mean</td>
-<td>0.12</td>
-<td>0.114</td>
-<td>0.104</td>
-<td>0.112</td>
-<td style="text-align: right;">0.117</td>
-</tr>
-</tbody>
-</table>
-<table class="table">
-<colgroup>
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Scale</th>
-<th>HH</th>
-<th>EM</th>
-<th>EX</th>
-<th>AG</th>
-<th style="text-align: right;">CO</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Meta-analytic mean estimate</td>
-<td>0.102</td>
-<td>0.097</td>
-<td>0.083</td>
-<td>0.092</td>
-<td style="text-align: right;">0.085</td>
-</tr>
-<tr class="even">
-<td>Confidence Interval</td>
-<td>0.097 : 0.106</td>
-<td>0.093 : 0.1</td>
-<td>0.078 : 0.088</td>
-<td>0.088 : 0.095</td>
-<td style="text-align: right;">0.081 : 0.09</td>
-</tr>
-<tr class="odd">
-<td>Heterogeneity tau</td>
-<td>0.008</td>
-<td>0.005</td>
-<td>0.009</td>
-<td>0.007</td>
-<td style="text-align: right;">0.009</td>
-</tr>
-<tr class="even">
-<td>Heteroeneity I^2</td>
-<td>69.422</td>
-<td>49.982</td>
-<td>80.355</td>
-<td>65.765</td>
-<td style="text-align: right;">77.466</td>
-</tr>
-<tr class="odd">
-<td>Heterogeneity H^2</td>
-<td>3.27</td>
-<td>1.999</td>
-<td>5.09</td>
-<td>2.921</td>
-<td style="text-align: right;">4.438</td>
-</tr>
-<tr class="even">
-<td>Q(18)</td>
-<td>59.251</td>
-<td>35.907</td>
-<td>80.68</td>
-<td>50.173</td>
-<td style="text-align: right;">68.688</td>
-</tr>
-<tr class="odd">
-<td>P-value QE</td>
-<td>&lt;.001</td>
-<td>0.007</td>
-<td>&lt;.001</td>
-<td>&lt;.001</td>
-<td style="text-align: right;">&lt;.001</td>
-</tr>
-</tbody>
-</table>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
@@ -1350,59 +512,918 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a>vis.df2 <span class="ot">&lt;-</span> <span class="fu">cbind</span>(vis.df2_empF, vis.df2_empT)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>vis.df_summarized2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 80 × 54
-# Groups:   CVT, CVE [16]
-     CVT   CVE   rel bias_varT.M bias_varT.MAE bias_varE.M bias_varE.MAE
-   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt;         &lt;dbl&gt;       &lt;dbl&gt;         &lt;dbl&gt;
- 1     0   0     0.1    0.00215         -0.297   -0.00207       -0.0376 
- 2     0   0     0.3    0.000652        -0.310   -0.00273       -0.0303 
- 3     0   0     0.5   -0.000509        -0.319    0.000297      -0.0198 
- 4     0   0     0.7    0.00310         -0.320   -0.000659      -0.0127 
- 5     0   0     0.9    0.00682         -0.324    0.000102      -0.00388
- 6     0   0.1   0.1    0.00808         -0.295    0.00388       -0.0347 
- 7     0   0.1   0.3    0.00338         -0.307   -0.00429       -0.0343 
- 8     0   0.1   0.5    0.0104          -0.309   -0.00410       -0.0256 
- 9     0   0.1   0.7   -0.00419         -0.329    0.00393       -0.00902
-10     0   0.1   0.9    0.00516         -0.321   -0.000591      -0.00484
-# ℹ 70 more rows
-# ℹ 47 more variables: bias_rel.M &lt;dbl&gt;, bias_rel.MAE &lt;dbl&gt;, bias_tauT &lt;dbl&gt;,
-#   bias_tauE &lt;dbl&gt;, MSE_varT.M &lt;dbl&gt;, MSE_varT.MAE &lt;dbl&gt;, MSE_varE.M &lt;dbl&gt;,
-#   MSE_varE.MAE &lt;dbl&gt;, MSE_rel.M &lt;dbl&gt;, MSE_rel.MAE &lt;dbl&gt;, MSE_tauT &lt;dbl&gt;,
-#   MSE_tauE &lt;dbl&gt;, RMSE_varT.M &lt;dbl&gt;, RMSE_varT.MAE &lt;dbl&gt;, RMSE_varE.M &lt;dbl&gt;,
-#   RMSE_varE.MAE &lt;dbl&gt;, RMSE_rel.M &lt;dbl&gt;, RMSE_rel.MAE &lt;dbl&gt;, RMSE_tauT &lt;dbl&gt;,
-#   RMSE_tauE &lt;dbl&gt;, CVT_empT &lt;dbl&gt;, CVE_empT &lt;dbl&gt;, rel_empT &lt;dbl&gt;, …</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>vis.df_summarised<span class="sc">$</span>T_ul <span class="sc">-</span> vis.df_summarised<span class="sc">$</span>T_ll</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>    97.5%     97.5%     97.5%     97.5%     97.5%     97.5%     97.5%     97.5% 
-0.9980080 0.9481348 0.9496716 0.9469212 0.9712860 0.9618731 0.9528763 0.9408710 
-    97.5%     97.5%     97.5%     97.5%     97.5%     97.5%     97.5%     97.5% 
-0.9307054 0.9715433 0.8815830 0.9289250 0.9236190 0.9636163 0.9582408 0.8610613 
-    97.5%     97.5%     97.5%     97.5%     97.5%     97.5%     97.5%     97.5% 
-0.8787312 0.9381103 0.9585010 0.9998592 0.9869175 0.9833532 1.0263499 0.7860384 
-    97.5%     97.5%     97.5%     97.5%     97.5%     97.5%     97.5%     97.5% 
-0.7152636 0.9431323 0.9779654 1.1092559 0.7585112 0.7422973 0.9010322 0.9817085 
-    97.5%     97.5%     97.5%     97.5%     97.5%     97.5%     97.5%     97.5% 
-1.0573597 0.7943605 0.7775251 0.8949700 0.9555611 1.0536290 0.8316046 0.7892287 
-    97.5%     97.5%     97.5%     97.5%     97.5%     97.5%     97.5%     97.5% 
-0.9889657 1.1077520 0.7923271 0.7063435 0.7363034 0.9838759 0.9989508 0.7463248 
-    97.5%     97.5%     97.5%     97.5%     97.5%     97.5%     97.5%     97.5% 
-0.7129990 0.6933129 0.9283158 1.0862069 0.7878726 0.7488063 0.7027118 0.8529257 
-    97.5%     97.5%     97.5%     97.5%     97.5%     97.5%     97.5%     97.5% 
-0.8535446 0.7353154 0.7555984 0.7592874 1.0226183 0.8562861 0.6868790 0.7970994 
-    97.5%     97.5%     97.5%     97.5%     97.5%     97.5%     97.5%     97.5% 
-0.8772766 0.9955845 0.8128083 0.6934829 0.7643218 0.8783175 0.9743909 0.8176535 
-    97.5%     97.5%     97.5%     97.5%     97.5%     97.5%     97.5%     97.5% 
-0.7294808 0.7782159 0.9569009 0.9011559 0.6824830 0.7433174 0.7051011 0.8995885 </code></pre>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>table_ratio_sig <span class="ot">&lt;-</span> vis.df2 <span class="sc">%&gt;%</span> </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(rel, CVT, CVE) <span class="sc">%&gt;%</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">ratio_sig_T =</span> <span class="fu">mean</span>(p_T <span class="sc">&lt;</span> .<span class="dv">05</span>, <span class="at">na.rm =</span> T)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>            , <span class="at">ratio_sig_E =</span> <span class="fu">mean</span>(p_E <span class="sc">&lt;</span> .<span class="dv">05</span>, <span class="at">na.rm =</span> T)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>            , <span class="at">ratio_sig_rel =</span> <span class="fu">mean</span>(p_rel <span class="sc">&lt;</span> .<span class="dv">05</span>, <span class="at">na.rm =</span> T))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'rel', 'CVT'. You can override using the
+`.groups` argument.</code></pre>
 </div>
 </div>
 <p>Simulating data under seemingly ideal circumstances – normal distribution of random true and error score variances, tau-equivalence of scores , …? – has shown that an analysis of score variance components is not without its flaws.</p>
 <p>Concerning the heterogeneity in true score variance, the simulation demonstrates that degrees of uncertainty remain, surrounding the estimates of heterogeneity. In total, the size of confidence intervals varied between 0.682 and 1.109. Across conditions, RMSE varied between 0.182 and 0.604. As demonstrated in figure X, these seem positively related to the degree of score reliability. However, even at the highest level of reliability, uncertainty in estimated true score variance heterogeneity remained between 0.693 and 1. In terms of RMSE, uncertainty in estimated true score variance hetergeneity remained between 0.186 and 0.604 at score reliability of .9. Uncertainty is also related to the degree of true score variance heterogeneity, at higher degrees of heterogeneity the uncertainty seems to fall. For example, at score reliability of .7, average confidence interval size falls from 0.95 at CV_T of 0, to 0.761 at CV_T of .3. Similarly, at score reliability of .7, mean RMSE falls from 0.585 at CV_T of 0, to 0.216 at CV_T of .3.</p>
 <p>More importantly, heterogeneity in true score variance estimates is highly overestimated at low degrees of reliability and low degrees of simulated heterogeneity. Average bias across all conditions was 0.188. In figure X, we can see that this overestimation falls with increasing heterogeneity in true score variance, as well as larger degree of score reliability. For example, at a reliability of .7, we see that average bias in heterogeneity in true score variance drops from 0.519 at CV_T = 0, to -0.082 at CV_T = .3. If anything, we seem to observe some degree of underestimation of heterogeneity in true score variance, if reliability is larger than .5 and heterogeneity is large. On the other hand, the simulated heterogeneity in error score variances seems to have no obvious effect on the estimates of true score variance heterogeneity.</p>
+<p>The tendency to overestimate heterogeneity in true score variances at low levels of heterogeneity can also be observed in the ratio of heterogeneity estimates, which attain statistical significance. Since we are using a signficance level of alpha = .05, we should expect .05 of all cases, where no heterogeneity was induced, to be flagged statistically significant anyways. However, if no heterogeneity is present, the significance test still indicates heterogeneity between 0.16 and 0.275 of all cases. The tendency to achieve statistical significance more often than expected seems moderated by the degree of score reliability. For example, at score reliability of .1 and CV_T of 0, on average 0.189 of all cases are flagged statistically significant. At a score reliabiity of .9 and CV_T of 0, on average 0.242 of all cases are flagged. If CV_T was not zero, between 0.192 and 1 of all cases were flagged. This relationship was moderated by degree of score reliability and degree of heterogeneity induced. For example, at score reliability of .3, at CV_T = .1, on average 0.28 of all cases are flagged, while at CV_T = .3 an average of 0.913 cases are flagged. On the other hand, at score reliability of .7, at CV_T = .1, on average 0.732 of all cases were flagged. At CV_T = .3 all cases were flagged.</p>
 <p>Compared to the estimation of heterogeneity in true score variance, estimation of error score variance heterogeneity is more precise and accurate. The size of confidence intervals varied more strongly between 0.028 and 0.727, see figure X. Similarly, across all conditions, RMSE varied between 0.008 and 0.194. Overall, it appears estimation was more precise at all levels of score reliability and degree of heterogeneity. Similarly to true score variance, for error score variance heterogeneity, we observed that its uncertainty in estimation fell an increase in score reliability. For example, average confidence interval size drops from 0.451 at score reliability of .1, to 0.05 at score reliability of .9. Similary, mean RMSE drops from 0.135 to 0.015, as score reliability rises from .1 to .9. At the same time, uncertainty in the esimtation of error score variance heterogeneity rises, as heterogeneity grows, across all levels of score reliability. For example, at score reliability of .7, average confidence interval size rises from 0.089 at CV_E of 0, to 0.242 at CV_E of .3. Similarly, at score reliability of .7, mean RMSE rises from 0.046 at CV_E of 0, to 0.065 at CV_E of .3. Concerning the relationship between score variance heterogeneity in uncertainty in its estimation, it appears that relationship is inverse for error score variance, compared to true score variance. While estimation of true score variance heterogeneity gets more precise as heterogeneity rises, estimation of error score variance gets more imprecise.</p>
-<p>While we observed some overestimation in true score variance heterogeneity, we seem to find less so for error score variance heterogeneity. On average, across all conditions, bias was 0.188. When score reliability and error score variance heterogeneity is low, from figure X it become clear that we still find some overestimation. For example, at a reliability of .7, we see that average bias in heterogeneity in error score variance drops from 0.035 at CV_E = 0, to -0.018 at CV_T = .3. While over- and underestimation of error score variance heterogeneity follows the same pattern as that of true score variance heterogeneity, from a comparison of figures X and X, it becomes clear that this pattern is less strongly pronounced for heterogeneity in error score variance.</p>
+<p>While we observed some overestimation in true score variance heterogeneity, we seem to find less so for error score variance heterogeneity. On average, across all conditions, bias was 0.188. When score reliability and error score variance heterogeneity is low, from figure X it become clear that we still find some overestimation. For example, at a reliability of .7, we see that average bias in heterogeneity in error score variance drops from 0.035 at CV_E = 0, to -0.018 at CV_T = .3. While over- and underestimation of error score variance heterogeneity follows the same pattern as that of true score variance heterogeneity, from a comparison of figures X and X it becomes clear that this pattern is less strongly pronounced for heterogeneity in error score variance.</p>
+<p>Concerning the tests of identifying statistically significant heterogeneity, we find a similar pattern for error score variance components, as for the true score variance components. If no heterogeneity was induced, we still identify statistically significant heterogeneity in between 0.09 and 0.128 of all cases. This pattern seems unaffected by the degree of score reliability: at score reliability of .1 and CV_E = 0, the test flags, on average, 0.12 of all cases. Similalry, at score reliability of .1 and CV_E = 0, the test flags 0.115 of all cases. In all cases where CV_E was not zero, no matter the degree of heterogeneity in error score variance component, the test identified statistically significant heterogeneity in all cases.</p>
+<p>The simulation has also shown some implications concerning the Estimation of heterogeneity in score reliability estimates Uncertainty varies with size of score reliability and score variance component heterogeneity, in total between 0.006 and 0.06 in terms of confidence interval width. First of all, as score reliability grows, uncertainty in estimating its heterogeneity falls. For example, average confidence interval width in score reliability heterogeneity is 0.055 at targeted score reliability of .1 and 0.013 at targeted score reliability of .9. The relationship between variance component heterogeneity and uncertainty in estimation of score reliability heterogeneity is less obvious. Concerning error score variance heterogeneity, at CV_E of 0, average confidence interval width is 0.034 and at CV_E of .3 it is 0.042. Concerning true score variance heterogeneity, at CV_T of 0, average confidence interval width is 0.034 and at CV_E of .3 it is 0.044. It would appear that uncertainty in estimation of score reliability heterogeneity rises with larger heterogeneity in both variance components, but this increase is less strongly pronounced than the increase due to degree of targeted score reliability heterogeneity.</p>
+<p>In cases of substantial heterogeneity in true and/or error score variance, a non-linear relationship between estimated heterogeneity in score reliability and degree of score reliability can be observed. As the heterogeneity in either (or both) of the score variance components grows, we find that heterogeneity in score reliability estimates grows as targeted score reliability approaches .5, where it plateaus. As targeted score reliability approaches .1 or .9, we observed a decrease in heterogeneity in score reliability. For example, at CV_T of 0, CV_E of .3 we find average score reliability heterogeneity to be 0.04 at targeted score reliability of .1, 0.084 at targeted score reliability of .5 and 0.026 at targeted score reliability of .9. Similarly, at CV_T of .3 and CV_E of 0, we find the average heterogeneity in score reliability to be 0.032 at targeted score reliability of .1, 0.067 at targeted score reliability of .5 and 0.026 at targeted score reliability of .9. It appears that there is an interaction between heterogeneity in the score variance components and the score reliability, when estimating heterogeneity in score reliability.</p>
+<p>While it is not clear what degree of heterogeneity in score reliability is to be expected at specific degrees of heterogeneity in score variance components, we know that we should not find any heterogeneity if none of the two score variance components vary, no matter the degree of score reliability. However, if there is no heterogeneity in either of the score variance components, we instead find score reliability heterogeneity of 0.025 at targeted score reliability of .1, 0.013 at targeted score reliability of .5 and 0.003 at targeted score reliability of .9. Similarly to the score variance components, we end up overestimating the heterogeneity in score reliability if there is little or no heterogeneity in the components present. Additionally, we do so more strongly if targeted score reliability is low.</p>
+<section id="results-reliability-generalization-and-variance-decomposition" class="level2">
+<h2 class="anchored" data-anchor-id="results-reliability-generalization-and-variance-decomposition">Results Reliability Generalization and Variance Decomposition</h2>
+<section id="cacioppo" class="level3">
+<h3 class="anchored" data-anchor-id="cacioppo">Cacioppo</h3>
+<p>Data set 1 concerned the scale of Need for Cognition (Cacioppo &amp; Petty, 1982), consisting of 6 Likert-stye items (5-point scale). Measured across 21 labs in Ebersole et al.&nbsp;(2016), using Cronbach’s Alpha, score reliability varied between 0.406 and 0.819, with a mean value of 0.586 and median value 0.578. Performing a random-effects meta-analysis on the untransformed Cronbach’s Alpha estimates, we find a meta-analytic mean estimate of 0.601 (0.558 : 0.644). Additionally, we find a significant degree of heterogeneity in score reliability, at Q(20) = 192.728, p &lt;.001. In terms of I^2, heterogeneity is 77.075%, which, according to XXX constitutes a large level of heterogeneity. In terms of tau, we find a standard deviation of 0.082 in true values of Cronbach’s Alpha. Similarly, when assessing Bonett-transformed Cronbach’s Alpha estimates, we find a meta-analytic mean of -0.906. Back-transformed this constitutes a Cronbach’s Alpha of 0.596 (CI: 0.549 : 0.638) (difference in MA-est. emerges at the 3rd decimal). Heterogeneity in Bonett-transformed estimates of Cronbach’s Alpha is also of statistically significant degree: Q(20) = 80.554, p &lt;.001. Standardized heterogeneity estimates of I^2 = 77.298% and H^2 = 4.405 display highly similar amounts of heterogeneity. When using McDonald’s Omega to estimate score reliability, the results change only to a very small degree. Therefore, estimates using McDonald’s Omega can be found in the supplemental materials.</p>
+<p>Also, we use Cronbach’s Alpha to decompose the observed variance into its true and error score variance components:</p>
+<table class="table">
+<colgroup>
+<col style="width: 29%">
+<col style="width: 29%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>{}</th>
+<th>True Score Variance</th>
+<th style="text-align: right;">Error Score Variance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Min</td>
+<td>0.101</td>
+<td style="text-align: right;">0.111</td>
+</tr>
+<tr class="even">
+<td>Q1</td>
+<td>0.153</td>
+<td style="text-align: right;">0.126</td>
+</tr>
+<tr class="odd">
+<td>Median</td>
+<td>0.169</td>
+<td style="text-align: right;">0.13</td>
+</tr>
+<tr class="even">
+<td>Q3</td>
+<td>0.238</td>
+<td style="text-align: right;">0.134</td>
+</tr>
+<tr class="odd">
+<td>Max</td>
+<td>0.555</td>
+<td style="text-align: right;">0.15</td>
+</tr>
+<tr class="even">
+<td>Mean</td>
+<td>0.203</td>
+<td style="text-align: right;">0.131</td>
+</tr>
+</tbody>
+</table>
+<p>Performing a random-effects meta-analysis on the components directly leads to:</p>
+<table class="table">
+<colgroup>
+<col style="width: 29%">
+<col style="width: 29%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>{}</th>
+<th>True Score Variance</th>
+<th style="text-align: right;">Error Score Variance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Meta-Analytic Mean Estimate</td>
+<td>0.201</td>
+<td style="text-align: right;">0.127</td>
+</tr>
+<tr class="even">
+<td>Confidence Interval</td>
+<td>0.159 : 0.243</td>
+<td style="text-align: right;">0.124 : 0.131</td>
+</tr>
+<tr class="odd">
+<td>Heterogeneity tau</td>
+<td>0.089</td>
+<td style="text-align: right;">0.003</td>
+</tr>
+<tr class="even">
+<td>Heterogeneity I^2</td>
+<td>83.888</td>
+<td style="text-align: right;">9.444</td>
+</tr>
+<tr class="odd">
+<td>Heterogeneity H^2</td>
+<td>6.206</td>
+<td style="text-align: right;">1.104</td>
+</tr>
+<tr class="even">
+<td>Q(20)</td>
+<td>129.574</td>
+<td style="text-align: right;">22.735</td>
+</tr>
+<tr class="odd">
+<td>p-value QE</td>
+<td>&lt;.001</td>
+<td style="text-align: right;">0.302</td>
+</tr>
+</tbody>
+</table>
+<p>Inspecting table 1, for the true score variance, we identify a statistically significant amount of heterogeneity. For the error score variance on the other hand, we could not distinguish heterogeneity in the error score variance from zero.</p>
+</section>
+<section id="shnabel-sense-of-power-rpp" class="level3">
+<h3 class="anchored" data-anchor-id="shnabel-sense-of-power-rpp">Shnabel Sense of Power (RPP)</h3>
+<p>Data set 2 concerned the scale of Sense of Power (Shnabel &amp; Nadler, 2008), consisting of 3 Likert-stye items (7-point scale). Measured across 8 labs in Baranski et al.&nbsp;(2020), using Cronbach’s Alpha, specifically for those labs following the RPP-protocol, score reliability varied between 0.723 and 0.828, with a mean value of 0.763 and median value 0.752. Performing a random-effects meta-analysis on the untransformed Cronbach’s Alpha estimates, we find a meta-analytic mean estimate of 0.769 (0.739 : 0.799). Additionally, we find a significant degree of heterogeneity in score reliability, at Q(7) = 15.851, p = 0.027. In terms of I^2, heterogeneity is 55.557%, which, according to XXX constitutes a medium level of heterogeneity. In terms of tau, we find a standard deviation of 0.031 in true values of Cronbach’s Alpha. Similarly, when assessing Bonett-transformed Cronbach’s Alpha estimates, we find a meta-analytic mean of -1.458. Back-transformed this constitutes a Cronbach’s Alpha of 0.767 (CI: 0.736 : 0.795) (difference in MA-est. emerges at the 3rd decimal). Heterogeneity in Bonett-transformed estimates of Cronbach’s Alpha is also of statistically significant degree: Q(7) = 16.013, p = 0.025. Standardized heterogeneity estimates of I^2 = 56.122% and H^2 = 2.279 display highly similar amounts of heterogeneity.</p>
+<p>Also, we use Cronbach’s Alpha to decompose the observed variance into its true and error score variance components:</p>
+<table class="table">
+<colgroup>
+<col style="width: 29%">
+<col style="width: 29%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>{}</th>
+<th>True Score Variance</th>
+<th style="text-align: right;">Error Score Variance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Min</td>
+<td>0.67</td>
+<td style="text-align: right;">0.204</td>
+</tr>
+<tr class="even">
+<td>Q1</td>
+<td>0.755</td>
+<td style="text-align: right;">0.256</td>
+</tr>
+<tr class="odd">
+<td>Median</td>
+<td>0.81</td>
+<td style="text-align: right;">0.263</td>
+</tr>
+<tr class="even">
+<td>Q3</td>
+<td>0.935</td>
+<td style="text-align: right;">0.277</td>
+</tr>
+<tr class="odd">
+<td>Max</td>
+<td>1.236</td>
+<td style="text-align: right;">0.296</td>
+</tr>
+<tr class="even">
+<td>Mean</td>
+<td>0.864</td>
+<td style="text-align: right;">0.262</td>
+</tr>
+</tbody>
+</table>
+<p>Performing a random-effects meta-analysis on the components directly leads to:</p>
+<table class="table">
+<colgroup>
+<col style="width: 29%">
+<col style="width: 29%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>{}</th>
+<th>True Score Variance</th>
+<th style="text-align: right;">Error Score Variance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Meta-Analytic Mean Estimate</td>
+<td>0.829</td>
+<td style="text-align: right;">0.26</td>
+</tr>
+<tr class="even">
+<td>Confidence Interval</td>
+<td>0.726 : 0.931</td>
+<td style="text-align: right;">0.238 : 0.281</td>
+</tr>
+<tr class="odd">
+<td>Heterogeneity tau</td>
+<td>0.063</td>
+<td style="text-align: right;">0.025</td>
+</tr>
+<tr class="even">
+<td>Heterogeneity I^2</td>
+<td>18.662</td>
+<td style="text-align: right;">66.311</td>
+</tr>
+<tr class="odd">
+<td>Heterogeneity H^2</td>
+<td>1.229</td>
+<td style="text-align: right;">2.968</td>
+</tr>
+<tr class="even">
+<td>Q(7)</td>
+<td>9.723</td>
+<td style="text-align: right;">24.052</td>
+</tr>
+<tr class="odd">
+<td>p-value QE</td>
+<td>0.205</td>
+<td style="text-align: right;">0.001</td>
+</tr>
+</tbody>
+</table>
+<p>In table 2 we find that, heterogeneity in true score variance could not be statistically distinguished from zero. On the other hand, for the error score variance, we do find statistically significant heterogeneity.</p>
+</section>
+<section id="shnabel-sense-of-power-rev" class="level3">
+<h3 class="anchored" data-anchor-id="shnabel-sense-of-power-rev">Shnabel Sense of Power (Rev)</h3>
+<p>Comparing those results to the labs employing the revised protocol, score reliability varied between 0.603 and 0.757, with a mean value of 0.696 and median value 0.701. Performing a random-effects meta-analysis on the untransformed Cronbach’s Alpha estimates, we find a meta-analytic mean estimate of 0.706 (0.672 : 0.74). Additionally, we find no significant degree of heterogeneity in score reliability, at Q(7) = 13.045, p = 0.071. In terms of I^2, heterogeneity is 47.571%, which, according to XXX constitutes a low to medium level of heterogeneity. In terms of tau, we find a standard deviation of 0.033 in true values of Cronbach’s Alpha. Similarly, when assessing Bonett-transformed Cronbach’s Alpha estimates, we find a meta-analytic mean of -1.209. Back-transformed this constitutes a Cronbach’s Alpha of 0.701 (CI: 0.663 : 0.736) (difference in MA-est. emerges at the 3rd decimal). Heterogeneity in Bonett-transformed estimates of Cronbach’s Alpha is of statistically significant degree: Q(7) = 14.839, p = 0.038. Standardized heterogeneity estimates of I^2 = 53.705% and H^2 = 2.16 display highly similar amounts of heterogeneity.</p>
+<p>Also, we use Cronbach’s Alpha to decompose the observed variance into its true and error score variance components:</p>
+<table class="table">
+<colgroup>
+<col style="width: 29%">
+<col style="width: 29%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>{}</th>
+<th>True Score Variance</th>
+<th style="text-align: right;">Error Score Variance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Min</td>
+<td>0.541</td>
+<td style="text-align: right;">0.231</td>
+</tr>
+<tr class="even">
+<td>Q1</td>
+<td>0.604</td>
+<td style="text-align: right;">0.289</td>
+</tr>
+<tr class="odd">
+<td>Median</td>
+<td>0.679</td>
+<td style="text-align: right;">0.304</td>
+</tr>
+<tr class="even">
+<td>Q3</td>
+<td>0.821</td>
+<td style="text-align: right;">0.322</td>
+</tr>
+<tr class="odd">
+<td>Max</td>
+<td>0.914</td>
+<td style="text-align: right;">0.355</td>
+</tr>
+<tr class="even">
+<td>Mean</td>
+<td>0.705</td>
+<td style="text-align: right;">0.301</td>
+</tr>
+</tbody>
+</table>
+<p>Performing a random-effects meta-analysis on the components directly leads to:</p>
+<table class="table">
+<colgroup>
+<col style="width: 29%">
+<col style="width: 29%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>{}</th>
+<th>True Score Variance</th>
+<th style="text-align: right;">Error Score Variance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Meta-Analytic Mean Estimate</td>
+<td>0.689</td>
+<td style="text-align: right;">0.299</td>
+</tr>
+<tr class="even">
+<td>Confidence Interval</td>
+<td>0.584 : 0.794</td>
+<td style="text-align: right;">0.27 : 0.328</td>
+</tr>
+<tr class="odd">
+<td>Heterogeneity tau</td>
+<td>0.101</td>
+<td style="text-align: right;">0.036</td>
+</tr>
+<tr class="even">
+<td>Heterogeneity I^2</td>
+<td>45.728</td>
+<td style="text-align: right;">75.265</td>
+</tr>
+<tr class="odd">
+<td>Heterogeneity H^2</td>
+<td>1.843</td>
+<td style="text-align: right;">4.043</td>
+</tr>
+<tr class="even">
+<td>Q(7)</td>
+<td>12.528</td>
+<td style="text-align: right;">36.801</td>
+</tr>
+<tr class="odd">
+<td>p-value QE</td>
+<td>0.084</td>
+<td style="text-align: right;">&lt;.001</td>
+</tr>
+</tbody>
+</table>
+<p>In table 3 we find that, similar to the RPP-protocol, in the Revised protocol we also find statistically significant heterogeneity only in the error score variance components.</p>
+</section>
+<section id="hexaco" class="level3">
+<h3 class="anchored" data-anchor-id="hexaco">HEXACO</h3>
+<section id="cronbachs-alpha" class="level4">
+<h4 class="anchored" data-anchor-id="cronbachs-alpha">Cronbach’s Alpha</h4>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Scale</th>
+<th>HH</th>
+<th>EM</th>
+<th>EX</th>
+<th>AG</th>
+<th>CO</th>
+<th style="text-align: right;">OX</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Meta-analytic mean estimate</td>
+<td>0.706</td>
+<td>0.767</td>
+<td>0.798</td>
+<td>0.735</td>
+<td>0.756</td>
+<td style="text-align: right;">0.73</td>
+</tr>
+<tr class="even">
+<td>Confidence Interval</td>
+<td>0.68 : 0.731</td>
+<td>0.746 : 0.788</td>
+<td>0.773 : 0.822</td>
+<td>0.712 : 0.758</td>
+<td>0.727 : 0.785</td>
+<td style="text-align: right;">0.706 : 0.753</td>
+</tr>
+<tr class="odd">
+<td>Heterogeneity tau</td>
+<td>0.039</td>
+<td>0.033</td>
+<td>0.046</td>
+<td>0.036</td>
+<td>0.054</td>
+<td style="text-align: right;">0.037</td>
+</tr>
+<tr class="even">
+<td>Heteroeneity I^2</td>
+<td>50.048</td>
+<td>52.721</td>
+<td>75.37</td>
+<td>50.528</td>
+<td>75.125</td>
+<td style="text-align: right;">51.591</td>
+</tr>
+<tr class="odd">
+<td>Heterogeneity H^2</td>
+<td>2.002</td>
+<td>2.115</td>
+<td>4.06</td>
+<td>2.021</td>
+<td>4.02</td>
+<td style="text-align: right;">2.066</td>
+</tr>
+<tr class="even">
+<td>Q(18)</td>
+<td>39.346</td>
+<td>44.673</td>
+<td>64.587</td>
+<td>44.159</td>
+<td>57.724</td>
+<td style="text-align: right;">37.335</td>
+</tr>
+<tr class="odd">
+<td>P-value QE</td>
+<td>0.003</td>
+<td>&lt;.001</td>
+<td>&lt;.001</td>
+<td>&lt;.001</td>
+<td>&lt;.001</td>
+<td style="text-align: right;">0.005</td>
+</tr>
+</tbody>
+</table>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Scale</th>
+<th>HH</th>
+<th>EM</th>
+<th>EX</th>
+<th>AG</th>
+<th>CO</th>
+<th style="text-align: right;">OX</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Min</td>
+<td>0.433</td>
+<td>0.461</td>
+<td>0.65</td>
+<td>0.377</td>
+<td>0.521</td>
+<td style="text-align: right;">0.602</td>
+</tr>
+<tr class="even">
+<td>Q1</td>
+<td>0.662</td>
+<td>0.745</td>
+<td>0.75</td>
+<td>0.709</td>
+<td>0.701</td>
+<td style="text-align: right;">0.685</td>
+</tr>
+<tr class="odd">
+<td>Median</td>
+<td>0.715</td>
+<td>0.763</td>
+<td>0.803</td>
+<td>0.739</td>
+<td>0.784</td>
+<td style="text-align: right;">0.726</td>
+</tr>
+<tr class="even">
+<td>Q3</td>
+<td>0.745</td>
+<td>0.803</td>
+<td>0.836</td>
+<td>0.763</td>
+<td>0.796</td>
+<td style="text-align: right;">0.762</td>
+</tr>
+<tr class="odd">
+<td>Max</td>
+<td>0.773</td>
+<td>0.826</td>
+<td>0.879</td>
+<td>0.801</td>
+<td>0.826</td>
+<td style="text-align: right;">0.792</td>
+</tr>
+<tr class="even">
+<td>Mean</td>
+<td>0.689</td>
+<td>0.75</td>
+<td>0.788</td>
+<td>0.716</td>
+<td>0.741</td>
+<td style="text-align: right;">0.719</td>
+</tr>
+</tbody>
+</table>
+<section id="back-transformed-bonett-estimates-meta-analytic-results" class="level5">
+<h5 class="anchored" data-anchor-id="back-transformed-bonett-estimates-meta-analytic-results">Back-transformed Bonett-estimates (meta-analytic results)</h5>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Scale</th>
+<th>HH</th>
+<th>EM</th>
+<th>EX</th>
+<th>AG</th>
+<th>CO</th>
+<th style="text-align: right;">OX</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Meta-analytic mean estimate</td>
+<td>0.696</td>
+<td>0.759</td>
+<td>0.796</td>
+<td>0.726</td>
+<td>0.751</td>
+<td style="text-align: right;">0.725</td>
+</tr>
+<tr class="even">
+<td>Confidence Interval</td>
+<td>0.663 : 0.726</td>
+<td>0.729 : 0.786</td>
+<td>0.769 : 0.82</td>
+<td>0.692 : 0.757</td>
+<td>0.717 : 0.782</td>
+<td style="text-align: right;">0.698 : 0.749</td>
+</tr>
+<tr class="odd">
+<td>Heterogeneity I^2</td>
+<td>66.793</td>
+<td>74.745</td>
+<td>77.198</td>
+<td>73.843</td>
+<td>78.945</td>
+<td style="text-align: right;">57.412</td>
+</tr>
+<tr class="even">
+<td>Heterogeneity H^2</td>
+<td>3.011</td>
+<td>3.96</td>
+<td>4.386</td>
+<td>3.823</td>
+<td>4.75</td>
+<td style="text-align: right;">2.348</td>
+</tr>
+<tr class="odd">
+<td>Q(18)</td>
+<td>55.265</td>
+<td>74.094</td>
+<td>78.648</td>
+<td>69.962</td>
+<td>90.827</td>
+<td style="text-align: right;">42.58</td>
+</tr>
+<tr class="even">
+<td>P-value QE</td>
+<td>&lt;.001</td>
+<td>&lt;.001</td>
+<td>&lt;.001</td>
+<td>&lt;.001</td>
+<td>&lt;.001</td>
+<td style="text-align: right;">&lt;.001</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="true-score-variance" class="level4">
+<h4 class="anchored" data-anchor-id="true-score-variance">True Score Variance</h4>
+<table class="table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Scale</th>
+<th>HH</th>
+<th>EM</th>
+<th>EX</th>
+<th>AG</th>
+<th style="text-align: right;">CO</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Min</td>
+<td>0.077</td>
+<td>0.086</td>
+<td>0.144</td>
+<td>0.052</td>
+<td style="text-align: right;">0.102</td>
+</tr>
+<tr class="even">
+<td>Q1</td>
+<td>0.204</td>
+<td>0.287</td>
+<td>0.272</td>
+<td>0.239</td>
+<td style="text-align: right;">0.219</td>
+</tr>
+<tr class="odd">
+<td>Median</td>
+<td>0.258</td>
+<td>0.319</td>
+<td>0.307</td>
+<td>0.256</td>
+<td style="text-align: right;">0.268</td>
+</tr>
+<tr class="even">
+<td>Q3</td>
+<td>0.279</td>
+<td>0.391</td>
+<td>0.409</td>
+<td>0.292</td>
+<td style="text-align: right;">0.326</td>
+</tr>
+<tr class="odd">
+<td>Max</td>
+<td>0.336</td>
+<td>0.44</td>
+<td>0.525</td>
+<td>0.383</td>
+<td style="text-align: right;">0.43</td>
+</tr>
+<tr class="even">
+<td>Mean</td>
+<td>0.241</td>
+<td>0.318</td>
+<td>0.337</td>
+<td>0.253</td>
+<td style="text-align: right;">0.268</td>
+</tr>
+</tbody>
+</table>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Scale</th>
+<th>HH</th>
+<th>EM</th>
+<th>EX</th>
+<th>AG</th>
+<th>CO</th>
+<th style="text-align: right;">OX</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Meta-analytic mean estimate</td>
+<td>0.235</td>
+<td>0.308</td>
+<td>0.327</td>
+<td>0.245</td>
+<td>0.26</td>
+<td style="text-align: right;">0.285</td>
+</tr>
+<tr class="even">
+<td>Confidence Interval</td>
+<td>0.204 : 0.265</td>
+<td>0.265 : 0.351</td>
+<td>0.283 : 0.372</td>
+<td>0.208 : 0.282</td>
+<td>0.223 : 0.296</td>
+<td style="text-align: right;">0.25 : 0.32</td>
+</tr>
+<tr class="odd">
+<td>Heterogeneity tau</td>
+<td>0.049</td>
+<td>0.08</td>
+<td>0.083</td>
+<td>0.069</td>
+<td>0.068</td>
+<td style="text-align: right;">0.062</td>
+</tr>
+<tr class="even">
+<td>Heteroeneity I^2</td>
+<td>52.902</td>
+<td>72.703</td>
+<td>72.339</td>
+<td>76.582</td>
+<td>74.663</td>
+<td style="text-align: right;">65.68</td>
+</tr>
+<tr class="odd">
+<td>Heterogeneity H^2</td>
+<td>2.123</td>
+<td>3.663</td>
+<td>3.615</td>
+<td>4.27</td>
+<td>3.947</td>
+<td style="text-align: right;">2.914</td>
+</tr>
+<tr class="even">
+<td>Q(18)</td>
+<td>39.551</td>
+<td>90.652</td>
+<td>64.645</td>
+<td>120.464</td>
+<td>80.405</td>
+<td style="text-align: right;">55.258</td>
+</tr>
+<tr class="odd">
+<td>P-value QE</td>
+<td>0.002</td>
+<td>&lt;.001</td>
+<td>&lt;.001</td>
+<td>&lt;.001</td>
+<td>&lt;.001</td>
+<td style="text-align: right;">&lt;.001</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="error-score-variance" class="level4">
+<h4 class="anchored" data-anchor-id="error-score-variance">Error Score Variance</h4>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Scale</th>
+<th>HH</th>
+<th>EM</th>
+<th>EX</th>
+<th>AG</th>
+<th>CO</th>
+<th style="text-align: right;">OX</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Min</td>
+<td>0.085</td>
+<td>0.086</td>
+<td>0.071</td>
+<td>0.079</td>
+<td>0.074</td>
+<td style="text-align: right;">0.096</td>
+</tr>
+<tr class="even">
+<td>Q1</td>
+<td>0.095</td>
+<td>0.092</td>
+<td>0.075</td>
+<td>0.085</td>
+<td>0.078</td>
+<td style="text-align: right;">0.101</td>
+</tr>
+<tr class="odd">
+<td>Median</td>
+<td>0.104</td>
+<td>0.095</td>
+<td>0.081</td>
+<td>0.09</td>
+<td>0.084</td>
+<td style="text-align: right;">0.109</td>
+</tr>
+<tr class="even">
+<td>Q3</td>
+<td>0.108</td>
+<td>0.102</td>
+<td>0.094</td>
+<td>0.096</td>
+<td>0.089</td>
+<td style="text-align: right;">0.116</td>
+</tr>
+<tr class="odd">
+<td>Max</td>
+<td>0.12</td>
+<td>0.114</td>
+<td>0.104</td>
+<td>0.112</td>
+<td>0.117</td>
+<td style="text-align: right;">0.131</td>
+</tr>
+<tr class="even">
+<td>Mean</td>
+<td>0.102</td>
+<td>0.097</td>
+<td>0.084</td>
+<td>0.092</td>
+<td>0.086</td>
+<td style="text-align: right;">0.109</td>
+</tr>
+</tbody>
+</table>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Scale</th>
+<th>HH</th>
+<th>EM</th>
+<th>EX</th>
+<th>AG</th>
+<th>CO</th>
+<th style="text-align: right;">OX</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Meta-analytic mean estimate</td>
+<td>0.102</td>
+<td>0.097</td>
+<td>0.083</td>
+<td>0.092</td>
+<td>0.085</td>
+<td style="text-align: right;">0.108</td>
+</tr>
+<tr class="even">
+<td>Confidence Interval</td>
+<td>0.097 : 0.106</td>
+<td>0.093 : 0.1</td>
+<td>0.078 : 0.088</td>
+<td>0.088 : 0.095</td>
+<td>0.081 : 0.09</td>
+<td style="text-align: right;">0.104 : 0.113</td>
+</tr>
+<tr class="odd">
+<td>Heterogeneity tau</td>
+<td>0.008</td>
+<td>0.005</td>
+<td>0.009</td>
+<td>0.007</td>
+<td>0.009</td>
+<td style="text-align: right;">0.008</td>
+</tr>
+<tr class="even">
+<td>Heteroeneity I^2</td>
+<td>69.422</td>
+<td>49.982</td>
+<td>80.355</td>
+<td>65.765</td>
+<td>77.466</td>
+<td style="text-align: right;">66.844</td>
+</tr>
+<tr class="odd">
+<td>Heterogeneity H^2</td>
+<td>3.27</td>
+<td>1.999</td>
+<td>5.09</td>
+<td>2.921</td>
+<td>4.438</td>
+<td style="text-align: right;">3.016</td>
+</tr>
+<tr class="even">
+<td>Q(18)</td>
+<td>59.251</td>
+<td>35.907</td>
+<td>80.68</td>
+<td>50.173</td>
+<td>68.688</td>
+<td style="text-align: right;">52.667</td>
+</tr>
+<tr class="odd">
+<td>P-value QE</td>
+<td>&lt;.001</td>
+<td>0.007</td>
+<td>&lt;.001</td>
+<td>&lt;.001</td>
+<td>&lt;.001</td>
+<td style="text-align: right;">&lt;.001</td>
+</tr>
+</tbody>
+</table>
 </section>
 </section>
 </section>

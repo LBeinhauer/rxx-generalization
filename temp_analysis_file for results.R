@@ -255,3 +255,76 @@ vars9 <- data.list[[9]] %>%
 
 hist(vars9$var, breaks = 10)  
 hist(vars9$lnvar, breaks = 10)  
+
+
+
+
+
+
+
+
+### Simulation data, check equivalence of rel vs ln(1-rel) approach
+
+
+Large_Sim_Data <- readRDS(file = here("Notes/Sim_40000_conditions.RData"))
+
+rel.L <- lapply(Large_Sim_Data, FUN = function(x){
+  
+  x$rel
+  
+})
+
+CVT <- seq(from = 0, to = .3, by = .1)
+CVE <- seq(from = 0, to = .3, by = .1)
+rel <- seq(from = .1, to = .9, by = .2)
+
+# combine 4*4*5 conditions
+condition_combinations <- expand.grid(CVT, CVE, rel)
+names(condition_combinations) <- c("CVT", "CVE", "rel")
+
+rel_tau_Bonett.L <- lapply(rel.L, FUN = function(x){
+  
+  Bonett_transf <- log(1 - x)
+  V_Bonett_transf <- rep((2*10)/((10-1)*(100-2)), 100)
+  
+  sqrt(metafor::rma(yi = Bonett_transf
+                    , vi = V_Bonett_transf
+                    , measure = "GEN"
+                    , method = "REML")$tau2)
+  
+})
+
+rel_I2_Bonett.L <- lapply(rel.L, FUN = function(x){
+  
+  Bonett_transf <- log(1 - x)
+  V_Bonett_transf <- rep((2*10)/((10-1)*(100-2)), 100)
+  
+  (metafor::rma(yi = Bonett_transf
+                , vi = V_Bonett_transf
+                , measure = "GEN"
+                , method = "REML")$I2)
+  
+})
+
+rel_I2_normal.L <- lapply(Large_Sim_Data, FUN = function(x){
+  
+  tryCatch({
+    metafor::rma(yi = x$rel, sei = x$ase
+                 , measure = "GEN"
+                 , method = "REML")$I2
+    
+  },
+  
+  error = function(e)(cat(conditionMessage(e)))) 
+  
+})
+
+rel_tau_Bonett.df <- data.frame(tau_rel_B = sapply(rel_tau_Bonett.L, FUN = function(x){x})
+                                , I2_rel_B = sapply(rel_I2_Bonett.L, FUN = function(x){x})
+                                , I2_rel = sapply(rel_I2_normal.L, FUN = function(x){ifelse(is.numeric(x), x, NA)})
+                                , CVT = rep(condition_combinations$CVT, 500)
+                                , CVE = rep(condition_combinations$CVE, 500)
+                                , rel = rep(condition_combinations$rel, 500))
+
+plot(rel_tau_Bonett.df$tau_rel_B, vis.df$tau_rel)
+plot(rel_tau_Bonett.df$I2_rel_B, rel_tau_Bonett.df$I2_rel)
