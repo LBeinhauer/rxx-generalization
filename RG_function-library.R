@@ -515,21 +515,43 @@ sim_het_VC <- function(j, n, k, reliability = 0.5, mean_score = 0, mean_observed
   }
   
   
-  true_var <- truncnorm::rtruncnorm(n = k, mean = mean_var_T, sd = tau_var_T, a = 0)
+  var_ln_var_T <- log(((tau_var_T^2) / (mean_var_T^2)) + 1)
   
-  error_var <- truncnorm::rtruncnorm(n = k, mean = mean_var_E, sd = tau_var_E, a = 0)
+  mu_ln_var_T <- log(mean_var_T) - (1/2) * var_ln_var_T
+  
+  
+  sample_ln_var_T <- rnorm(k
+                           , mean = mu_ln_var_T
+                           , sd = sqrt(var_ln_var_T)
+                           )
+  
+  
+  sample_transf_ln_var_T <- exp(sample_ln_var_T)
+  
+  
+  
+  var_ln_var_E <- log(((tau_var_E^2)/(mean_var_E^2)) + 1)
+  
+  mu_ln_var_E <- log(mean_var_E) - (1/2) * var_ln_var_E
+  
+  
+  sample_ln_var_E <- rnorm(k, mean = mu_ln_var_E, sd = sqrt(var_ln_var_E))
+  
+  sample_transf_ln_var_E <- exp(sample_ln_var_E)
+  
+  
   
   sim_d.L <- apply(as.matrix(1:k), MARGIN = 1, FUN = function(x){
     
-    var_T1 <- true_var[x]
+    var_T1 <- sample_transf_ln_var_T[x]
     
-    var_E1 <- error_var[x]*j
+    var_E1 <- sample_transf_ln_var_E[x]*j
     
     mat <- matrix(var_T1, nrow = j, ncol = j)
     
     diag(mat) <- var_T1 + var_E1
     
-    obs_scores <- mvrnorm(n = n, mu = rep(mean_score, j), Sigma = mat,
+    obs_scores <- MASS::mvrnorm(n = n, mu = rep(mean_score, j), Sigma = mat,
                           empirical = empirical)
     
     sim_data <- obs_scores
