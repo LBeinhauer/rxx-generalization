@@ -514,10 +514,23 @@ sim_het_VC <- function(j, n, k, reliability = 0.5, mean_score = 0, mean_observed
     tau_var_E <- mean_var_E * CV_var_E
   }
   
+  tau_ln_var_T <- sqrt(log((tau_var_T^2) / mean_var_T^2) + 1)
+  tau_ln_var_E <- sqrt(log((tau_var_E^2) / mean_var_E^2) + 1)
   
-  true_var <- truncnorm::rtruncnorm(n = k, mean = mean_var_T, sd = tau_var_T, a = 0)
   
-  error_var <- truncnorm::rtruncnorm(n = k, mean = mean_var_E, sd = tau_var_E, a = 0)
+  mu_ln_var_T <- log(mean_var_T) - (1/2) * tau_ln_var_T^2
+  mu_ln_var_E <- log(mean_var_E) - (1/2) * tau_ln_var_E^2
+  
+  
+  ln_true_var <- rnorm(n = k, mean = mu_ln_var_T, sd = tau_ln_var_T)
+  ln_error_var <- rnorm(n = k, mean = mu_ln_var_E, sd = tau_ln_var_E)
+  
+  # true_var <- truncnorm::rtruncnorm(n = k, mean = mean_var_T, sd = tau_var_T, a = 0)
+  # 
+  # error_var <- truncnorm::rtruncnorm(n = k, mean = mean_var_E, sd = tau_var_E, a = 0)
+  
+  true_var <- exp(ln_true_var)
+  error_var <- exp(ln_error_var)
   
   sim_d.L <- apply(as.matrix(1:k), MARGIN = 1, FUN = function(x){
     
