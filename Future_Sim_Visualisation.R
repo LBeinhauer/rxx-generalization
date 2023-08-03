@@ -54,22 +54,22 @@ Large_Sim_Data_RMA <- lapply(Large_Sim_Data, FUN = function(x){
   
   )
 })
-
-
-Large_Sim_Data_RMA.meta <- lapply(Large_Sim_Data, FUN = function(x){
-  
-  tauT <- meta::metagen(TE = x$varT, seTE = x$SE_T.b)
-  tauE <- meta::metagen(TE = x$varE, seTE = x$SE_E.b)
-  
-  return(data.frame(tau_T = (tauT$tau),
-                    tau_E = (tauE$tau),
-                    p_T = tauT$pval.Q,
-                    p_E = tauE$pval.Q,
-                    tau_T.lower = tauT$lower.tau,
-                    tau_T.upper = tauT$upper.tau,
-                    tau_E.lower = tauE$lower.tau,
-                    tau_E.upper = tauE$upper.tau))
-})
+# 
+# 
+# Large_Sim_Data_RMA.meta <- lapply(Large_Sim_Data, FUN = function(x){
+#   
+#   tauT <- meta::metagen(TE = x$varT, seTE = x$SE_T.b)
+#   tauE <- meta::metagen(TE = x$varE, seTE = x$SE_E.b)
+#   
+#   return(data.frame(tau_T = (tauT$tau),
+#                     tau_E = (tauE$tau),
+#                     p_T = tauT$pval.Q,
+#                     p_E = tauE$pval.Q,
+#                     tau_T.lower = tauT$lower.tau,
+#                     tau_T.upper = tauT$upper.tau,
+#                     tau_E.lower = tauE$lower.tau,
+#                     tau_E.upper = tauE$upper.tau))
+# })
 
 
 vis.df <- data.frame(all_conditions,
@@ -77,16 +77,16 @@ vis.df <- data.frame(all_conditions,
                      tau_E = sapply(Large_Sim_Data_RMA, FUN = function(x){ifelse(is.numeric(x$tau_E), x$tau_E, NA)}),
                      p_T = sapply(Large_Sim_Data_RMA, FUN = function(x){ifelse(is.numeric(x$p_T), x$p_T, NA)}),
                      p_E = sapply(Large_Sim_Data_RMA, FUN = function(x){ifelse(is.numeric(x$p_E), x$p_T, NA)}))
-
-vis.df.meta <- data.frame(condition_combinations,
-                          tau_T = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_T}),
-                          tau_E = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_E}),
-                          p_T = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$p_T}),
-                          p_E = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$p_E}),
-                          tau_T.lower = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_T.lower}),
-                          tau_T.upper = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_T.upper}),
-                          tau_E.lower = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_E.lower}),
-                          tau_E.upper = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_E.upper}))
+# 
+# vis.df.meta <- data.frame(condition_combinations,
+#                           tau_T = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_T}),
+#                           tau_E = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_E}),
+#                           p_T = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$p_T}),
+#                           p_E = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$p_E}),
+#                           tau_T.lower = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_T.lower}),
+#                           tau_T.upper = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_T.upper}),
+#                           tau_E.lower = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_E.lower}),
+#                           tau_E.upper = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_E.upper}))
 
 Large_Sim_data_RMA_rel <- lapply(Large_Sim_Data, FUN = function(x){
   tryCatch({
@@ -114,7 +114,7 @@ Large_Sim_data_RMA_rel <- lapply(Large_Sim_Data, FUN = function(x){
                       tau_rel_cTE = sqrt(taurel_corTE$tau2))
     )
   },
-  error = function(e)(cat("ERROR: ", conditionMessage(e)))
+  error = function(e)(cat("ERROR: ", conditionMessage(e), "\n"))
   
   )
 })
