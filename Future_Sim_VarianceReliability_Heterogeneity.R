@@ -3,8 +3,8 @@
 
 
 # selected packages required for analysis
-packages <- c("tidyverse", "here", "psych", "coefficientalpha", "boot", "MASS", 
-              "truncnorm", "spsUtil", "metafor", "meta", "bayesmeta", "future.apply")
+packages <- c("tidyverse", "here", "boot", "MASS", 
+              "spsUtil", "metafor", "future.apply")
 
 # check, whether library already installed or not - install and load as needed:
 apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
@@ -22,42 +22,6 @@ apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
 
 # source function from function-script
 source(here("RG_function-library.R"))
-
-
-## Heterogeneity in True Variance
-
-# takes about .15 seconds for a single run of 1000 samples.
-
-system.time(
-  test1 <- sim_het_VC(j = 10, n = 100, k = 100,
-                      reliability = .5, mean_score = 0, 
-                      mean_observed_var = 10,
-                      CV_var_T = .2,
-                      CV_var_E = .1,
-                      tau_var_T = 0,
-                      tau_var_E = 0)
-)
-
-
-# takes about 16 seconds to decompose variance & generate bootstrapped SE for 100(!) samples 
-#  (with 3000 bootstrapped samples each)
-
-
-system.time(
-  long_test_T <- apply_Bootstrap_SE_nonspecific(test1$sim_data.L, var.component = "TRUE", R = 3000)
-)
-
-
-plan(multisession, workers = 7)
-
-# takes about 12 seconds instead on 7 cores
-
-system.time(
-  long_test_T <- future_apply_Bootstrap_SE_nonspecific(test1$sim_data.L, var.component = "TRUE", R = 3000)
-)
-
-plan(sequential)
-
 
 
 # simulation scheme:
@@ -80,76 +44,6 @@ for(i in 1:1000){
   all_conditions <- rbind(all_conditions, condition_combinations)
 }
 
-# 
-# completion_grid <- matrix(0, nrow = nrow(all_conditions), ncol = 1)
-# 
-# write.csv(completion_grid, here("Notes/completion_grid.csv"), row.names = FALSE)
-# write.csv(completion_grid, here("Notes/working_on_grid.csv"), row.names = FALSE)
-# 
-# 
-# 
-# 
-# 
-# bingo_apply <- function(cells, completion_grid_path, working_on_grid_path){
-#   # pull info, which cells completed
-#   comp_grid <- read.csv(completion_grid_path)
-#   
-#   # assess, whether anything still needs to be computed
-#   if(sum(comp_grid == 0) == 0){
-#     stop("All cells completed")
-#   }
-#   
-#   # pull info, which cells are worked on atm
-#   working_grid <- read.csv(working_on_grid_path)
-#   
-#   # combine the infos
-#   both_grid <- cbind(comp_grid, working_grid)
-#   
-#   
-#   if(length(rowSums(both_grid) == 0) == 0){
-#     stop("Either all cells completed, or all remaining cells already worked on")
-#   }
-#   
-#   # determine, which cell should be worked on now
-#   it <- which(rowSums(both_grid) == 0)[1]
-#   
-#   # update working_grid
-#   working_grid[it,] <- 1
-#   working_grid_updated <- working_grid
-#   
-#   # update info, which cells are worked on atm
-#   write.csv(working_grid_updated, file = working_on_grid_path, row.names = FALSE)
-#   
-#   
-#   # do action
-#   
-#   
-#   
-#   # re-assess file, which have been completed so far
-#   comp_grid_end <- read.csv(completion_grid_path)
-#   
-#   # update completion grid
-#   comp_grid_updated <- comp_grid_end
-#   comp_grid_updated[it,] <- 1
-#   
-#   # update info, which cells have been completed
-#   write.csv(comp_grid_updated, file = completion_grid_path, row.names = FALSE)
-#   
-#   # re-assess file, which is being worked on atm
-#   working_grid_end <- read.csv(working_on_grid_path)
-#   
-#   
-#   # update working_grid
-#   working_grid_end[it,] <- 0
-#   
-#   # update info, which cells are worked on atm
-#   write.csv(working_grid_end, file = working_on_grid_path, row.names = FALSE)
-# }
-# 
-# 
-# 
-# 
-# 
 
 
 # call additional cores (make sure you have at least 1 core remaining, in case
@@ -158,15 +52,12 @@ plan(multisession, workers = 7)
 
 
 
-set.seed(050922)
+set.seed(040823)
 
 
 
-# time for 20 replications at n = 100, k = 100, R = 3000 using 7 cores: 280 seconds
-
-
-# sim_apply_boot <- function(condition_row, seed)
-
+# time for 20 replications at n = 100, k = 100, R = 3000 using 7 cores: 235 seconds
+## NOT ON POWER
 
 
 # keep time while running simulation
@@ -204,18 +95,19 @@ system.time(
     ase <- sapply(a, FUN = function(x){x$ase})
     
     # prepare data frame to be returned by function
-    df <- data.frame(varT.b = b.data_T$boot.mean,
-                     SE_T.b = b.data_T$SE,
-                     varE.b = b.data_E$boot.mean,
-                     SE_E.b = b.data_E$SE,
+    df <- data.frame(varT.b = b.data_T$df.formatted$boot.mean,
+                     SE_T.b = b.data_T$df.formatted$SE,
+                     varE.b = b.data_E$df.formatted$boot.mean,
+                     SE_E.b = b.data_E$df.formatted$SE,
                      varT = varT,
                      varE = varE,
                      rel = rel,
                      ase = ase)
     
-    
-    # write.csv(df, here(paste0("Notes/Simulation_sub_files/sim", it, ".csv")), row.names = FALSE)
-    
+    # collect results of Bootstrapping endeavours in seperate .csv-files
+    write.csv(df, here(paste0("Simulation Data/Simulation_sub_files/sim", x, ".csv")), row.names = FALSE)
+    # collect simulated data (lists) in seperate .RData-files
+    saveRDS(it.simdata, here(paste0("Simulation Data/Data/", x, ".RData")))
     
     return(df)
     
@@ -224,6 +116,8 @@ system.time(
 
 
 plan(sequential)
+
+## The following code might help you kill the cores running simulations, if anything goes wrong
 
 # v <- listenv::listenv()
 # for(ii in 1:15){

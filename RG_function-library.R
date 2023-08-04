@@ -514,8 +514,8 @@ sim_het_VC <- function(j, n, k, reliability = 0.5, mean_score = 0, mean_observed
     tau_var_E <- mean_var_E * CV_var_E
   }
   
-  tau_ln_var_T <- sqrt(log((tau_var_T^2) / mean_var_T^2) + 1)
-  tau_ln_var_E <- sqrt(log((tau_var_E^2) / mean_var_E^2) + 1)
+  tau_ln_var_T <- sqrt(log(((tau_var_T^2) / (mean_var_T^2)) + 1))
+  tau_ln_var_E <- sqrt(log(((tau_var_E^2) / (mean_var_E^2)) + 1))
   
 
   mu_ln_var_T <- log(mean_var_T) - (1/2) * tau_ln_var_T^2
@@ -534,9 +534,9 @@ sim_het_VC <- function(j, n, k, reliability = 0.5, mean_score = 0, mean_observed
 
   sim_d.L <- apply(as.matrix(1:k), MARGIN = 1, FUN = function(x){
     
-    var_T1 <- sample_transf_ln_var_T[x]
+    var_T1 <- true_var[x]
     
-    var_E1 <- sample_transf_ln_var_E[x]*j
+    var_E1 <- error_var[x]*j
     
     mat <- matrix(var_T1, nrow = j, ncol = j)
     
