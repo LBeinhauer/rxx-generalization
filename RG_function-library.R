@@ -56,31 +56,31 @@ estimate_alpha <- function(data, csv = FALSE, project.title = NULL){
 }
 
 
+## Artifact
 
-
-estimate_omega <- function(data, csv = FALSE, project.title = NULL){
-  
-  k <- length(unique(data$source))
-  s.idx <- grep("source", names(data))
-  
-  est <- sapply(1:k, FUN = function(x){
-    d <- data[which(data$source == unique(data$source)[x]), -s.idx]
-    
-    fit <- spsUtil::quiet(coefficientalpha::omega(d, se = TRUE, test = FALSE, silent = TRUE))
-    
-    return(c(fit$omega, fit$se))
-  })  
-  
-  df <- data.frame(Reliability = t(est)[,1],
-                   StandardError = t(est)[,2],
-                   source = unique(data$source))
-  
-  if(csv){
-    write.csv(df, file = here(paste0("Data/Reliability Estimates/", project.title, "_Omega.csv")), row.names = FALSE)
-  }
-  
-  return(df)
-}
+# estimate_omega <- function(data, csv = FALSE, project.title = NULL){
+#   
+#   k <- length(unique(data$source))
+#   s.idx <- grep("source", names(data))
+#   
+#   est <- sapply(1:k, FUN = function(x){
+#     d <- data[which(data$source == unique(data$source)[x]), -s.idx]
+#     
+#     fit <- spsUtil::quiet(coefficientalpha::omega(d, se = TRUE, test = FALSE, silent = TRUE))
+#     
+#     return(c(fit$omega, fit$se))
+#   })  
+#   
+#   df <- data.frame(Reliability = t(est)[,1],
+#                    StandardError = t(est)[,2],
+#                    source = unique(data$source))
+#   
+#   if(csv){
+#     write.csv(df, file = here(paste0("Data/Reliability Estimates/", project.title, "_Omega.csv")), row.names = FALSE)
+#   }
+#   
+#   return(df)
+# }
 
 
 estimate_Bonett_alpha <- function(data, csv = FALSE, project.title = NULL){
@@ -116,37 +116,39 @@ estimate_Bonett_alpha <- function(data, csv = FALSE, project.title = NULL){
 }
 
 
-estimate_Bonett_omega <- function(data, csv = FALSE, project.title = NULL){
-  
-  k <- length(unique(data$source))
-  s.idx <- grep("source", names(data))
-  j <- k-1
-  n <- data %>%
-    group_by(source) %>%
-    summarise(n = n())
-  n <- n$n
-  
-  est <- apply(as.matrix(1:k), MARGIN = 1, FUN = function(x){
-    d <- data[which(data$source == unique(data$source)[x]), -s.idx]
-    
-    fit <- spsUtil::quiet(coefficientalpha::omega(d, se = TRUE, test = FALSE, silent = TRUE))
-  })  
-  
-  Omega <- sapply(est, FUN = function(x){x$omega})
-  
-  B.Omega <- log(1 - Omega)
-  SE_B.Omega <- sqrt((2 * j)/((j - 1) * (n - 2)))                
-  
-  df <- data.frame(Reliability = B.Omega,
-                   StandardError = SE_B.Omega,
-                   source = unique(data$source))
-  
-  if(csv){
-    write.csv(df, file = here(paste0("Data/Reliability Estimates/", project.title, "_Bonett-Omega.csv")), row.names = FALSE)
-  }
-  
-  return(df)
-}
+## artifact
+
+# estimate_Bonett_omega <- function(data, csv = FALSE, project.title = NULL){
+#   
+#   k <- length(unique(data$source))
+#   s.idx <- grep("source", names(data))
+#   j <- k-1
+#   n <- data %>%
+#     group_by(source) %>%
+#     summarise(n = n())
+#   n <- n$n
+#   
+#   est <- apply(as.matrix(1:k), MARGIN = 1, FUN = function(x){
+#     d <- data[which(data$source == unique(data$source)[x]), -s.idx]
+#     
+#     fit <- spsUtil::quiet(coefficientalpha::omega(d, se = TRUE, test = FALSE, silent = TRUE))
+#   })  
+#   
+#   Omega <- sapply(est, FUN = function(x){x$omega})
+#   
+#   B.Omega <- log(1 - Omega)
+#   SE_B.Omega <- sqrt((2 * j)/((j - 1) * (n - 2)))                
+#   
+#   df <- data.frame(Reliability = B.Omega,
+#                    StandardError = SE_B.Omega,
+#                    source = unique(data$source))
+#   
+#   if(csv){
+#     write.csv(df, file = here(paste0("Data/Reliability Estimates/", project.title, "_Bonett-Omega.csv")), row.names = FALSE)
+#   }
+#   
+#   return(df)
+# }
 
 
 

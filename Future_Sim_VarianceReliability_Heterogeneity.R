@@ -62,7 +62,7 @@ set.seed(040823)
 
 # keep time while running simulation
 system.time(
-  Large_Sim_Data <- future_lapply(1:nrow(all_conditions[1:20,]), future.seed = TRUE, FUN = function(x){
+  Large_Sim_Data <- future_lapply(1:nrow(all_conditions), future.seed = TRUE, FUN = function(x){
     
     # simulate data, according to specific condition simulated at the time
       # additional information on sim_het_VC can be found in the function-library
