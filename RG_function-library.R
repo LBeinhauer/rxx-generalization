@@ -31,23 +31,34 @@ apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
 })
 
 
+## A function to estimate Cronbach's Alpha, using the package psych
 
-
+#  data-argument expects a data.frame. This data.frame may only contain columns containing
+# responses concerning a respective item and a single column containg the source-ID, named
+# "source" 
 estimate_alpha <- function(data, csv = FALSE, project.title = NULL){
   
+  # compute nr. of groups
   k <- length(unique(data$source))
+  # find index of "source"
   s.idx <- grep("source", names(data))
   
+  # apply-loop to generate estimate of Cronbach's Alpha and its Standard Error, using psych
   est <- apply(as.matrix(1:k), MARGIN = 1, FUN = function(x){
+    
+    # identify responses belonging to group of current iteration, remove source column
     d <- data[which(data$source == unique(data$source)[x]), -s.idx]
     
+    # compute Cronbach' Alpha & Standard Error - mute psych-output to console
     spsUtil::quiet(psych::alpha(d))
   })  
   
+  # store results in a data.frame
   df <- data.frame(Reliability = sapply(est, FUN = function(x){x$total$raw_alpha}),
                    StandardError = sapply(est, FUN = function(x){x$total$ase}),
                    source = unique(data$source))
   
+  # if desired, store data.frame in a .csv-file
   if(csv){
     write.csv(df, file = here(paste0("Data/Reliability Estimates/", project.title, "_Alpha.csv")), row.names = FALSE)
   }
@@ -56,58 +67,50 @@ estimate_alpha <- function(data, csv = FALSE, project.title = NULL){
 }
 
 
-## Artifact
+## A function to estimate the Bonnett-transform of Cronbach's Alpha
 
-# estimate_omega <- function(data, csv = FALSE, project.title = NULL){
-#   
-#   k <- length(unique(data$source))
-#   s.idx <- grep("source", names(data))
-#   
-#   est <- sapply(1:k, FUN = function(x){
-#     d <- data[which(data$source == unique(data$source)[x]), -s.idx]
-#     
-#     fit <- spsUtil::quiet(coefficientalpha::omega(d, se = TRUE, test = FALSE, silent = TRUE))
-#     
-#     return(c(fit$omega, fit$se))
-#   })  
-#   
-#   df <- data.frame(Reliability = t(est)[,1],
-#                    StandardError = t(est)[,2],
-#                    source = unique(data$source))
-#   
-#   if(csv){
-#     write.csv(df, file = here(paste0("Data/Reliability Estimates/", project.title, "_Omega.csv")), row.names = FALSE)
-#   }
-#   
-#   return(df)
-# }
-
-
+#  data-argument expects a data.frame. This data.frame may only contain columns containing
+# responses concerning a respective item and a single column containg the source-ID, named
+# "source" 
 estimate_Bonett_alpha <- function(data, csv = FALSE, project.title = NULL){
   
+  # compute nr. of groups
   k <- length(unique(data$source))
+  # identify "source"-colum
   s.idx <- grep("source", names(data))
-  j <- k-1
+  # compute nr. of items
+  j <- length(names(data[,-s.idx]))
+  # compute group-sample size
   n <- data %>%
     group_by(source) %>%
     summarise(n = n())
   n <- n$n
   
+  # apply-loop to generate estimate of Cronbach's Alpha and its Standard Error, using psych
   est <- apply(as.matrix(1:k), MARGIN = 1, FUN = function(x){
+    
+    # identify responses belonging to group of current iteration, remove source column
     d <- data[which(data$source == unique(data$source)[x]), -s.idx]
     
+    # compute Cronbach' Alpha & Standard Error - mute psych-output to console
     spsUtil::quiet(psych::alpha(d))
   })  
   
+  # extract alpha-estimates from list
   Alpha <- sapply(est, FUN = function(x){x$total$raw_alpha})
   
+  # generate Bonett-transform of Cronbach's Alpha
   B.Alpha <- log(1 - Alpha)
-  SE_B.Alpha <- sqrt((2 * j)/((j - 1) * (n - 2)))                
+  
+  # generate Standard Error of Bonett-transform of Cronbach's Alpha
+  SE_B.Alpha <- sqrt((2 * j)/((j - 1) * (k - 2)))                
                   
+  # store results in a data.frame
   df <- data.frame(Reliability = B.Alpha,
                    StandardError = SE_B.Alpha,
                    source = unique(data$source))
   
+  # if desired, store results in a .csv-file
   if(csv){
     write.csv(df, file = here(paste0("Data/Reliability Estimates/", project.title, "_Bonett-Alpha.csv")), row.names = FALSE)
   }
@@ -117,38 +120,6 @@ estimate_Bonett_alpha <- function(data, csv = FALSE, project.title = NULL){
 
 
 
-
-# estimate_Bonett_omega <- function(data, csv = FALSE, project.title = NULL){
-#   
-#   k <- length(unique(data$source))
-#   s.idx <- grep("source", names(data))
-#   j <- k-1
-#   n <- data %>%
-#     group_by(source) %>%
-#     summarise(n = n())
-#   n <- n$n
-#   
-#   est <- apply(as.matrix(1:k), MARGIN = 1, FUN = function(x){
-#     d <- data[which(data$source == unique(data$source)[x]), -s.idx]
-#     
-#     fit <- spsUtil::quiet(coefficientalpha::omega(d, se = TRUE, test = FALSE, silent = TRUE))
-#   })  
-#   
-#   Omega <- sapply(est, FUN = function(x){x$omega})
-#   
-#   B.Omega <- log(1 - Omega)
-#   SE_B.Omega <- sqrt((2 * j)/((j - 1) * (n - 2)))                
-#   
-#   df <- data.frame(Reliability = B.Omega,
-#                    StandardError = SE_B.Omega,
-#                    source = unique(data$source))
-#   
-#   if(csv){
-#     write.csv(df, file = here(paste0("Data/Reliability Estimates/", project.title, "_Bonett-Omega.csv")), row.names = FALSE)
-#   }
-#   
-#   return(df)
-# }
 
 
 
