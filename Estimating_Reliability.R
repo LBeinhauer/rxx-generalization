@@ -32,20 +32,25 @@ apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
   }
 })
 
+
+# source the function-library R-script
 source(here("RG_function-library.R"))
 
 
-
+# identify paths of relevant data-files
 path_data <- list.files(here("Data/Extracted (Project) Data"), full.names = TRUE)
 
 
+# read data-files. Resulting Object is a list.
 data.list <- lapply(path_data, read.csv)
 
+# extract project names from the path-files
 names(data.list) <- substr(list.files(here("Data/Extracted (Project) Data"), full.names = FALSE),
                            1, (nchar(list.files(here("Data/Extracted (Project) Data"), full.names = FALSE))-4))
 
 
 
+# Generate estimates of Cronbach's Alpha, using pre-defined function in an apply-loop
 alpha_estimates.list <- lapply(seq_along(data.list), FUN = function(x){
   estimate_alpha(data.list[[x]], csv = TRUE, 
                  project.title = names(data.list)[x])
@@ -54,35 +59,23 @@ alpha_estimates.list <- lapply(seq_along(data.list), FUN = function(x){
 
 
 
-
-
-
-omega_estimates.list <- lapply(seq_along(data.list), FUN = function(x){
-  
-  tryCatch({
-    estimate_omega(data.list[[x]][which(rowSums(is.na(data.list[[x]])) <= 1),], csv = TRUE, 
-                   project.title = names(data.list)[x])
-  },
-  
-  error = function(e)(cat("ERROR: ", conditionMessage(e), " - ", 
-                          names(data.list)[x], 
-                          " - ", x, "\n"))
-  )
-  
-
-})
-
-
+#  Generate estimates of Bonnett-transformed Cronbach's Alpha, using pre-defined function
+# in an apply-loop. Each iteration is wrapped in a tryCatch function, as some extreme cases
+# might produce negative variances, which lead to errors in the sqrt-function. Currenty, these
+# cases are dropped.
 Bonett.alpha_estimates.list <- lapply(seq_along(data.list), FUN = function(x){
+  
+  # tryCatch wrapper
   tryCatch({
+    # estimate Bonnett-transform of Cronbach's Alpha
     estimate_Bonett_alpha(data.list[[x]], csv = TRUE, 
                           project.title = names(data.list)[x])
   },
   
+  # print error to console
   error = function(e)(cat("ERROR: ", conditionMessage(e), " - ", 
                           names(data.list)[x], 
                           " - ", x, "\n"))
-  
     
   )
   
@@ -90,19 +83,5 @@ Bonett.alpha_estimates.list <- lapply(seq_along(data.list), FUN = function(x){
 
 
 
-
-Bonett.omega_estimates.list <- lapply(seq_along(data.list), FUN = function(x){
-  tryCatch({
-    estimate_Bonett_omega(data.list[[x]][which(rowSums(is.na(data.list[[x]])) <= 1),], csv = TRUE, 
-                          project.title = names(data.list)[x])
-  },
-  
-  error = function(e)(cat("ERROR: ", conditionMessage(e), " - ", 
-                          names(data.list)[x], 
-                          " - ", x, "\n"))
-  
-  )
-  
-})
 
 
