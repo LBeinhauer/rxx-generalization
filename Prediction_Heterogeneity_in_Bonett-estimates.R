@@ -4,29 +4,35 @@ library(here)
 DF <- read.csv(here("Notes/vis_df.csv"), sep = "")
 
 
-Large_Sim_Data <- readRDS(file = here("Notes/Sim_40000_conditions.RData"))
+Large_Sim_Data <- readRDS(file = here("Simulation Data/Sim_80000_conditions.RData"))
 
-rma_Bonett <- lapply(1:length(Large_Sim_Data), FUN = function(it){
-  
-  x <- Large_Sim_Data[[it]]
-  
-  Bonett <- log(1-x$rel)
-  var <- (2*10)/((10-1)*(100-2))
-  
-  rma_Bon <- metafor::rma(measure = "GEN",
-                          method = "REML",
-                          yi = Bonett,
-                          vi = var)
-  
-  return(list(tau2 = rma_Bon$tau2,
-              mu = rma_Bon$b[1],
-              H2 = rma_Bon$H2,
-              k = rma_Bon$k,
-              QE = rma_Bon$QE,
-              I2 = rma_Bon$I2))
-  
-})
+system.time(
+  rma_Bonett <- lapply(1:length(Large_Sim_Data), FUN = function(it){
+    
+    x <- Large_Sim_Data[[it]]
+    
+    Bonett <- log(1-x$rel)
+    var <- (2*10)/((10-1)*(100-2))
+    
+    rma_Bon <- metafor::rma(measure = "GEN",
+                            method = "REML",
+                            yi = Bonett,
+                            vi = var)
+    
+    return(list(tau2 = rma_Bon$tau2,
+                mu = rma_Bon$b[1],
+                H2 = rma_Bon$H2,
+                k = rma_Bon$k,
+                QE = rma_Bon$QE,
+                I2 = rma_Bon$I2))
+    
+  })
+)
 
+saveRDS(rma_Bonett, 
+        file = "Simulation Data/Sim_80000_conditions_rmaBonett.RData")
+
+rma_Bonett <- readRDS(file = "Simulation Data/Sim_80000_conditions_rmaBonett.RData")
 
 tau2_Bonett <- lapply(rma_Bonett, FUN = function(x){x$tau2})
 
@@ -83,7 +89,21 @@ pred.tau2_Bonett2 <- tau_lnvarE^2 +
 
 tau2 <- unlist(tau2_Bonett)
 
-back.transform_tau2 <- ((exp(mu)^2)*tau2) + (((exp(mu)^2) / 2) * (tau2^2))
+
+
+var_Bonnett_backtransformed <- function(mean_x, var_x){
+  (((-exp(mean_x))^2) * var_x) + (.5*((-exp(mean_x))^2)*(var_x^2)) + ((-exp(mean_x)) * (-exp(mean_x)) * (var_x^2))
+}
+
+mean_Bonnett_backtransformed <- function(mean_x, var_x){
+  1 - exp(mean_x) + ((-exp(mean_x)) / 2) * var_x
+}
+
+
+
+# back.transform_tau2 <- ((exp(mu)^2)*tau2) + (((exp(mu)^2) / 2) * (tau2^2))
+back.transform_tau2 <- var_Bonnett_backtransformed(mean_x = mu, var_x = tau2)
+
 
 
 
@@ -184,13 +204,46 @@ dftest2 <- data.frame(pred = pred.tau2_Bonett2,
 
 ggplot(data = dftest2) +
   #geom_abline(intercept = 0, slope = 1) + 
-  geom_point(aes(x = rel, y = tau_back, colour = as.factor(rel)), alpha = .5,
+  geom_point(aes(x = rel, y = tau_back, colour = as.factor(rel)), alpha = .1,
              position = position_jitter(width = .01)) +
+  geom_point(aes(x = rel, y = tau_untr_pred)) +
   facet_grid(rows = vars(CVT),
              cols = vars(CVE))
 
+library(tidyverse)
+
+df2_sum <- dftest2 %>%
+  group_by(rel, CVE, CVT) %>% 
+  summarise(mean_tau_back = mean(tau_back),
+            median_tau_back = median(tau_back)) %>% 
+  arrange(rel, CVE, CVT)
+
+dftest2$mean_tau_back <- rep(df2_sum$mean_tau_back, 1000)
+dftest2$median_tau_back <- rep(df2_sum$median_tau_back, 1000)
+
+
 ggplot(data = dftest2) +
-  #geom_abline(intercept = 0, slope = 1) + 
+  # geom_abline(intercept = 0, slope = 1) + 
+  geom_point(aes(x = rel, y = tau_back, colour = as.factor(rel)), alpha = .1,
+             position = position_jitter(width = .01)) +
+  geom_point(aes(x = (rel-.05), y = mean_tau_back), size = 2, shape = 15) +
+  geom_point(aes(x = (rel+.05), y = median_tau_back), colour = "purple", size = 2, shape = 18) +
+  geom_point(aes(x = rel, y = tau_untr_pred), colour = "white", size = 2, shape = 10) +
+  facet_grid(rows = vars(CVT),
+             cols = vars(CVE)) +
+  labs(y = "estimated heterogeneity (tau) in r",
+       x = "predicted heterogeneity (tau) in r",
+       title = "Transformed estimates of heterogeneity in ln(1-r)",
+       subtitle = "rows = CVT, columns = CVE",
+       colour = "Reliability") 
+  
+
+ggsave(filename = "C:/Users/Lukas/Downloads/Heterogeneity_in_rel.png", 
+       plot = last_plot(),
+       width = 10, height = 10)
+
+
+ggplot(data = dftest2) +
   geom_point(aes(x = rel, y = tau_untr_pred, colour = as.factor(rel)), alpha = .5,
              position = position_jitter(width = .01)) +
   facet_grid(rows = vars(CVT),

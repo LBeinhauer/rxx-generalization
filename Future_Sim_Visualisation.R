@@ -36,24 +36,65 @@ for(i in 1:500){
 }
 
 
-Large_Sim_Data <- readRDS(file = here("Notes/Sim_40000_conditions.RData"))
+Large_Sim_Data <- readRDS(file = here("Simulation Data/Sim_80000_conditions.RData"))
 
-
-Large_Sim_Data_RMA <- lapply(Large_Sim_Data, FUN = function(x){
+system.time(
+Large_Sim_Data_RMA <- lapply((1:length(Large_Sim_Data))[1:80], FUN = function(it){
+  
   
   tryCatch({
-    tauT <- metafor::rma(measure = "GEN", method = "PM", data = x, yi = varT, sei = SE_T.b)
-    tauE <- metafor::rma(measure = "GEN", method = "PM", data = x, yi = varE, sei = SE_E.b)
+    
+    x <- Large_Sim_Data[[it]]
+    
+    Bonett_rel <- log(1 - x$rel)
+    ln_varX <- log(x$varT + x$varE)
+    
+    Var_Bonett_rel <- (2*10)/(9*98)
+    
+    
+    tauT <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = varT, sei = SE_T.b)
+    tauE <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = varE, sei = SE_E.b)
+    taurel <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = rel, sei = ase)
+    
+    rma_Bonett_rel_base <- metafor::rma(yi = Bonett_rel,
+                                        vi = Var_Bonett_rel,
+                                        measure = "GEN",
+                                        method = "REML")
+    
+    rma_Bonett_rel_Botella <- metafor::rma(yi = Bonett_rel,
+                                           vi = Var_Bonett_rel,
+                                           measure = "GEN",
+                                           method = "REML",
+                                           mods = ~ ln_varX)
     
     return(data.frame(tau_T = sqrt(tauT$tau2),
                       tau_E = sqrt(tauE$tau2),
+                      tau_rel = sqrt(taurel$tau2),
+                      tau_Bonnett = sqrt(rma_Bonett_rel_base$tau2),
+                      tau_Bonett_rel_Botella = sqrt(rma_Bonett_rel_Botella$tau2),
                       p_T = tauT$QEp,
-                      p_E = tauE$QEp))
-  },
-  error = function(e)(cat("ERROR: ", conditionMessage(e)))
+                      p_E = tauE$QEp,
+                      p_rel = taurel$QEp,
+                      p_Bonett = rma_Bonett_rel_base$QEp,
+                      p_Bonett = rma_Bonett_rel_Botella$QEp,
+                      k_T = tauT$k,
+                      k_E = tauE$k,
+                      k_rel = taurel$k,
+                      k_Bonett = rma_Bonett_rel_base$k,
+                      k_Bonett = rma_Bonett_rel_Botella$k))
+  }
+  ,
+  error = function(e)(cat(""))
   
   )
 })
+
+)
+
+
+saveRDS(Large_Sim_Data_RMA, here("Notes/Sim80000_rma.RData"))
+
+
 # 
 # 
 # Large_Sim_Data_RMA.meta <- lapply(Large_Sim_Data, FUN = function(x){
@@ -71,12 +112,12 @@ Large_Sim_Data_RMA <- lapply(Large_Sim_Data, FUN = function(x){
 #                     tau_E.upper = tauE$upper.tau))
 # })
 
-
-vis.df <- data.frame(all_conditions,
-                     tau_T = sapply(Large_Sim_Data_RMA, FUN = function(x){ifelse(is.numeric(x$tau_T), x$tau_T, NA)}),
-                     tau_E = sapply(Large_Sim_Data_RMA, FUN = function(x){ifelse(is.numeric(x$tau_E), x$tau_E, NA)}),
-                     p_T = sapply(Large_Sim_Data_RMA, FUN = function(x){ifelse(is.numeric(x$p_T), x$p_T, NA)}),
-                     p_E = sapply(Large_Sim_Data_RMA, FUN = function(x){ifelse(is.numeric(x$p_E), x$p_T, NA)}))
+# 
+# vis.df <- data.frame(all_conditions,
+#                      tau_T = sapply(Large_Sim_Data_RMA, FUN = function(x){ifelse(is.numeric(x$tau_T), x$tau_T, NA)}),
+#                      tau_E = sapply(Large_Sim_Data_RMA, FUN = function(x){ifelse(is.numeric(x$tau_E), x$tau_E, NA)}),
+#                      p_T = sapply(Large_Sim_Data_RMA, FUN = function(x){ifelse(is.numeric(x$p_T), x$p_T, NA)}),
+#                      p_E = sapply(Large_Sim_Data_RMA, FUN = function(x){ifelse(is.numeric(x$p_E), x$p_T, NA)}))
 # 
 # vis.df.meta <- data.frame(condition_combinations,
 #                           tau_T = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_T}),
@@ -88,56 +129,110 @@ vis.df <- data.frame(all_conditions,
 #                           tau_E.lower = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_E.lower}),
 #                           tau_E.upper = sapply(Large_Sim_Data_RMA.meta, FUN = function(x){x$tau_E.upper}))
 
-Large_Sim_data_RMA_rel <- lapply(Large_Sim_Data, FUN = function(x){
-  tryCatch({
-    tauT <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = varT, sei = SE_T.b)
-    tauE <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = varE, sei = SE_E.b)
-    taurel <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = rel, sei = ase)
-    taurel_corT <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = rel, sei = ase,
-                                mods = ~ varT)
-    taurel_corE <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = rel, sei = ase,
-                                mods = ~ varE)
-    taurel_corTE <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = rel, sei = ase,
-                                 mods = ~ varT + varE)
-    
-    return(data.frame(tau_T = sqrt(tauT$tau2),
-                      tau_E = sqrt(tauE$tau2),
-                      tau_rel = sqrt(taurel$tau2),
-                      p_T = tauT$QEp,
-                      p_E = tauE$QEp,
-                      p_rel = taurel$QEp,
-                      var_T.MAE = tauT$b[1],
-                      var_E.MAE = tauE$b[1],
-                      rel.MAE = taurel$b[1],
-                      tau_rel_cT = sqrt(taurel_corT$tau2),
-                      tau_rel_cE = sqrt(taurel_corE$tau2),
-                      tau_rel_cTE = sqrt(taurel_corTE$tau2))
-    )
-  },
-  error = function(e)(cat("ERROR: ", conditionMessage(e), "\n"))
-  
-  )
-})
+# Large_Sim_data_RMA_rel <- lapply(Large_Sim_Data, FUN = function(x){
+#   tryCatch({
+#     tauT <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = varT, sei = SE_T.b)
+#     tauE <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = varE, sei = SE_E.b)
+#     taurel <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = rel, sei = ase)
+#     taurel_corT <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = rel, sei = ase,
+#                                 mods = ~ varT)
+#     taurel_corE <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = rel, sei = ase,
+#                                 mods = ~ varE)
+#     taurel_corTE <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = rel, sei = ase,
+#                                  mods = ~ varT + varE)
+#     
+#     return(data.frame(tau_T = sqrt(tauT$tau2),
+#                       tau_E = sqrt(tauE$tau2),
+#                       tau_rel = sqrt(taurel$tau2),
+#                       p_T = tauT$QEp,
+#                       p_E = tauE$QEp,
+#                       p_rel = taurel$QEp,
+#                       var_T.MAE = tauT$b[1],
+#                       var_E.MAE = tauE$b[1],
+#                       rel.MAE = taurel$b[1],
+#                       tau_rel_cT = sqrt(taurel_corT$tau2),
+#                       tau_rel_cE = sqrt(taurel_corE$tau2),
+#                       tau_rel_cTE = sqrt(taurel_corTE$tau2))
+#     )
+#   }
+#   ,
+#   #error = function(e)(cat("ERROR: ", conditionMessage(e), "\n"))
+#   error = function(e)(cat(""))
+#   
+#   )
+# })
+
+
+# Large_Sim_Data_RMA_lnvar <- lapply(Large_Sim_Data, FUN = function(x){
+#   
+#   tryCatch({
+#     
+#     Bonett_rel <- log(1 - x$rel)
+#     ln_varX <- log(x$varT + x$varE)
+#     
+#     Var_Bonett_rel <- (2*10)/(9*98)
+#     
+#     tau_Bonett_rel_base <- sqrt(metafor::rma(yi = Bonett_rel,
+#                                              vi = Var_Bonett_rel,
+#                                              measure = "GEN",
+#                                              method = "REML")$tau2)
+#     
+#     tau_Bonett_rel_Botella <- sqrt(metafor::rma(yi = Bonett_rel,
+#                                                 vi = Var_Bonett_rel,
+#                                                 measure = "GEN",
+#                                                 method = "REML",
+#                                                 mods = ~ ln_varX)$tau2)
+#     
+#     return(list(tau_Bonett_rel_base = tau_Bonett_rel_base,
+#                 tau_Bonett_rel_Botella = tau_Bonett_rel_Botella))
+#     
+#   }
+#   , 
+#   #error = function(e)(cat("ERROR: ", conditionMessage(e), "\n"))
+#   error = function(e)(cat(""))
+#   
+#   )
+#   
+# })
+# 
+# 
+
+# tau_Bonett_rel_base <- sapply(Large_Sim_Data_RMA_lnvar, FUN = function(x){x$tau_Bonett_rel_base})
+# tau_Bonett_rel_Botella <- sapply(Large_Sim_Data_RMA_lnvar, FUN = function(x){x$tau_Bonett_rel_Botella})
+# 
+# 
+# plot(all_conditions$CVT, tau_Bonett_rel_base)
+# plot(all_conditions$CVE, tau_Bonett_rel_base)
+# plot(all_conditions$CVT, tau_Bonett_rel_Botella)
+# plot(all_conditions$CVE, tau_Bonett_rel_Botella)
+# 
+# plot(tau_Bonett_rel_Botella, vis.df2$tau_E)
+# plot(tau_Bonett_rel_Botella, vis.df2$tau_T)
+# plot(tau_Bonett_rel_Botella, vis.df2$tau_rel)
+
+
+
 
 vis.df2 <- data.frame(all_conditions,
-                      varT.M = sapply(Large_Sim_Data, FUN = function(x){mean(x$varT)}),
-                      SE_T.M = sapply(Large_Sim_Data, FUN = function(x){mean(x$SE_T.b)}),
-                      varE.M = sapply(Large_Sim_Data, FUN = function(x){mean(x$varE)}),
-                      SE_E.M = sapply(Large_Sim_Data, FUN = function(x){mean(x$SE_E.b)}),
-                      rel.M = sapply(Large_Sim_Data, FUN = function(x){mean(x$rel)}),
-                      ase.M = sapply(Large_Sim_Data, FUN = function(x){mean(x$ase)}),
-                      varT.MAE = sapply(Large_Sim_data_RMA_rel, FUN = function(x){ifelse(is.numeric(x$var_T.MAE), x$var_T.MAE, NA)}),
-                      varE.MAE = sapply(Large_Sim_data_RMA_rel, FUN = function(x){ifelse(is.numeric(x$var_E.MAE), x$var_E.MAE, NA)}),
-                      rel.MAE = sapply(Large_Sim_data_RMA_rel, FUN = function(x){ifelse(is.numeric(x$rel.MAE), x$rel.MAE, NA)}),
-                      tau_T = sapply(Large_Sim_data_RMA_rel, FUN = function(x){ifelse(is.numeric(x$tau_T), x$tau_T, NA)}),
-                      tau_E = sapply(Large_Sim_data_RMA_rel, FUN = function(x){ifelse(is.numeric(x$tau_E), x$tau_E, NA)}),
-                      tau_rel = sapply(Large_Sim_data_RMA_rel, FUN = function(x){ifelse(is.numeric(x$tau_rel), x$tau_rel, NA)}),
-                      p_T = sapply(Large_Sim_data_RMA_rel, FUN = function(x){ifelse(is.numeric(x$p_T), x$p_T, NA)}),
-                      p_E = sapply(Large_Sim_data_RMA_rel, FUN = function(x){ifelse(is.numeric(x$p_E), x$p_E, NA)}),
-                      p_rel = sapply(Large_Sim_data_RMA_rel, FUN = function(x){ifelse(is.numeric(x$p_rel), x$p_rel, NA)}),
-                      tau_rel_cT = sapply(Large_Sim_data_RMA_rel, FUN = function(x){ifelse(is.numeric(x$tau_rel_cT), x$tau_rel_cT, NA)}),
-                      tau_rel_cE = sapply(Large_Sim_data_RMA_rel, FUN = function(x){ifelse(is.numeric(x$tau_rel_cE), x$tau_rel_cE, NA)}),
-                      tau_rel_cTE = sapply(Large_Sim_data_RMA_rel, FUN = function(x){ifelse(is.numeric(x$tau_rel_cTE), x$tau_rel_cTE, NA)})
+                      # varT.M = sapply(Large_Sim_Data, FUN = function(x){mean(x$varT)}),
+                      # SE_T.M = sapply(Large_Sim_Data, FUN = function(x){mean(x$SE_T.b)}),
+                      # varE.M = sapply(Large_Sim_Data, FUN = function(x){mean(x$varE)}),
+                      # SE_E.M = sapply(Large_Sim_Data, FUN = function(x){mean(x$SE_E.b)}),
+                      # rel.M = sapply(Large_Sim_Data, FUN = function(x){mean(x$rel)}),
+                      # ase.M = sapply(Large_Sim_Data, FUN = function(x){mean(x$ase)}),
+                      # varT.MAE = sapply(Large_Sim_data_RMA_rel, FUN = function(x){ifelse(is.numeric(x$var_T.MAE), x$var_T.MAE, NA)}),
+                      # varE.MAE = sapply(Large_Sim_data_RMA_rel, FUN = function(x){ifelse(is.numeric(x$var_E.MAE), x$var_E.MAE, NA)}),
+                      # rel.MAE = sapply(Large_Sim_data_RMA_rel, FUN = function(x){ifelse(is.numeric(x$rel.MAE), x$rel.MAE, NA)}),
+                      tau_T = sapply(Large_Sim_Data_RMA, FUN = function(x){ifelse(is.numeric(x$tau_T), x$tau_T, NA)}),
+                      tau_E = sapply(Large_Sim_Data_RMA, FUN = function(x){ifelse(is.numeric(x$tau_E), x$tau_E, NA)}),
+                      tau_rel = sapply(Large_Sim_Data_RMA, FUN = function(x){ifelse(is.numeric(x$tau_rel), x$tau_rel, NA)}),
+                      p_T = sapply(Large_Sim_Data_RMA, FUN = function(x){ifelse(is.numeric(x$p_T), x$p_T, NA)}),
+                      p_E = sapply(Large_Sim_Data_RMA, FUN = function(x){ifelse(is.numeric(x$p_E), x$p_E, NA)}),
+                      p_rel = sapply(Large_Sim_Data_RMA, FUN = function(x){ifelse(is.numeric(x$p_rel), x$p_rel, NA)})
+                      # ,
+                      # tau_rel_cT = sapply(Large_Sim_Data, FUN = function(x){ifelse(is.numeric(x$tau_rel_cT), x$tau_rel_cT, NA)}),
+                      # tau_rel_cE = sapply(Large_Sim_Data, FUN = function(x){ifelse(is.numeric(x$tau_rel_cE), x$tau_rel_cE, NA)}),
+                      # tau_rel_cTE = sapply(Large_Sim_Data, FUN = function(x){ifelse(is.numeric(x$tau_rel_cTE), x$tau_rel_cTE, NA)})
 )
 
 
