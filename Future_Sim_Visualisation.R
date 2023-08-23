@@ -2,7 +2,7 @@
 
 
 
-packages <- c("tidyverse", "here", "psych")
+packages <- c("tidyverse", "here", "psych", "future.apply")
 
 # check, whether library already installed or not - install and load as needed:
 apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
@@ -38,8 +38,11 @@ for(i in 1:500){
 
 Large_Sim_Data <- readRDS(file = here("Simulation Data/Sim_80000_conditions.RData"))
 
+plan(multisession, workers = 7)
+options(future.globals.maxSize = 1024*1024^2)
+
 system.time(
-Large_Sim_Data_RMA <- lapply((1:length(Large_Sim_Data))[1:80], FUN = function(it){
+Large_Sim_Data_RMA <- future_lapply((1:length(Large_Sim_Data)), FUN = function(it){
   
   
   tryCatch({
@@ -72,16 +75,36 @@ Large_Sim_Data_RMA <- lapply((1:length(Large_Sim_Data))[1:80], FUN = function(it
                       tau_rel = sqrt(taurel$tau2),
                       tau_Bonnett = sqrt(rma_Bonett_rel_base$tau2),
                       tau_Bonett_rel_Botella = sqrt(rma_Bonett_rel_Botella$tau2),
+                      I2_T = tauT$I2,
+                      I2_E = tauE$I2,
+                      I2_rel = taurel$I2,
+                      I2_Bonnett = rma_Bonett_rel_base$I2,
+                      I2_Bonnett_rel_Botella = rma_Bonett_rel_Botella$I2,
+                      H2_T = tauT$H2,
+                      H2_E = tauE$H2,
+                      H2_rel = taurel$H2,
+                      H2_Bonnett = rma_Bonett_rel_base$H2,
+                      H2_Bonnett_rel_Botella = rma_Bonett_rel_Botella$H2,
+                      QE_T = tauT$QE,
+                      QE_E = tauE$QE,
+                      QE_rel = taurel$QE,
+                      QE_Bonnett = rma_Bonett_rel_base$QE,
+                      QE_Bonnett_rel_Botella = rma_Bonett_rel_Botella$QE,
                       p_T = tauT$QEp,
                       p_E = tauE$QEp,
                       p_rel = taurel$QEp,
                       p_Bonett = rma_Bonett_rel_base$QEp,
-                      p_Bonett = rma_Bonett_rel_Botella$QEp,
+                      p_Bonett_rel_Botella = rma_Bonett_rel_Botella$QEp,
+                      mu_T = tauT$b[1],
+                      mu_E = tauE$b[1],
+                      mu_rel = taurel$b[1],
+                      mu_Bonnett = rma_Bonett_rel_base$b[1],
+                      mu_Bonnett_rel_Botella = rma_Bonett_rel_Botella$b[1],
                       k_T = tauT$k,
                       k_E = tauE$k,
                       k_rel = taurel$k,
                       k_Bonett = rma_Bonett_rel_base$k,
-                      k_Bonett = rma_Bonett_rel_Botella$k))
+                      k_Bonett_rel_Botella = rma_Bonett_rel_Botella$k))
   }
   ,
   error = function(e)(cat(""))
@@ -91,6 +114,33 @@ Large_Sim_Data_RMA <- lapply((1:length(Large_Sim_Data))[1:80], FUN = function(it
 
 )
 
+
+
+
+
+plan(sequential)
+
+
+mat_rma <- matrix(NA, nrow = 80000, ncol = length(Large_Sim_Data_RMA[[3]]))
+
+
+for(i in 1:length(Large_Sim_Data_RMA)){
+  
+  tryCatch({
+    mat_rma[i,] <- unlist(Large_Sim_Data_RMA[[i]])
+  },
+  error = function(e)(cat(""))
+  )
+ 
+  
+}
+
+df_rma <- as.data.frame(mat_rma)
+
+names(df_rma) <- names(Large_Sim_Data_RMA[[3]])
+
+write.csv(df_rma, here("Notes/Sim80000_rma.csv"),
+          row.names = FALSE)
 
 saveRDS(Large_Sim_Data_RMA, here("Notes/Sim80000_rma.RData"))
 
