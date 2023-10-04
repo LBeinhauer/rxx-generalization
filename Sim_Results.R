@@ -1,7 +1,7 @@
 
 
 
-packages <- c("dplyr", "here", "psych", "magrittr", "ggplot2")
+packages <- c("dplyr", "here", "magrittr")
 
 # check, whether library already installed or not - install and load as needed:
 apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
@@ -29,7 +29,10 @@ apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
 
 DF_rma <- read.csv(here("Notes/Sim80000_rma.csv"))
 
+DF_rma$tau_T2_alt <- DF_rma$tau_X^2 - DF_rma$tau_E^2
+DF_rma$tau_T_alt <- sqrt(DF_rma$tau_T2_alt)
 
+DF_rma$mu_T_alt <- DF_rma$mu_X - DF_rma$mu_E
 
 # Formulating functions to back-transform the estimated heterogeneity in ln(1-r_xx)
 var_Bonnett_backtransformed <- function(mean_x, var_x){
@@ -39,10 +42,6 @@ var_Bonnett_backtransformed <- function(mean_x, var_x){
 mean_Bonnett_backtransformed <- function(mean_x, var_x){
   1 - exp(mean_x) + ((-exp(mean_x)) / 2) * var_x
 }
-
-
-# back.transform_tau2 <- ((exp(mu)^2)*tau2) + (((exp(mu)^2) / 2) * (tau2^2))
-# back.transform_tau2 <- var_Bonnett_backtransformed(mean_x = mu, var_x = tau2)
 
 
 df_rma <- DF_rma %>% 
@@ -56,16 +55,9 @@ df_rma <- DF_rma %>%
                                                               var_x = tau_Bonett_rel_Botella^2))
 
 
-# pred.mu_untransformed <- (mu_varT/mu_varX) + ((tau_varX^2)*(mu_varT/(mu_varX^3))) - ((tau_varT^2)/(mu_varX^2))
-
-
-
-
-
-
 CVT <- seq(from = 0, to = .3, by = .1)
 CVE <- seq(from = 0, to = .3, by = .1)
-rel <- seq(from = .1, to = .9, by = .2)
+rel <- seq(from = .5, to = .9, by = .1)
 
 # combine 4*4*5 conditions
 condition_combinations <- expand.grid(CVT, CVE, rel)
@@ -97,6 +89,9 @@ df_pred <- data.frame(all_conditions) %>%
   
   # compute predicted meta-analytic estimate in score reliability r_xx
   mutate(pred.mu_rel = (mu_varT/mu_varX) + ((tau_varX^2)*(mu_varT/(mu_varX^3))) - ((tau_varT^2)/(mu_varX^2))) %>% 
+  
+  # compute predicted coefficient of variation for score reliability r_xx
+  mutate(pred.CVrel = pred.tau_rel/pred.mu_rel) %>% 
   
   # compute predicted heterogeneity in log-transformed score variance components
   mutate(tau_lnvarT = sqrt(log(((tau_varT^2) / (mu_varT^2)) + 1)),
@@ -132,71 +127,33 @@ df_pred <- data.frame(all_conditions) %>%
 df_comparison <- data.frame(df_rma,
                             df_pred) %>% 
   
-  # compute bias for meta-analytic estimates and estimates of heterogeneity
-  mutate(bias_mu_rel = pred.mu_rel - mu_rel_transf,
-         bias_mu_rel_Botella = pred.mu_rel - mu_rel_Botella_transf,
-         bias_tau_rel = pred.tau_rel - tau_rel_transf,
-         bias_tau_rel_Botella = pred.tau_rel - tau_rel_Botella_transf,
-         bias_mu_varT = mu_varT - mu_T,
-         bias_mu_varE = mu_varE - mu_E,
-         bias_tau_varT = tau_varT - tau_T,
-         bias_tau_varE = tau_varE - tau_E)
-
-
-
-
-ggplot(data = df_comparison) +
-  geom_abline(intercept = 0, slope = 1) + 
-  geom_point(aes(x = tau_varT, y = tau_T, colour = as.factor(CVT)), alpha = .1,
-             position = position_jitter(width = .01)) +
-  facet_grid(rows = vars(CVE),
-             cols = vars(rel)) +
-  labs(y = "estimated heterogeneity (tau) in true score variance",
-       x = "predicted heterogeneity (tau) in true score variance",
-       title = "Heterogeneity in true score variance",
-       subtitle = "rows = CVE, columns = reliability",
-       colour = "CVT")   
-
-
-
-ggplot(data = df_comparison) +
-  geom_abline(intercept = 0, slope = 1) + 
-  geom_point(aes(x = tau_varE, y = tau_E, colour = as.factor(CVE)), alpha = .1,
-             position = position_jitter(width = .01)) +
-  facet_grid(rows = vars(CVT),
-             cols = vars(rel)) +
-  labs(y = "estimated heterogeneity (tau) in true score variance",
-       x = "predicted heterogeneity (tau) in true score variance",
-       title = "Heterogeneity in error score variance",
-       subtitle = "rows = CVT, columns = reliability",
-       colour = "CVE")   
-
+  # compute estimated coefficients of variation
+  mutate(est.CVT = tau_T/mu_T,
+         est.CVT_alt = tau_T_alt/mu_T_alt,
+         est.CVE = tau_E/mu_E,
+         est.CVrel = tau_rel_transf/mu_rel_transf,
+         est.CVrel_Botella = tau_rel_Botella_transf/mu_rel_Botella_transf) %>% 
   
+  # compute bias for meta-analytic estimates and estimates of heterogeneity
+  mutate(bias_mu_rel = mu_rel_transf - pred.mu_rel,
+         bias_mu_rel_Botella = mu_rel_Botella_transf - pred.mu_rel,
+         bias_tau_rel = tau_rel_transf - pred.tau_rel,
+         bias_tau_rel_Botella = tau_rel_Botella_transf - pred.tau_rel,
+         bias_mu_varT = mu_T - mu_varT,
+         bias_mu_varT_alt = mu_T_alt - mu_varT,
+         bias_mu_varE = mu_E - mu_varE,
+         bias_tau_varT = tau_T - tau_varT,
+         bias_tau_varT_alt = tau_T_alt - tau_varT,
+         bias_tau_varE = tau_E - tau_varE,
+         bias_est.CVT = est.CVT - CVT,
+         bias_est.CVT_alt = est.CVT_alt - CVT,
+         bias_est.CVE = est.CVE - CVE,
+         bias_est.CVrel = est.CVrel - pred.CVrel,
+         bias_est.CVrel_Botella = est.CVrel_Botella - pred.CVrel)
 
 
-ggplot(data = df_comparison) +
-  geom_abline(intercept = 0, slope = 1) + 
-  geom_point(aes(x = pred.tau_rel, y = tau_rel_transf, colour = as.factor(rel)), alpha = .1,
-             position = position_jitter(width = .005)) +
-  facet_grid(rows = vars(CVT),
-             cols = vars(CVE)) +
-  labs(y = "estimated heterogeneity (tau) in r",
-       x = "predicted heterogeneity (tau) in r",
-       title = "Transformed estimates of heterogeneity in ln(1-r)",
-       subtitle = "rows = CVT, columns = CVE",
-       colour = "Reliability") 
 
 
-
-ggplot(data = df_comparison) +
-  geom_point(aes(x = pred.mu_rel, y = tau_rel_transf, colour = as.factor(rel)), alpha = .1,
-             position = position_jitter(width = .01)) +
-  facet_grid(rows = vars(CVT),
-             cols = vars(CVE)) +
-  labs(y = "estimated heterogeneity (tau) in r",
-       x = "predicted level of score reliability",
-       title = "Transformed estimates of heterogeneity in ln(1-r)",
-       subtitle = "rows = CVT, columns = CVE",
-       colour = "Reliability") 
-
+write.csv(df_comparison, here("Notes/Sim80000_rma_df.csv"),
+          row.names = FALSE)
 
