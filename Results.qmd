@@ -6,6 +6,11 @@ editor: visual
 ---
 
 ```{r}
+library(tidyverse)
+```
+
+
+```{r}
 
 paths_rel <- list.files(file.path("Data/Reliability Estimates"), full.names = TRUE)
 
@@ -25,6 +30,48 @@ varT_rma.list <- readRDS(file.path("Notes/bootstrapped_varT_rma.RData"))
 varE_rma.list <- readRDS(file.path("Notes/bootstrapped_varE_rma.RData"))
 
 
+data.list <- lapply(list.files(file.path("Data/Extracted (Project) Data"), 
+                               full.names = TRUE), FUN = read.csv) 
+
+
+varX_rma.list <- lapply(data.list, FUN = function(x){
+  
+  varX.L <- lapply(unique(x$source), FUN = function(lab){
+    
+    d <- x[x$source == lab, -ncol(x)]
+    
+    v_X <- var(rowMeans(d), na.rm = T)
+    
+    SE_v_X <- sqrt(2/(nrow(d) - 1))
+    
+    return(list(v_X = v_X,
+                SE_v_X = SE_v_X))
+  })
+  
+  varX.df <- data.frame(v_X = sapply(varX.L, FUN = function(y){y$v_X}),
+                        SE_v_X = sapply(varX.L, FUN = function(y){y$SE_v_X}))
+  
+  metafor::rma(measure = "GEN", method = "REML",
+               data = varX.df,
+               yi = log(v_X), sei = SE_v_X)
+  
+})
+
+
+backtr_rma_varX <- lapply(varX_rma.list, FUN = function(x){
+  
+  mu <-  exp(x$b[1] + .5*x$tau2)
+  tau2 <- (mu^2) * (exp(x$tau2) - 1)
+  
+  return(list(mu_X = mu,
+              tau2_X = tau2))
+  
+})
+
+backtr_rma_varX.df <- data.frame(mu_X = sapply(backtr_rma_varX, FUN = function(x){x$mu_X}),
+                                 tau2_X = sapply(backtr_rma_varX, FUN = function(x){x$tau2_X}))
+
+backtr_rma_varX.df$tau_X <- sqrt(backtr_rma_varX.df$tau2_X)
 
 ```
 
@@ -162,230 +209,522 @@ s_HexOX_varT_rma <- varT_rma.list[[7]]
 s_HexOX_varE_rma <- varE_rma.list[[7]]
 
 
-```
 
+varT_alt.L <- lapply(1:length(varE_rma.list), FUN = function(x){
+  
+  varT_tau2 <- backtr_rma_varX.df$tau2_X[x] - varE_rma.list[[x]]$tau2
+  muT <- backtr_rma_varX.df$mu_X[x] - varE_rma.list[[x]]$b[1]
+  
+  return(list(varT_tau2 = varT_tau2,
+              varT_tau = sqrt(varT_tau2),
+              muT = muT))
+  
+})
+
+varT_alt.df <- data.frame(varT_tau2 = sapply(varT_alt.L, FUN = function(x){x$varT_tau2}),
+                          varT_tau = sapply(varT_alt.L, FUN = function(x){x$varT_tau}),
+                          muT = sapply(varT_alt.L, FUN = function(x){x$muT}))
+
+names(varE_rma.list)[9] <- "Mazar_HEXACO_OX"
+
+varE.df <- data.frame(varE_tau2 = sapply(varE_rma.list, FUN = function(x){x$tau2}),
+                      varE_tau = sqrt(sapply(varE_rma.list, FUN = function(x){x$tau2})),
+                      muE = sapply(varE_rma.list, FUN = function(x){x$b[1]}))
+
+```
 
 ```{r}
 library(tidyverse)
+
+CV_ratio.df <- data.frame(varT_alt.df,
+                          varE.df) %>% 
+  mutate(CV_E = varE_tau / muE,
+         CV_T = varT_tau / muT) %>% 
+  mutate(ratio_ET = CV_E / CV_T,
+         ratio_TE = CV_T / CV_E) 
+
+CV_ratio.df$project <- as.factor(row.names(CV_ratio.df))
+
+ggplot(CV_ratio.df) +
+  geom_point(aes(x = CV_E, y = project)) +
+  labs(y = "Project / MASC", x = expression(CV[E] == frac(tau[E], mu[E])))
+
+ggplot(CV_ratio.df) +
+  geom_point(aes(x = CV_T, y = project)) +
+  labs(y = "Project / MASC", x = expression(CV["T"] == frac(tau["T"], mu["T"])))
+
+ggplot(CV_ratio.df) +
+  geom_point(aes(x = ratio_ET, y = project)) +
+  labs(y = "Project / MASC", x = expression(R[CV["E"],CV["T"]] == frac(frac(tau[E], mu[E]), frac(tau["T"], mu["T"]))))
+
+ggplot(CV_ratio.df) +
+  geom_point(aes(x = ratio_TE, y = project))+
+  labs(y = "Project / MASC", x = expression(CV[E] == frac(tau[E], mu[E]))) +
+  labs(y = "Project / MASC", x = expression(R[CV["T"],CV["E"]] == frac(frac(tau["T"], mu["T"]), frac(tau[E], mu[E]))))
+
+
 ```
 
 ```{r}
 ### Simulation Results
 
-vis.df_empF <- read.csv(file.path("Notes/vis_df.csv"), sep = " ")
-vis.df_empT <- read.csv(file.path("Notes/vis_df_empT.csv"), sep = " ")
-
-vis.df_summarised_empF <- vis.df_empF %>% 
-  group_by(CVT, CVE, rel) %>%
-  summarise(T_m = mean(tau_T, na.rm = T),
-            E_m = mean(tau_E, na.rm = T),
-            T_sd = sd(tau_T, na.rm = T),
-            E_sd = sd(tau_E, na.rm = T),
-            T_ll = quantile(tau_T, .025, na.rm = T),
-            T_ul = quantile(tau_T, .975, na.rm = T),
-            E_ll = quantile(tau_E, .025, na.rm = T),
-            E_ul = quantile(tau_E, .975, na.rm = T),
-            VT.MAE_m = mean(varT.MAE, na.rm = T),
-            VE.MAE_m = mean(varE.MAE, na.rm = T),
-            VT.MAE_ll = quantile(varT.MAE, .025, na.rm = T),
-            VT.MAE_ul = quantile(varT.MAE, .975, na.rm = T),
-            VE.MAE_ll = quantile(varE.MAE, .025, na.rm = T),
-            VE.MAE_ul = quantile(varE.MAE, .975, na.rm = T),
-            VT.M_m = mean(varT.M, na.rm = T),
-            VE.M_m = mean(varE.M, na.rm = T),
-            VT.M_ll = quantile(varT.M, .025, na.rm = T),
-            VT.M_ul = quantile(varT.M, .975, na.rm = T),
-            VE.M_ll = quantile(varE.M, .025, na.rm = T),
-            VE.M_ul = quantile(varE.M, .975, na.rm = T),
-            rel.M_m = mean(rel.M, na.rm = T),
-            rel.M_ll = quantile(rel.M, .025, na.rm = T),
-            rel.M_ul = quantile(rel.M, .975, na.rm = T),
-            rel.MAE_m = mean(rel.MAE, na.rm = T),
-            rel.MAE_ll = quantile(rel.MAE, .025, na.rm = T),
-            rel.MAE_ul = quantile(rel.MAE, .975, na.rm = T),
-            tau_rel_m = mean(tau_rel, na.rm = T),
-            tau_rel_ll = quantile(tau_rel, .025, na.rm = T),
-            tau_rel_ul = quantile(tau_rel, .975, na.rm = T),
-            tau_rel_cT_m = mean(tau_rel_cT, na.rm = T),
-            tau_rel_cT_ll = quantile(tau_rel_cT, .025, na.rm = T),
-            tau_rel_cT_ul = quantile(tau_rel_cT, .975, na.rm = T),
-            tau_rel_cE_m = mean(tau_rel_cE, na.rm = T),
-            tau_rel_cE_ll = quantile(tau_rel_cE, .025, na.rm = T),
-            tau_rel_cE_ul = quantile(tau_rel_cE, .975, na.rm = T),
-            tau_rel_cTE_m = mean(tau_rel_cTE, na.rm = T),
-            tau_rel_cTE_ll = quantile(tau_rel_cTE, .025, na.rm = T),
-            tau_rel_cTE_ul = quantile(tau_rel_cTE, .975, na.rm = T))
-
-vis.df_summarised_empT <- vis.df_empT %>% 
-  group_by(CVT, CVE, rel) %>%
-  summarise(T_m = mean(tau_T, na.rm = T),
-            E_m = mean(tau_E, na.rm = T),
-            T_sd = sd(tau_T, na.rm = T),
-            E_sd = sd(tau_E, na.rm = T),
-            T_ll = quantile(tau_T, .025, na.rm = T),
-            T_ul = quantile(tau_T, .975, na.rm = T),
-            E_ll = quantile(tau_E, .025, na.rm = T),
-            E_ul = quantile(tau_E, .975, na.rm = T),
-            VT.MAE_m = mean(varT.MAE, na.rm = T),
-            VE.MAE_m = mean(varE.MAE, na.rm = T),
-            VT.MAE_ll = quantile(varT.MAE, .025, na.rm = T),
-            VT.MAE_ul = quantile(varT.MAE, .975, na.rm = T),
-            VE.MAE_ll = quantile(varE.MAE, .025, na.rm = T),
-            VE.MAE_ul = quantile(varE.MAE, .975, na.rm = T),
-            VT.M_m = mean(varT.M, na.rm = T),
-            VE.M_m = mean(varE.M, na.rm = T),
-            VT.M_ll = quantile(varT.M, .025, na.rm = T),
-            VT.M_ul = quantile(varT.M, .975, na.rm = T),
-            VE.M_ll = quantile(varE.M, .025, na.rm = T),
-            VE.M_ul = quantile(varE.M, .975, na.rm = T),
-            rel.M_m = mean(rel.M, na.rm = T),
-            rel.M_ll = quantile(rel.M, .025, na.rm = T),
-            rel.M_ul = quantile(rel.M, .975, na.rm = T),
-            rel.MAE_m = mean(rel.MAE, na.rm = T),
-            rel.MAE_ll = quantile(rel.MAE, .025, na.rm = T),
-            rel.MAE_ul = quantile(rel.MAE, .975, na.rm = T),
-            tau_rel_m = mean(tau_rel, na.rm = T),
-            tau_rel_ll = quantile(tau_rel, .025, na.rm = T),
-            tau_rel_ul = quantile(tau_rel, .975, na.rm = T),
-            tau_rel_cT_m = mean(tau_rel_cT, na.rm = T),
-            tau_rel_cT_ll = quantile(tau_rel_cT, .025, na.rm = T),
-            tau_rel_cT_ul = quantile(tau_rel_cT, .975, na.rm = T),
-            tau_rel_cE_m = mean(tau_rel_cE, na.rm = T),
-            tau_rel_cE_ll = quantile(tau_rel_cE, .025, na.rm = T),
-            tau_rel_cE_ul = quantile(tau_rel_cE, .975, na.rm = T),
-            tau_rel_cTE_m = mean(tau_rel_cTE, na.rm = T),
-            tau_rel_cTE_ll = quantile(tau_rel_cTE, .025, na.rm = T),
-            tau_rel_cTE_ul = quantile(tau_rel_cTE, .975, na.rm = T))
-
-
-
-
-vis.df_summarized2_empF <- vis.df_empF %>%
-  group_by(CVT, CVE, rel) %>%
-  summarise(bias_varT.M = mean(varT.M - rel*10, na.rm = T),
-            bias_varT.MAE = mean(varT.MAE - rel*10, na.rm = T),
-            bias_varE.M = mean(varE.M - (1-rel)*10, na.rm = T),
-            bias_varE.MAE = mean(varE.MAE - (1-rel)*10, na.rm = T),
-            bias_rel.M = mean(rel.M - rel, na.rm = T),
-            bias_rel.MAE = mean(rel.MAE-rel, na.rm = T),
-            bias_tauT = mean(tau_T - CVT*rel*10, na.rm = T),
-            bias_tauE = mean(tau_E - CVE*(1-rel)*10, na.rm = T),
-            MSE_varT.M = mean((varT.M - rel*10)^2, na.rm = T),
-            MSE_varT.MAE = mean((varT.MAE - rel*10)^2, na.rm = T),
-            MSE_varE.M = mean((varE.M - (1-rel)*10)^2, na.rm = T),
-            MSE_varE.MAE = mean((varE.MAE - (1-rel)*10)^2, na.rm = T),
-            MSE_rel.M = mean((rel.M - rel)^2, na.rm = T),
-            MSE_rel.MAE = mean((rel.MAE-rel)^2, na.rm = T),
-            MSE_tauT = mean((tau_T - CVT*rel*10)^2, na.rm = T),
-            MSE_tauE = mean((tau_E - CVE*(1-rel)*10)^2, na.rm = T),
-            RMSE_varT.M = sqrt(mean((varT.M - rel*10)^2, na.rm = T)),
-            RMSE_varT.MAE = sqrt(mean((varT.MAE - rel*10)^2, na.rm = T)),
-            RMSE_varE.M = sqrt(mean((varE.M - (1-rel)*10)^2, na.rm = T)),
-            RMSE_varE.MAE = sqrt(mean((varE.MAE - (1-rel)*10)^2, na.rm = T)),
-            RMSE_rel.M = sqrt(mean((rel.M - rel)^2, na.rm = T)),
-            RMSE_rel.MAE = sqrt(mean((rel.MAE-rel)^2, na.rm = T)),
-            RMSE_tauT = sqrt(mean((tau_T - CVT*rel*10)^2, na.rm = T)),
-            RMSE_tauE = sqrt(mean((tau_E - CVE*(1-rel)*10)^2, na.rm = T)))
-
-
-
-vis.df_summarized2_empT <- vis.df_empT %>%
-  group_by(CVT, CVE, rel) %>%
-  summarise(bias_varT.M = mean(varT.M - rel*10, na.rm = T),
-            bias_varT.MAE = mean(varT.MAE - rel*10, na.rm = T),
-            bias_varE.M = mean(varE.M - (1-rel)*10, na.rm = T),
-            bias_varE.MAE = mean(varE.MAE - (1-rel)*10, na.rm = T),
-            bias_rel.M = mean(rel.M - rel, na.rm = T),
-            bias_rel.MAE = mean(rel.MAE-rel, na.rm = T),
-            bias_tauT = mean(tau_T - CVT*rel*10, na.rm = T),
-            bias_tauE = mean(tau_E - CVE*(1-rel)*10, na.rm = T),
-            MSE_varT.M = mean((varT.M - rel*10)^2, na.rm = T),
-            MSE_varT.MAE = mean((varT.MAE - rel*10)^2, na.rm = T),
-            MSE_varE.M = mean((varE.M - (1-rel)*10)^2, na.rm = T),
-            MSE_varE.MAE = mean((varE.MAE - (1-rel)*10)^2, na.rm = T),
-            MSE_rel.M = mean((rel.M - rel)^2, na.rm = T),
-            MSE_rel.MAE = mean((rel.MAE-rel)^2, na.rm = T),
-            MSE_tauT = mean((tau_T - CVT*rel*10)^2, na.rm = T),
-            MSE_tauE = mean((tau_E - CVE*(1-rel)*10), na.rm = T)^2,
-            RMSE_varT.M = sqrt(mean((varT.M - rel*10)^2, na.rm = T)),
-            RMSE_varT.MAE = sqrt(mean((varT.MAE - rel*10)^2, na.rm = T)),
-            RMSE_varE.M = sqrt(mean((varE.M - (1-rel)*10)^2, na.rm = T)),
-            RMSE_varE.MAE = sqrt(mean((varE.MAE - (1-rel)*10)^2, na.rm = T)),
-            RMSE_rel.M = sqrt(mean((rel.M - rel)^2, na.rm = T)),
-            RMSE_rel.MAE = sqrt(mean((rel.MAE-rel)^2, na.rm = T)),
-            RMSE_tauT = sqrt(mean((tau_T - CVT*rel*10)^2, na.rm = T)),
-            RMSE_tauE = sqrt(mean((tau_E - CVE*(1-rel)*10), na.rm = T)^2)
-            )
-
-
-vis.df2_empF <- vis.df_empF %>%
-  mutate(bias_varT.M = (varT.M - rel*10),
-         bias_varT.MAE = (varT.MAE - rel*10),
-         bias_varE.M = (varE.M - (1-rel)*10),
-         bias_varE.MAE = (varE.MAE - (1-rel)*10),
-         bias_rel.M = (rel.M - rel),
-         bias_rel.MAE = (rel.MAE-rel),
-         bias_tauT = (tau_T - CVT*rel*10),
-         bias_tauE = (tau_E - CVE*(1-rel)*10)
-  )
-
-vis.df2_empT <- vis.df_empT %>%
-  mutate(bias_varT.M = (varT.M - rel*10),
-         bias_varT.MAE = (varT.MAE - rel*10),
-         bias_varE.M = (varE.M - (1-rel)*10),
-         bias_varE.MAE = (varE.MAE - (1-rel)*10),
-         bias_rel.M = (rel.M - rel),
-         bias_rel.MAE = (rel.MAE-rel),
-         bias_tauT = (tau_T - CVT*rel*10),
-         bias_tauE = (tau_E - CVE*(1-rel)*10)
-  )
-
-
-
-colnames(vis.df_empT) <- paste0(colnames(vis.df_empF), "_empT")
-colnames(vis.df_summarised_empT) <- paste0(colnames(vis.df_summarised_empF), "_empT")
-colnames(vis.df_summarized2_empT) <- paste0(colnames(vis.df_summarized2_empF), "_empT")
-colnames(vis.df2_empT) <- paste0(colnames(vis.df2_empF), "_empT")
-
-vis.df <- cbind(vis.df_empF, vis.df_empT)
-vis.df_summarised <- cbind(vis.df_summarised_empF, vis.df_summarised_empT)
-vis.df_summarized2 <- cbind(vis.df_summarized2_empF, vis.df_summarized2_empT)
-vis.df2 <- cbind(vis.df2_empF, vis.df2_empT)
-
+# vis.df_empF <- read.csv(file.path("Notes/vis_df.csv"), sep = " ")
+# vis.df_empT <- read.csv(file.path("Notes/vis_df_empT.csv"), sep = " ")
+# 
+# vis.df_summarised_empF <- vis.df_empF %>% 
+#   group_by(CVT, CVE, rel) %>%
+#   summarise(T_m = mean(tau_T, na.rm = T),
+#             E_m = mean(tau_E, na.rm = T),
+#             T_sd = sd(tau_T, na.rm = T),
+#             E_sd = sd(tau_E, na.rm = T),
+#             T_ll = quantile(tau_T, .025, na.rm = T),
+#             T_ul = quantile(tau_T, .975, na.rm = T),
+#             E_ll = quantile(tau_E, .025, na.rm = T),
+#             E_ul = quantile(tau_E, .975, na.rm = T),
+#             VT.MAE_m = mean(varT.MAE, na.rm = T),
+#             VE.MAE_m = mean(varE.MAE, na.rm = T),
+#             VT.MAE_ll = quantile(varT.MAE, .025, na.rm = T),
+#             VT.MAE_ul = quantile(varT.MAE, .975, na.rm = T),
+#             VE.MAE_ll = quantile(varE.MAE, .025, na.rm = T),
+#             VE.MAE_ul = quantile(varE.MAE, .975, na.rm = T),
+#             VT.M_m = mean(varT.M, na.rm = T),
+#             VE.M_m = mean(varE.M, na.rm = T),
+#             VT.M_ll = quantile(varT.M, .025, na.rm = T),
+#             VT.M_ul = quantile(varT.M, .975, na.rm = T),
+#             VE.M_ll = quantile(varE.M, .025, na.rm = T),
+#             VE.M_ul = quantile(varE.M, .975, na.rm = T),
+#             rel.M_m = mean(rel.M, na.rm = T),
+#             rel.M_ll = quantile(rel.M, .025, na.rm = T),
+#             rel.M_ul = quantile(rel.M, .975, na.rm = T),
+#             rel.MAE_m = mean(rel.MAE, na.rm = T),
+#             rel.MAE_ll = quantile(rel.MAE, .025, na.rm = T),
+#             rel.MAE_ul = quantile(rel.MAE, .975, na.rm = T),
+#             tau_rel_m = mean(tau_rel, na.rm = T),
+#             tau_rel_ll = quantile(tau_rel, .025, na.rm = T),
+#             tau_rel_ul = quantile(tau_rel, .975, na.rm = T),
+#             tau_rel_cT_m = mean(tau_rel_cT, na.rm = T),
+#             tau_rel_cT_ll = quantile(tau_rel_cT, .025, na.rm = T),
+#             tau_rel_cT_ul = quantile(tau_rel_cT, .975, na.rm = T),
+#             tau_rel_cE_m = mean(tau_rel_cE, na.rm = T),
+#             tau_rel_cE_ll = quantile(tau_rel_cE, .025, na.rm = T),
+#             tau_rel_cE_ul = quantile(tau_rel_cE, .975, na.rm = T),
+#             tau_rel_cTE_m = mean(tau_rel_cTE, na.rm = T),
+#             tau_rel_cTE_ll = quantile(tau_rel_cTE, .025, na.rm = T),
+#             tau_rel_cTE_ul = quantile(tau_rel_cTE, .975, na.rm = T))
+# 
+# vis.df_summarised_empT <- vis.df_empT %>% 
+#   group_by(CVT, CVE, rel) %>%
+#   summarise(T_m = mean(tau_T, na.rm = T),
+#             E_m = mean(tau_E, na.rm = T),
+#             T_sd = sd(tau_T, na.rm = T),
+#             E_sd = sd(tau_E, na.rm = T),
+#             T_ll = quantile(tau_T, .025, na.rm = T),
+#             T_ul = quantile(tau_T, .975, na.rm = T),
+#             E_ll = quantile(tau_E, .025, na.rm = T),
+#             E_ul = quantile(tau_E, .975, na.rm = T),
+#             VT.MAE_m = mean(varT.MAE, na.rm = T),
+#             VE.MAE_m = mean(varE.MAE, na.rm = T),
+#             VT.MAE_ll = quantile(varT.MAE, .025, na.rm = T),
+#             VT.MAE_ul = quantile(varT.MAE, .975, na.rm = T),
+#             VE.MAE_ll = quantile(varE.MAE, .025, na.rm = T),
+#             VE.MAE_ul = quantile(varE.MAE, .975, na.rm = T),
+#             VT.M_m = mean(varT.M, na.rm = T),
+#             VE.M_m = mean(varE.M, na.rm = T),
+#             VT.M_ll = quantile(varT.M, .025, na.rm = T),
+#             VT.M_ul = quantile(varT.M, .975, na.rm = T),
+#             VE.M_ll = quantile(varE.M, .025, na.rm = T),
+#             VE.M_ul = quantile(varE.M, .975, na.rm = T),
+#             rel.M_m = mean(rel.M, na.rm = T),
+#             rel.M_ll = quantile(rel.M, .025, na.rm = T),
+#             rel.M_ul = quantile(rel.M, .975, na.rm = T),
+#             rel.MAE_m = mean(rel.MAE, na.rm = T),
+#             rel.MAE_ll = quantile(rel.MAE, .025, na.rm = T),
+#             rel.MAE_ul = quantile(rel.MAE, .975, na.rm = T),
+#             tau_rel_m = mean(tau_rel, na.rm = T),
+#             tau_rel_ll = quantile(tau_rel, .025, na.rm = T),
+#             tau_rel_ul = quantile(tau_rel, .975, na.rm = T),
+#             tau_rel_cT_m = mean(tau_rel_cT, na.rm = T),
+#             tau_rel_cT_ll = quantile(tau_rel_cT, .025, na.rm = T),
+#             tau_rel_cT_ul = quantile(tau_rel_cT, .975, na.rm = T),
+#             tau_rel_cE_m = mean(tau_rel_cE, na.rm = T),
+#             tau_rel_cE_ll = quantile(tau_rel_cE, .025, na.rm = T),
+#             tau_rel_cE_ul = quantile(tau_rel_cE, .975, na.rm = T),
+#             tau_rel_cTE_m = mean(tau_rel_cTE, na.rm = T),
+#             tau_rel_cTE_ll = quantile(tau_rel_cTE, .025, na.rm = T),
+#             tau_rel_cTE_ul = quantile(tau_rel_cTE, .975, na.rm = T))
+# 
+# 
+# 
+# 
+# vis.df_summarized2_empF <- vis.df_empF %>%
+#   group_by(CVT, CVE, rel) %>%
+#   summarise(bias_varT.M = mean(varT.M - rel*10, na.rm = T),
+#             bias_varT.MAE = mean(varT.MAE - rel*10, na.rm = T),
+#             bias_varE.M = mean(varE.M - (1-rel)*10, na.rm = T),
+#             bias_varE.MAE = mean(varE.MAE - (1-rel)*10, na.rm = T),
+#             bias_rel.M = mean(rel.M - rel, na.rm = T),
+#             bias_rel.MAE = mean(rel.MAE-rel, na.rm = T),
+#             bias_tauT = mean(tau_T - CVT*rel*10, na.rm = T),
+#             bias_tauE = mean(tau_E - CVE*(1-rel)*10, na.rm = T),
+#             MSE_varT.M = mean((varT.M - rel*10)^2, na.rm = T),
+#             MSE_varT.MAE = mean((varT.MAE - rel*10)^2, na.rm = T),
+#             MSE_varE.M = mean((varE.M - (1-rel)*10)^2, na.rm = T),
+#             MSE_varE.MAE = mean((varE.MAE - (1-rel)*10)^2, na.rm = T),
+#             MSE_rel.M = mean((rel.M - rel)^2, na.rm = T),
+#             MSE_rel.MAE = mean((rel.MAE-rel)^2, na.rm = T),
+#             MSE_tauT = mean((tau_T - CVT*rel*10)^2, na.rm = T),
+#             MSE_tauE = mean((tau_E - CVE*(1-rel)*10)^2, na.rm = T),
+#             RMSE_varT.M = sqrt(mean((varT.M - rel*10)^2, na.rm = T)),
+#             RMSE_varT.MAE = sqrt(mean((varT.MAE - rel*10)^2, na.rm = T)),
+#             RMSE_varE.M = sqrt(mean((varE.M - (1-rel)*10)^2, na.rm = T)),
+#             RMSE_varE.MAE = sqrt(mean((varE.MAE - (1-rel)*10)^2, na.rm = T)),
+#             RMSE_rel.M = sqrt(mean((rel.M - rel)^2, na.rm = T)),
+#             RMSE_rel.MAE = sqrt(mean((rel.MAE-rel)^2, na.rm = T)),
+#             RMSE_tauT = sqrt(mean((tau_T - CVT*rel*10)^2, na.rm = T)),
+#             RMSE_tauE = sqrt(mean((tau_E - CVE*(1-rel)*10)^2, na.rm = T)))
+# 
+# 
+# 
+# vis.df_summarized2_empT <- vis.df_empT %>%
+#   group_by(CVT, CVE, rel) %>%
+#   summarise(bias_varT.M = mean(varT.M - rel*10, na.rm = T),
+#             bias_varT.MAE = mean(varT.MAE - rel*10, na.rm = T),
+#             bias_varE.M = mean(varE.M - (1-rel)*10, na.rm = T),
+#             bias_varE.MAE = mean(varE.MAE - (1-rel)*10, na.rm = T),
+#             bias_rel.M = mean(rel.M - rel, na.rm = T),
+#             bias_rel.MAE = mean(rel.MAE-rel, na.rm = T),
+#             bias_tauT = mean(tau_T - CVT*rel*10, na.rm = T),
+#             bias_tauE = mean(tau_E - CVE*(1-rel)*10, na.rm = T),
+#             MSE_varT.M = mean((varT.M - rel*10)^2, na.rm = T),
+#             MSE_varT.MAE = mean((varT.MAE - rel*10)^2, na.rm = T),
+#             MSE_varE.M = mean((varE.M - (1-rel)*10)^2, na.rm = T),
+#             MSE_varE.MAE = mean((varE.MAE - (1-rel)*10)^2, na.rm = T),
+#             MSE_rel.M = mean((rel.M - rel)^2, na.rm = T),
+#             MSE_rel.MAE = mean((rel.MAE-rel)^2, na.rm = T),
+#             MSE_tauT = mean((tau_T - CVT*rel*10)^2, na.rm = T),
+#             MSE_tauE = mean((tau_E - CVE*(1-rel)*10), na.rm = T)^2,
+#             RMSE_varT.M = sqrt(mean((varT.M - rel*10)^2, na.rm = T)),
+#             RMSE_varT.MAE = sqrt(mean((varT.MAE - rel*10)^2, na.rm = T)),
+#             RMSE_varE.M = sqrt(mean((varE.M - (1-rel)*10)^2, na.rm = T)),
+#             RMSE_varE.MAE = sqrt(mean((varE.MAE - (1-rel)*10)^2, na.rm = T)),
+#             RMSE_rel.M = sqrt(mean((rel.M - rel)^2, na.rm = T)),
+#             RMSE_rel.MAE = sqrt(mean((rel.MAE-rel)^2, na.rm = T)),
+#             RMSE_tauT = sqrt(mean((tau_T - CVT*rel*10)^2, na.rm = T)),
+#             RMSE_tauE = sqrt(mean((tau_E - CVE*(1-rel)*10), na.rm = T)^2)
+#             )
+# 
+# 
+# vis.df2_empF <- vis.df_empF %>%
+#   mutate(bias_varT.M = (varT.M - rel*10),
+#          bias_varT.MAE = (varT.MAE - rel*10),
+#          bias_varE.M = (varE.M - (1-rel)*10),
+#          bias_varE.MAE = (varE.MAE - (1-rel)*10),
+#          bias_rel.M = (rel.M - rel),
+#          bias_rel.MAE = (rel.MAE-rel),
+#          bias_tauT = (tau_T - CVT*rel*10),
+#          bias_tauE = (tau_E - CVE*(1-rel)*10)
+#   )
+# 
+# vis.df2_empT <- vis.df_empT %>%
+#   mutate(bias_varT.M = (varT.M - rel*10),
+#          bias_varT.MAE = (varT.MAE - rel*10),
+#          bias_varE.M = (varE.M - (1-rel)*10),
+#          bias_varE.MAE = (varE.MAE - (1-rel)*10),
+#          bias_rel.M = (rel.M - rel),
+#          bias_rel.MAE = (rel.MAE-rel),
+#          bias_tauT = (tau_T - CVT*rel*10),
+#          bias_tauE = (tau_E - CVE*(1-rel)*10)
+#   )
+# 
+# 
+# 
+# colnames(vis.df_empT) <- paste0(colnames(vis.df_empF), "_empT")
+# colnames(vis.df_summarised_empT) <- paste0(colnames(vis.df_summarised_empF), "_empT")
+# colnames(vis.df_summarized2_empT) <- paste0(colnames(vis.df_summarized2_empF), "_empT")
+# colnames(vis.df2_empT) <- paste0(colnames(vis.df2_empF), "_empT")
+# 
+# # vis.df <- cbind(vis.df_empF, vis.df_empT)
+# # vis.df_summarised <- cbind(vis.df_summarised_empF, vis.df_summarised_empT)
+# # vis.df_summarized2 <- cbind(vis.df_summarized2_empF, vis.df_summarized2_empT)
+# # vis.df2 <- cbind(vis.df2_empF, vis.df2_empT)
+# vis.df2 <- vis.df2_empF
+# vis.df_summarised <- vis.df_summarised_empF
+# vis.df_summarized2 <- vis.df_summarized2_empF
 
 ```
 
 ```{r}
 
 
-table_ratio_sig <- vis.df2 %>% 
-  group_by(rel, CVT, CVE) %>%
-  summarise(ratio_sig_T = mean(p_T < .05, na.rm = T)
-            , ratio_sig_E = mean(p_E < .05, na.rm = T)
-            , ratio_sig_rel = mean(p_rel < .05, na.rm = T))
+# table_ratio_sig <- vis.df2_empF %>% 
+#   group_by(rel, CVT, CVE) %>%
+#   summarise(ratio_sig_T = mean(p_T < .05, na.rm = T)
+#             , ratio_sig_E = mean(p_E < .05, na.rm = T)
+#             , ratio_sig_rel = mean(p_rel < .05, na.rm = T))
+# 
+
+```
+
+```{r}
+packages <- c("dplyr", "here", "magrittr", "ggplot2")
+
+# check, whether library already installed or not - install and load as needed:
+apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
+  
+  pkg_avail <- nzchar(system.file(package = x))   # check if library is installed on system
+  
+  if(pkg_avail){
+    require(x, character.only = TRUE)             # load the library, if already installed
+    
+  }else{
+    install.packages(x)                           # install the library, if missing
+    require(x, character.only = TRUE)             # load after installation
+  }
+})
+```
+
+```{r}
+
+
+df_comparison <- read.csv(here("Notes/Sim80000_rma_df.csv"))
+
+df_comparison_means <- df_comparison %>% 
+  group_by(CVT, CVE, rel) %>% 
+  summarise(across(everything(), \(x) mean(x, na.rm = T)))
+
+names(df_comparison_means) <- c("CVT", "CVE", "rel", 
+                                paste0("mean_", names(df_comparison_means)[!names(df_comparison_means) %in% c("CVT", "CVE", "rel")]))
+
+
+df_comparison_80ll <- df_comparison %>% 
+  group_by(CVT, CVE, rel) %>% 
+  summarise(across(everything(), \(x) quantile(x, probs = .1, na.rm = T)))
+
+names(df_comparison_80ll) <- c("CVT", "CVE", "rel", 
+                                paste0("ll80_", names(df_comparison_80ll)[!names(df_comparison_80ll) %in% c("CVT", "CVE", "rel")]))
+
+
+df_comparison_80ul <- df_comparison %>% 
+  group_by(CVT, CVE, rel) %>% 
+  summarise(across(everything(), \(x) quantile(x, probs = .9, na.rm = T)))
+
+names(df_comparison_80ul) <- c("CVT", "CVE", "rel", 
+                                paste0("ul80_", names(df_comparison_80ul)[!names(df_comparison_80ul) %in% c("CVT", "CVE", "rel")]))
+
+
+df_comparison_vars <- df_comparison %>% 
+  group_by(CVT, CVE, rel) %>% 
+  summarise(across(tau_T:mu_rel_Botella_transf, \(x) var(x, na.rm = T)))
+
+names(df_comparison_vars) <- c("CVT", "CVE", "rel", 
+                               paste0("var_", names(df_comparison_vars)[!names(df_comparison_vars) %in% c("CVT", "CVE", "rel")]))
+
+
+df_comparison_summary <- data.frame(df_comparison_means,
+                                    df_comparison_80ll[,!names(df_comparison_80ll) %in% c("CVT", "CVE", "rel")],
+                                    df_comparison_80ul[,!names(df_comparison_80ul) %in% c("CVT", "CVE", "rel")],
+                                    df_comparison_vars[,!names(df_comparison_vars) %in% c("CVT", "CVE", "rel")])
 
 
 ```
 
-Simulating data under seemingly ideal circumstances -- normal distribution of random true and error score variances, tau-equivalence of scores , ...? -- has shown that an analysis of score variance components is not without its flaws.
+Firstly, most obviously, figure 1 shows that there is a strong overestimation of heterogeneity in score reliability, if no heterogeneity is present in either of the variance components. This effect is stronger at lower levels of score reliability. This finding is not surprising. Estimation of heterogeneity of any parameters tends to be biased positively, if heterogeneity is not present or low (reference). As negative variances are undesirable, these tend to be set to zero in most estimation software. Thereby, as sampling errors produce estimates of heterogeneity surrounding the true value of zero, the selection for positive values leads to a positive bias in estimates of heterogeneity. More importantly, figure 1 shows that for low levels of score reliability, paired with low levels of heterogeneity in the error score variance component, heterogeneity in score reliability tends to be slightly underestimated. If heterogeneity in true score variance is present as well, it tends to alleviate this bias, however, as higher levels of heterogeneity in true score variance appear to increase the bias in heterogeneity of score reliability estimates. Lastly, high levels of targeted score reliability paired with high levels of heterogeneity in true score variances leads to some overestimation of heterogeneity in score reliability. While some biases could be noted, it appears that overall, estimation of heterogeneity in score reliability is generally precise, depending somewhat on the level of heterogeneity and score reliability observed. The mean absolute bias in heterogeneity in relative terms is at most about `r round(max(df_comparison_summary$mean_bias_tau_rel[-c(1:5)]/df_comparison_summary$mean_tau_rel_transf[-c(1:5)]), 3)` of size of the actual heterogeneity in score reliability, on average, this ratio is about `r round(mean(df_comparison_summary$mean_bias_tau_rel[-c(1:5)]/df_comparison_summary$mean_tau_rel_transf[-c(1:5)]), 3)`.
 
-Concerning the heterogeneity in true score variance, the simulation demonstrates that degrees of uncertainty remain, surrounding the estimates of heterogeneity. In total, the size of confidence intervals varied between `r round(min(vis.df_summarised$T_ul - vis.df_summarised$T_ll), r.dec)` and `r round(max(vis.df_summarised$T_ul - vis.df_summarised$T_ll), r.dec)`. Across conditions, RMSE varied between `r round(min(vis.df_summarized2$RMSE_tauT), r.dec)` and `r round(max(vis.df_summarized2$RMSE_tauT), r.dec)`. As demonstrated in figure X, these seem positively related to the degree of score reliability. However, even at the highest level of reliability, uncertainty in estimated true score variance heterogeneity remained between `r round(min(vis.df_summarised$T_ul[vis.df_summarised$rel == .9] - vis.df_summarised$T_ll[vis.df_summarised$rel == .9]), r.dec)` and `r round(max(vis.df_summarised$T_ul[vis.df_summarised$rel == .9] - vis.df_summarised$T_ll[vis.df_summarised$rel == .9]), r.dec)`. In terms of RMSE, uncertainty in estimated true score variance hetergeneity remained between `r round(min(vis.df_summarized2$RMSE_tauT[vis.df_summarised$rel == .9]), r.dec)` and `r round(max(vis.df_summarized2$RMSE_tauT[vis.df_summarised$rel == .9]), r.dec)` at score reliability of .9. Uncertainty is also related to the degree of true score variance heterogeneity, at higher degrees of heterogeneity the uncertainty seems to fall. For example, at score reliability of .7, average confidence interval size falls from `r round(mean(vis.df_summarised$T_ul[vis.df_summarised$rel == .7 & vis.df_summarised$CVT == 0] - vis.df_summarised$T_ll[vis.df_summarised$rel == .7 & vis.df_summarised$CVT == 0]), r.dec)` at CV_T of 0, to `r round(mean(vis.df_summarised$T_ul[vis.df_summarised$rel == .7 & vis.df_summarised$CVT == .3] - vis.df_summarised$T_ll[vis.df_summarised$rel == .7 & vis.df_summarised$CVT == .3]), r.dec)` at CV_T of .3. Similarly, at score reliability of .7, mean RMSE falls from `r round(mean(vis.df_summarized2$RMSE_tauT[vis.df_summarized2$rel == .7 & vis.df_summarized2$CVT == 0]), r.dec)` at CV_T of 0, to `r round(mean(vis.df_summarized2$RMSE_tauT[vis.df_summarized2$rel == .7 & vis.df_summarized2$CVT == .3]), r.dec)` at CV_T of .3.
+```{r}
+ggplot(data = df_comparison_summary) +
+  geom_ribbon(aes(x = mean_pred.tau_rel,
+                  ymin = ul80_bias_tau_rel,
+                  ymax = ll80_bias_tau_rel),
+              fill = "blue", alpha = .1) +
+  geom_abline(intercept = 0, slope = 0) +
+  geom_point(aes(x = mean_pred.tau_rel, y = mean_bias_tau_rel, colour = as.factor(rel))) +
+  facet_grid(rows = vars(CVE),
+             cols = vars(CVT)) +
+  labs(y = "mean bias in estimated heterogeneity (tau) in score reliability",
+       x = "predicted heterogeneity (tau) in score reliability",
+       title = "Heterogeneity in Score Reliability",
+       subtitle = "rows = CVE, columns = CVT", 
+       colour = "Score \n Reliability")
+```
 
-More importantly, heterogeneity in true score variance estimates is highly overestimated at low degrees of reliability and low degrees of simulated heterogeneity. Average bias across all conditions was `r round(mean(vis.df_summarized2$bias_tauT), r.dec)`. In figure X, we can see that this overestimation falls with increasing heterogeneity in true score variance, as well as larger degree of score reliability. For example, at a reliability of .7, we see that average bias in heterogeneity in true score variance drops from `r round(mean(vis.df_summarized2$bias_tauT[which(vis.df_summarized2$rel == .7 & vis.df_summarized2$CVT == 0)]), r.dec)` at CV_T = 0, to `r round(mean(vis.df_summarized2$bias_tauT[which(vis.df_summarized2$rel == .7 & vis.df_summarized2$CVT == .3)]), r.dec)` at CV_T = .3. If anything, we seem to observe some degree of underestimation of heterogeneity in true score variance, if reliability is larger than .5 and heterogeneity is large. On the other hand, the simulated heterogeneity in error score variances seems to have no obvious effect on the estimates of true score variance heterogeneity. 
+Figure 2 pertains to the efficiency of heterogeneity in score reliability estimates. Overall, the standard deviation of estimates within a single condition reveal a straightforward picture. Most obviously, we see that efficency of estimation in heterogeneity, in terms of standard deviation, is a function of level of score reliability. High levels of score reliability lead to higher level of efficiency, as the estimates' standard deviations are lower, while lower levels of score reliability come with lower levels of efficiency. Such findings are to be expected. As higher levels of score reliability carry smaller and more stable standard errors, estimation of heterogeneity should be less uncertain as well. Additionally we observe that efficiency of score reliability heterogeneity estimation seems to increase with higher levels of heterogeneity in either true or score variance component.
 
-The tendency to overestimate heterogeneity in true score variances at low levels of heterogeneity can also be observed in the ratio of heterogeneity estimates, which attain statistical significance. Since we are using a signficance level of alpha = .05, we should expect .05 of all cases, where no heterogeneity was induced, to be flagged statistically significant anyways. However, if no heterogeneity is present, the significance test still indicates heterogeneity between `r round(min(table_ratio_sig$ratio_sig_T[which(table_ratio_sig$CVT == 0)]), r.dec)` and `r round(max(table_ratio_sig$ratio_sig_T[which(table_ratio_sig$CVT == 0)]), r.dec)` of all cases. The tendency to achieve statistical significance more often than expected seems moderated by the degree of score reliability. For example, at score reliability of .1 and CV_T of 0, on average `r round(mean(table_ratio_sig$ratio_sig_T[which(table_ratio_sig$CVT == 0 & table_ratio_sig$rel == .1)]), r.dec)` of all cases are flagged statistically significant. At a score reliabiity of .9 and CV_T of 0, on average `r round(mean(table_ratio_sig$ratio_sig_T[which(table_ratio_sig$CVT == 0 & table_ratio_sig$rel == .9)]), r.dec)` of all cases are flagged. If CV_T was not zero, between `r round(min(table_ratio_sig$ratio_sig_T[which(table_ratio_sig$CVT != 0)]), r.dec)` and `r round(max(table_ratio_sig$ratio_sig_T[which(table_ratio_sig$CVT != 0)]), r.dec)` of all cases were flagged. This relationship was moderated by degree of score reliability and degree of heterogeneity induced. For example, at score reliability of .3, at CV_T = .1, on average `r round(mean(table_ratio_sig$ratio_sig_T[which(table_ratio_sig$CVT == .1 & table_ratio_sig$rel == .3)]), r.dec)` of all cases are flagged, while at CV_T = .3 an average of `r round(mean(table_ratio_sig$ratio_sig_T[which(table_ratio_sig$CVT == .3 & table_ratio_sig$rel == .3)]), r.dec)` cases are flagged. On the other hand, at score reliability of .7, at CV_T = .1, on average `r round(mean(table_ratio_sig$ratio_sig_T[which(table_ratio_sig$CVT == .1 & table_ratio_sig$rel == .7)]), r.dec)` of all cases were flagged. At CV_T = .3 all cases were flagged.
+The ratio of standard deviation to its mean estimate is at most `r round(max(sqrt(df_comparison_summary$var_tau_rel_transf[!df_comparison_summary$CVE == 0 & !df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_rel[!df_comparison_summary$CVE == 0 & !df_comparison_summary$CVT == 0]), 3)`, on average `r round(mean(sqrt(df_comparison_summary$var_tau_rel_transf[!df_comparison_summary$CVE == 0 & !df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_rel[!df_comparison_summary$CVE == 0 & !df_comparison_summary$CVT == 0]), 3)`, if there is any heterogeneity present.
 
-Compared to the estimation of heterogeneity in true score variance, estimation of error score variance heterogeneity is more precise and accurate. The size of confidence intervals varied more strongly between `r round(min(vis.df_summarised$E_ul - vis.df_summarised$E_ll), r.dec)` and `r round(max(vis.df_summarised$E_ul - vis.df_summarised$E_ll), r.dec)`, see figure X. Similarly, across all conditions, RMSE varied between `r round(min(vis.df_summarized2$RMSE_tauE), r.dec)` and `r round(max(vis.df_summarized2$RMSE_tauE), r.dec)`. Overall, it appears estimation was more precise at all levels of score reliability and degree of heterogeneity. Similarly to true score variance, for error score variance heterogeneity, we observed that its uncertainty in estimation fell an increase in score reliability. For example, average confidence interval size drops from `r round(mean(vis.df_summarised$E_ul[vis.df_summarised$rel == .1] - vis.df_summarised$E_ll[vis.df_summarised$rel == .1]), r.dec)` at score reliability of .1, to `r round(mean(vis.df_summarised$E_ul[vis.df_summarised$rel == .9] - vis.df_summarised$E_ll[vis.df_summarised$rel == .9]), r.dec)` at score reliability of .9. Similary, mean RMSE drops from `r round(mean(vis.df_summarized2$RMSE_tauE[vis.df_summarized2$rel == .1]), r.dec)` to `r round(mean(vis.df_summarized2$RMSE_tauE[vis.df_summarized2$rel == .9]), r.dec)`, as score reliability rises from .1 to .9. At the same time, uncertainty in the esimtation of error score variance heterogeneity rises, as heterogeneity grows, across all levels of score reliability. For example, at score reliability of .7, average confidence interval size rises from `r round(mean(vis.df_summarised$E_ul[vis.df_summarised$rel == .7 & vis.df_summarised$CVE == 0] - vis.df_summarised$E_ll[vis.df_summarised$rel == .7 & vis.df_summarised$CVE == 0]), r.dec)` at CV_E of 0, to `r round(mean(vis.df_summarised$E_ul[vis.df_summarised$rel == .7 & vis.df_summarised$CVE == .3] - vis.df_summarised$E_ll[vis.df_summarised$rel == .7 & vis.df_summarised$CVE == .3]), r.dec)` at CV_E of .3. Similarly, at score reliability of .7, mean RMSE rises from `r round(mean(vis.df_summarized2$RMSE_tauE[vis.df_summarized2$rel == .7 & vis.df_summarized2$CVE == 0]), r.dec)` at CV_E of 0, to `r round(mean(vis.df_summarized2$RMSE_tauE[vis.df_summarized2$rel == .7 & vis.df_summarized2$CVE == .3]), r.dec)` at CV_E of .3. Concerning the relationship between score variance heterogeneity in uncertainty in its estimation, it appears that relationship is inverse for error score variance, compared to true score variance. While estimation of true score variance heterogeneity gets more precise as heterogeneity rises, estimation of error score variance gets more imprecise.
+```{r}
+ggplot(data = df_comparison_summary) +
+  geom_abline(intercept = 0, slope = 0) +
+  geom_point(aes(x = mean_pred.tau_rel, y = sqrt(var_tau_rel_transf), colour = as.factor(rel))) +
+  facet_grid(rows = vars(CVE),
+             cols = vars(CVT)) +
+  labs(y = "mean variance in estimated heterogeneity (tau) in score reliability",
+       x = "predicted heterogeneity (tau) in score reliability",
+       title = "Heterogeneity in Score Reliability",
+       subtitle = "rows = CVE, columns = CVT", 
+       colour = "Score \n Reliability")
+```
 
-While we observed some overestimation in true score variance heterogeneity, we seem to find less so for error score variance heterogeneity. On average, across all conditions, bias was `r round(mean(vis.df_summarized2$bias_tauT), r.dec)`. When score reliability and error score variance heterogeneity is low, from figure X it become clear that we still find some overestimation. For example, at a reliability of .7, we see that average bias in heterogeneity in error score variance drops from `r round(mean(vis.df_summarized2$bias_tauE[which(vis.df_summarized2$rel == .7 & vis.df_summarized2$CVE == 0)]), r.dec)` at CV_E = 0, to `r round(mean(vis.df_summarized2$bias_tauE[which(vis.df_summarized2$rel == .7 & vis.df_summarized2$CVE == .3)]), r.dec)` at CV_T = .3. While over- and underestimation of error score variance heterogeneity follows the same pattern as that of true score variance heterogeneity, from a comparison of figures X and X it becomes clear that this pattern is less strongly pronounced for heterogeneity in error score variance.
 
-Concerning the tests of identifying statistically significant heterogeneity, we find a similar pattern for error score variance components, as for the true score variance components. If no heterogeneity was induced, we still identify statistically significant heterogeneity in between `r round(min(table_ratio_sig$ratio_sig_E[which(table_ratio_sig$CVE == 0)]), r.dec)` and `r round(max(table_ratio_sig$ratio_sig_E[which(table_ratio_sig$CVE == 0)]), r.dec)` of all cases. This pattern seems unaffected by the degree of score reliability: at score reliability of .1 and CV_E = 0, the test flags, on average, `r round(mean(table_ratio_sig$ratio_sig_E[which(table_ratio_sig$CVE == 0 & table_ratio_sig$rel == .1)]), r.dec)` of all cases. Similalry, at score reliability of .1 and CV_E = 0, the test flags `r round(mean(table_ratio_sig$ratio_sig_E[which(table_ratio_sig$CVE == 0 & table_ratio_sig$rel == .9)]), r.dec)` of all cases. In all cases where CV_E was not zero, no matter the degree of heterogeneity in error score variance component, the test identified statistically significant heterogeneity in all cases.
+In figure 3, the positive bias in heterogeneity estimates of error score variance is most obvious in cases where actually no heterogeneity is present. Similarly to the case of heterogeneity in score reliability, this can easily be explained by the positive bias of selection for positive estimates of heterogeneity. However, it also becomes apparent that this bias decreases with higher levels of score reliability. While this may seem informative, this bias is a simple function of the size of mean error score variance. As score reliability increases, the absolute size of error score variance decreases. Thereby, as the scale of the estimated parameter decreases, so does the bias of its estimated heterogeneity.
 
-The simulation has also shown some implications concerning the Estimation of heterogeneity in score reliability estimates Uncertainty varies with size of score reliability and score variance component heterogeneity, in total between `r round(min(vis.df_summarised$rel.M_ul - vis.df_summarised$rel.M_ll), r.dec)` and `r round(max(vis.df_summarised$rel.M_ul - vis.df_summarised$rel.M_ll), r.dec)` in terms of confidence interval width. First of all, as score reliability grows, uncertainty in estimating its heterogeneity falls. For example, average confidence interval width in score reliability heterogeneity is `r round(mean(vis.df_summarised$rel.M_ul[vis.df_summarised$rel == .1] - vis.df_summarised$rel.M_ll[vis.df_summarised$rel == .1]), r.dec)` at targeted score reliability of .1 and `r round(mean(vis.df_summarised$rel.M_ul[vis.df_summarised$rel == .9] - vis.df_summarised$rel.M_ll[vis.df_summarised$rel == .9]), r.dec)` at targeted score reliability of .9. The relationship between variance component heterogeneity and uncertainty in estimation of score reliability heterogeneity is less obvious. Concerning error score variance heterogeneity, at CV_E of 0, average confidence interval width is `r round(mean(vis.df_summarised$rel.M_ul[vis.df_summarised$CVE == 0] - vis.df_summarised$rel.M_ll[vis.df_summarised$CVE == 0]), r.dec)` and at CV_E of .3 it is `r round(mean(vis.df_summarised$rel.M_ul[vis.df_summarised$CVE == .3] - vis.df_summarised$rel.M_ll[vis.df_summarised$CVE == .3]), r.dec)`. Concerning true score variance heterogeneity, at CV_T of 0, average confidence interval width is `r round(mean(vis.df_summarised$rel.M_ul[vis.df_summarised$CVT == 0] - vis.df_summarised$rel.M_ll[vis.df_summarised$CVT == 0]), r.dec)` and at CV_E of .3 it is `r round(mean(vis.df_summarised$rel.M_ul[vis.df_summarised$CVT == .3] - vis.df_summarised$rel.M_ll[vis.df_summarised$CVT == .3]), r.dec)`. It would appear that uncertainty in estimation of score reliability heterogeneity rises with larger heterogeneity in both variance components, but this increase is less strongly pronounced than the increase due to degree of targeted score reliability heterogeneity.
+More interestingly, if there is heterogeneity present in the error score variance, the ratio of mean absolute bias to its mean estimate is at most `r round(max(abs(df_comparison_summary$mean_bias_tau_varE[!df_comparison_summary$CVE == 0])/df_comparison_summary$mean_tau_E[!df_comparison_summary$CVE == 0]), 3)`. On average this ratio is `r round(mean(abs(df_comparison_summary$mean_bias_tau_varE[!df_comparison_summary$CVE == 0])/df_comparison_summary$mean_tau_E[!df_comparison_summary$CVE == 0]), 3)`. From figure 2 no particularly obvious function of bias in error score variance estimates becomes apparent, concerning the parameters of induced heterogeneity or level of score reliability. However, in general it seems that the estimation of heterogeneity in error score variance, in terms of bias, is unaffected by the level of heterogeneity in true score variance.
 
-In cases of substantial heterogeneity in true and/or error score variance, a non-linear relationship between estimated heterogeneity in score reliability and degree of score reliability can be observed. As the heterogeneity in either (or both) of the score variance components grows, we find that heterogeneity in score reliability estimates grows as targeted score reliability approaches .5, where it plateaus. As targeted score reliability approaches .1 or .9, we observed a decrease in heterogeneity in score reliability. For example, at CV_T of 0, CV_E of .3 we find average score reliability heterogeneity to be `r round(vis.df_summarised$tau_rel_m[vis.df_summarised$CVE == .3 & vis.df_summarised$CVT == 0 & vis.df_summarised$rel == .1], r.dec)` at targeted score reliability of .1, `r round(vis.df_summarised$tau_rel_m[vis.df_summarised$CVE == .3 & vis.df_summarised$CVT == 0 & vis.df_summarised$rel == .5], r.dec)` at targeted score reliability of .5 and `r round(vis.df_summarised$tau_rel_m[vis.df_summarised$CVE == .3 & vis.df_summarised$CVT == 0 & vis.df_summarised$rel == .9], r.dec)` at targeted score reliability of .9. Similarly, at CV_T of .3 and CV_E of 0, we find the average heterogeneity in score reliability to be `r round(vis.df_summarised$tau_rel_m[vis.df_summarised$CVT == .3 & vis.df_summarised$CVE == 0 & vis.df_summarised$rel == .1], r.dec)` at targeted score reliability of .1, `r round(vis.df_summarised$tau_rel_m[vis.df_summarised$CVT == .3 & vis.df_summarised$CVE == 0 & vis.df_summarised$rel == .5], r.dec)` at targeted score reliability of .5 and `r round(vis.df_summarised$tau_rel_m[vis.df_summarised$CVT == .3 & vis.df_summarised$CVE == 0 & vis.df_summarised$rel == .9], r.dec)` at targeted score reliability of .9. It appears that there is an interaction between heterogeneity in the score variance components and the score reliability, when estimating heterogeneity in score reliability.
 
-While it is not clear what degree of heterogeneity in score reliability is to be expected at specific degrees of heterogeneity in score variance components, we know that we should not find any heterogeneity if none of the two score variance components vary, no matter the degree of score reliability. However, if there is no heterogeneity in either of the score variance components, we instead find score reliability heterogeneity of `r round(vis.df_summarised$tau_rel_m[vis.df_summarised$CVE == 0 & vis.df_summarised$CVT == 0 & vis.df_summarised$rel == .1], r.dec)` at targeted score reliability of .1, `r round(vis.df_summarised$tau_rel_m[vis.df_summarised$CVE == 0 & vis.df_summarised$CVT == 0 & vis.df_summarised$rel == .5], r.dec)` at targeted score reliability of .5 and `r round(vis.df_summarised$tau_rel_m[vis.df_summarised$CVE == 0 & vis.df_summarised$CVT == 0 & vis.df_summarised$rel == .9], r.dec)` at targeted score reliability of .9. Similarly to the score variance components, we end up overestimating the heterogeneity in score reliability if there is little or no heterogeneity in the components present. Additionally, we do so more strongly if targeted score reliability is low.
+```{r}
+ggplot(data = df_comparison_summary) +
+  geom_abline(intercept = 0, slope = 0) +
+  geom_point(aes(x = mean_tau_varE, y = mean_bias_tau_varE, colour = as.factor(CVE))) +
+  facet_grid(rows = vars(CVT),
+             cols = vars(rel)) +
+  labs(y = "mean bias in heterogeneity (tau) in error score variance",
+       x = "predicted heterogeneity (tau) in error score variance",
+       title = "Heterogeneity in Error Score Variance",
+       subtitle = "rows = CVT, columns = rel",
+       colour = "CVE")
+```
+
+In figure 4, it becomes apparent that efficiency in estimation of heterogeneity in error score variances is, similarly to its bias, a function of level of score reliability. Again, as score reliability increases, error score variance decreases. The smaller scale of this parameter thereby leads to less absolute variation. Also, similarly to the bias in heterogeneity of error score variance, the efficiency of its estimation remains unaffected by the level of heterogeneity in the true score variance component.
+
+If there is heterogeneity present in error score variance, figure 4 demonstrates that efficiency in the estimation of this parameter, in terms of its standard deviation, increases almost linearly with heterogeneity induced. Interestingly, we see that, if no heterogeneity is present at all, efficiency in estimation is about the same size (very slightly smaller, but we shouldn't overinterpret this) as if little heterogeneity is present. Whenever there is true heterogeneity present, the ratio of standard deviation to its mean estimate is at most `r round(max(sqrt(df_comparison_summary$var_tau_E[!df_comparison_summary$CVE == 0])/df_comparison_summary$mean_tau_E[!df_comparison_summary$CVE == 0]), 3)`, on average `r round(mean(sqrt(df_comparison_summary$var_tau_E[!df_comparison_summary$CVE == 0])/df_comparison_summary$mean_tau_E[!df_comparison_summary$CVE == 0]), 3)`.
+
+
+
+```{r}
+ggplot(data = df_comparison_summary) +
+  geom_abline(intercept = 0, slope = 0) +
+  geom_point(aes(x = mean_tau_varE, y = sqrt(var_tau_E), colour = as.factor(CVE))) +
+  facet_grid(rows = vars(CVT),
+             cols = vars(rel)) +
+  labs(y = "sd in heterogeneity (tau) in error score variance",
+       x = "predicted heterogeneity (tau) in error score variance",
+       title = "Heterogeneity in Error Score Variance",
+       subtitle = "rows = CVT, columns = rel",
+       colour = "CVE")
+```
+
+
+Concerning the estimation of heterogeneity in true score variance, figure 5 seems to imply a similar relationship between its bias and the parameters of heterogeneity in score variance components or level of score reliability. However, most importantly it has to be noted that everything occurs on a different, much larger scale. If there is heterogeneity present, the largest ratio of absolute mean bias and mean estimate of true score variance heterogeneity is `r round(max(abs(df_comparison_summary$mean_bias_tau_varT[!df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_T[!df_comparison_summary$CVT == 0]), 3)`. On average, this ratio is `r round(mean(abs(df_comparison_summary$mean_bias_tau_varT[!df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_T[!df_comparison_summary$CVT == 0]), 3)`, the median is `r round(median(abs(df_comparison_summary$mean_bias_tau_varT[!df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_T[!df_comparison_summary$CVT == 0]), 3)` - several magnitudes larger than for estimation of heterogeneity in error score variances.
+
+Concerning the function of mean bias in heterogeneity of true score variance estimates, based on levels of score reliability or heterogeneity in the error score variance components, no obvious relationship is revealed in figure 5. Estimation appears unaffected by induction of heterogeneity in error score variance. More surprisingly, it appears that even levels of score reliability and different levels of true heterogeneity in true score variances have no immediately obvious impact on the bias in these estimates. Most crucially, we note that while a large bias remains, if no heterogeneity is present, a generally negative, but by magnitudes smaller, bias is noted if there is true heterogeneity present.
+
+
+
+```{r}
+ggplot(data = df_comparison_summary) +
+  geom_ribbon(aes(x = mean_tau_varT, 
+                  ymin = ul80_bias_tau_varT_alt,
+                  ymax = ll80_bias_tau_varT_alt),
+              fill = "blue", alpha = .1) +
+  geom_abline(intercept = 0, slope = 0) +
+  geom_point(aes(x = mean_tau_varT, y = mean_bias_tau_varT_alt, colour = as.factor(CVT))) + 
+  facet_grid(rows = vars(CVE),
+             cols = vars(rel)) +
+  labs(y = "mean bias in estimated heterogeneity (tau) in true score variance",
+       x = "predicted heterogeneity (tau) in true score variance",
+       title = "Heterogeneity in True Score Variance",
+       subtitle = "rows = CVE, columns = rel, var(T) = var(X) - var(E)",
+       colour = "CVT") 
+```
+
+Concerning the efficiency of true score variance heterogeneity estimation figure 6 reveals that, compared to efficiency in estimation of error score variance heterogeneity, again performs magnitudes worse. If there is heteroeneity present, the ratio of standard deviation to its mean estimate is at most `r round(max(sqrt(df_comparison_summary$var_tau_T[!df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_T[!df_comparison_summary$CVT == 0]), 3)`, on average `r round(mean(sqrt(df_comparison_summary$var_tau_T[!df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_T[!df_comparison_summary$CVT == 0]), 3)`, the median is `r round(median(sqrt(df_comparison_summary$var_tau_T[!df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_T[!df_comparison_summary$CVT == 0]), 3)`.
+
+It seems that heterogeneity in error score variance does affect the efficiency of the true score variance heterogeneity estimator. At higher levels of heterogeneity in error score variances, efficiency in estimation of true score variance is lower (standard deviations are larger). Since heterogeneity in true score variances is estimated using a prior estimate of error score variance, such a function was to be expected. Efficiency in error score variance estimation decreases, as the error score variance heterogeneity increases - therefore, efficiency of subsequent estimates is expected to suffer in the same way.
+
+Also, it can generally be observed that higher levels of score reliability improve efficiency. At higher levels of score reliability, the absolute true score variance is larger. Such a larger scale might have implied that the standard deviation of parameter estimates in a single condition grows. However, it appears that the improved efficiency in estimation, due to higher levels of score reliability, surpasses even this. Additionally, in figure 6 the relationship between varying levels of heterogeneity in true score variances and the efficiency of their estimation is not obvious. It appears that, if there is actual heterogeneity present, at lower levels of score reliability, higher levels of heterogeneity come with improved efficiency. However, at higher levels of score reliability, starting at .7, heterogeneity in true score variance produces the lowest standard deviation in estimates at CV_T = .2. Both at lower and higher levels of heterogeneity, efficiency is lower (standard deviations are larger).  
+
+
+```{r}
+ggplot(data = df_comparison_summary) +
+  geom_abline(intercept = 0, slope = 0) +
+  geom_point(aes(x = mean_tau_varT, y = sqrt(var_tau_T_alt), colour = as.factor(CVT))) + 
+  facet_grid(rows = vars(CVE),
+             cols = vars(rel)) +
+  labs(y = "sd in estimated heterogeneity (tau) in true score variance",
+       x = "predicted heterogeneity (tau) in true score variance",
+       title = "Heterogeneity in True Score Variance",
+       subtitle = "rows = CVE, columns = rel, var(T) = var(X) - var(E)",
+       colour = "CVT")  
+```
+
+
+
+## Comparison Current & Botella & Suero correction
+
+Botella & Suero suggested to add (log-transformed) observed score variances as a predictor to a meta-regression model of (Bonnett-transformed) score reliability estimates. They claim that this essentially equals a model/test for error score variances. We may have analytical arguments on why estimates generated from such a model can not be expected to actually represent heterogeneity in error score variances, but whether these arguments actually have implications in practice remains to be shown. Therefore, as a first step, estimates of heterogeneity stemming from both modelling approaches will be compared.
+
+Figures 7, 8 and 9 aim to show in how far estimates of heterogeneity generated from either of the two models relate to the true heterogeneity induced in the simulation. Since the meta-regression model produces estimates on the log-scale, figure 8 is included. This figure demonstrates that on the log-scale the meta-regression model underestimates heterogeneity in log-transformed error score variance. Most remarkably, the model produces mostly estimates of zero heterogeneity, if little heterogeneity of CV_E = .1 was truly present in the data. As larger degrees of heterogeneity is induced in the simulation, the model does produce non-zero estimate, which are still visibly underestimated. Higher levels of score reliability seem to reduce this bias at higher levels of error score variance heterogeneity, but does not alleviate it.
+
+
+```{r}
+ggplot(data = df_comparison_summary) +
+  geom_ribbon(aes(x = mean_tau_varE, 
+                  ymin = ul80_tau_E,
+                  ymax = ll80_tau_E), 
+              fill = "blue", alpha = .1) +
+  geom_abline(intercept = 0, slope = 1) +
+  geom_point(aes(x = mean_tau_varE, y = mean_tau_E, colour = as.factor(CVE))) +
+  facet_grid(rows = vars(CVT),
+             cols = vars(rel)) +
+  labs(y = "mean estimated heterogeneity (tau) in error score variance",
+       x = "predicted heterogeneity (tau) in error score variance",
+       title = "Heterogeneity in Error Score Variance",
+       subtitle = "rows = CVT, columns = rel",
+       colour = "CVE")
+
+ggplot(data = df_comparison_summary) +
+  geom_ribbon(aes(x = mean_tau_lnvarE, 
+                  ymin = ul80_tau_Bonett_rel_Botella,
+                  ymax = ul80_tau_Bonett_rel_Botella), 
+              fill = "blue", alpha = .1) +
+  geom_abline(intercept = 0, slope = 1) +
+  geom_point(aes(x = mean_tau_lnvarE, y = mean_tau_Bonett_rel_Botella, 
+                 colour = as.factor(CVE))) +
+  facet_grid(rows = vars(CVT),
+             cols = vars(rel)) +
+  labs(y = "mean estimated heterogeneity (tau) in Bonnett - Botella-cor.",
+       x = "predicted heterogeneity (tau) in ln error score variance",
+       title = "Heterogeneity in Score Reliability - Botella correction",
+       subtitle = "rows = CVE, columns = CVT") 
+
+ggplot(data = df_comparison_summary) +
+  geom_ribbon(aes(x = mean_tau_varE, 
+                  ymin = ll80_tau_Bonett_rel_Botella_transf,
+                  ymax = ul80_tau_Bonett_rel_Botella_transf), 
+              fill = "blue", alpha = .1) +
+  geom_abline(intercept = 0, slope = 1) +
+  geom_point(aes(x = mean_tau_varE, y = mean_tau_Bonett_rel_Botella_transf)) +
+  facet_grid(rows = vars(CVT),
+             cols = vars(rel),
+             scales = "free") +
+  labs(y = "mean estimated heterogeneity (tau) in Bonnett - Botella-cor.",
+       x = "predicted heterogeneity (tau) in ln error score variance",
+       title = "Heterogeneity in Score Reliability - Botella correction",
+       subtitle = "rows = CVE, columns = CVT") 
+```
+
+
+In figure 9, back-transformed estimates are presented on the original scale of the error score variances. It appears that the negative bias on the log-scale produces severely distorted estimates of error score variance heterogeneity. While this may seem damning, one needs to take into account that this method was not developed to produce estimates of error score variance heterogeneity. Instead it was intended to simply detect whether statistically significant variation in (latent) error score variances are present. Therefore, we additionally assessed in how far the meta-regression model does indicate that statistically significant variation in the error score variances could be identified, in conditions where true heterogeneity in those was present:
+
+```{r}
+df_comparison %>% 
+  group_by(CVT, CVE, rel) %>% 
+  summarise(Botella_sig = mean(p_Bonett_rel_Botella < .05, na.rm = T),
+            varE_sig = mean(p_E < .05, na.rm = T)) %>% 
+  ggplot() +
+  geom_point(aes(x = CVE, y = Botella_sig), colour = "blue") +
+  geom_point(aes(x = CVE, y = varE_sig), colour = "red") +
+  geom_abline(intercept = .05, slope = 0) +
+  facet_grid(rows = vars(CVT),
+             cols = vars(rel))
+```
+
+
+Figure 10 demonstrates the rates of detection of statistically significant variation in error score variances, using the XXX hypothesis test. It appears that using Botella & Suero's meta-regression model, in cases of zero heterogeneity, the hypothesis test reliably flags none of the data-sets as containing error score variance heterogeneity. The hypothesis test concerning the heterogeneity in error score variance estimates model explicitly flags about .09 of all cases as statistically significant, which did not contain any heterogeneity, well above the expected rate of .05 type-I-error rate (an alpha of .05 was used to test for statistically significant heterogeneity). 
+
+As some heterogeneity is induced in the simulation, in the form of CV_E of .1, the meta-regression model still flags none of the cases as containing statistically significant heterogeneity in error score variances. The model on the decomposed variance estimates on the other hand identifies statistically significant heterogeneity in error score variance 100% of the time. As more heterogeneity is introduced, the meta-regression model identifies variation in the error score variances more often. At higher levels of score reliability, more to all cases are flagged as statistically significant. Additionally, higher levels of heterogeneity in true score variance also lead to higher rates of error score variance heterogeneity detection, implying that the model does not only pick up heterogeneity in the error score variances but also in the true score variances.
+
+
+# Old Results
 
 
 ## Results Reliability Generalization and Variance Decomposition
@@ -417,9 +756,7 @@ Performing a random-effects meta-analysis on the components directly leads to:
 | Q(`r s_Caciop_varT_rma$k - 1`) | `r round(s_Caciop_varT_rma$QE, r.dec)`                                                 |                                                 `r round(s_Caciop_varE_rma$QE, r.dec)` |
 | p-value QE                     | `r ifelse(s_Caciop_varT_rma$QEp < .001, "<.001", round(s_Caciop_varT_rma$QEp, r.dec))` | `r ifelse(s_Caciop_varE_rma$QEp < .001, "<.001", round(s_Caciop_varE_rma$QEp, r.dec))` |
 
-
 Inspecting table 1, for the true score variance, we identify a statistically significant amount of heterogeneity. For the error score variance on the other hand, we could not distinguish heterogeneity in the error score variance from zero.
-
 
 ### Shnabel Sense of Power (RPP)
 
@@ -477,26 +814,24 @@ Performing a random-effects meta-analysis on the components directly leads to:
 | Q(`r s_ShnabelRev_varT_rma$k - 1`) | `r round(s_ShnabelRev_varT_rma$QE, r.dec)`                                                     |                                                     `r round(s_ShnabelRev_varE_rma$QE, r.dec)` |
 | p-value QE                         | `r ifelse(s_ShnabelRev_varT_rma$QEp < .001, "<.001", round(s_ShnabelRev_varT_rma$QEp, r.dec))` | `r ifelse(s_ShnabelRev_varE_rma$QEp < .001, "<.001", round(s_ShnabelRev_varE_rma$QEp, r.dec))` |
 
-
 In table 3 we find that, similar to the RPP-protocol, in the Revised protocol we also find statistically significant heterogeneity only in the error score variance components.
-
 
 ### HEXACO
 
 #### Cronbach's Alpha
 
-| Scale                        | HH                                                                                     | EM                                                                                     | EX                                                                                     | AG                                                                                     |                                                                                     CO | OX |
-|------------|------------|------------|------------|------------|-----------|-----------:|
-| Meta-analytic mean estimate  | `r round(s_HexHH_Alpha_rma$b[1], r.dec)`                                               | `r round(s_HexEM_Alpha_rma$b[1], r.dec)`                                               | `r round(s_HexEX_Alpha_rma$b[1], r.dec)`                                               | `r round(s_HexAG_Alpha_rma$b[1], r.dec)`                                               |                                               `r round(s_HexCO_Alpha_rma$b[1], r.dec)` | `r round(s_HexOX_Alpha_rma$b[1], r.dec)` |
-| Confidence Interval          | `r round(s_HexHH_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexHH_Alpha_rma$ci.ub, r.dec)`  | `r round(s_HexEM_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexEM_Alpha_rma$ci.ub, r.dec)`  | `r round(s_HexEX_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexEX_Alpha_rma$ci.ub, r.dec)`  | `r round(s_HexAG_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexAG_Alpha_rma$ci.ub, r.dec)`  |  `r round(s_HexCO_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexCO_Alpha_rma$ci.ub, r.dec)` | `r round(s_HexOX_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexOX_Alpha_rma$ci.ub, r.dec)` |
-| Heterogeneity tau            | `r round(sqrt(s_HexHH_Alpha_rma$tau2), r.dec)`                                         | `r round(sqrt(s_HexEM_Alpha_rma$tau2), r.dec)`                                         | `r round(sqrt(s_HexEX_Alpha_rma$tau2), r.dec)`                                         | `r round(sqrt(s_HexAG_Alpha_rma$tau2), r.dec)`                                         |                                         `r round(sqrt(s_HexCO_Alpha_rma$tau2), r.dec)` |  `r round(sqrt(s_HexOX_Alpha_rma$tau2), r.dec)` |
-| Heteroeneity I\^2            | `r round(s_HexHH_Alpha_rma$I2, r.dec)`                                                 | `r round(s_HexEM_Alpha_rma$I2, r.dec)`                                                 | `r round(s_HexEX_Alpha_rma$I2, r.dec)`                                                 | `r round(s_HexAG_Alpha_rma$I2, r.dec)`                                                 |                                                 `r round(s_HexCO_Alpha_rma$I2, r.dec)` |  `r round(s_HexOX_Alpha_rma$I2, r.dec)` |
-| Heterogeneity H\^2           | `r round(s_HexHH_Alpha_rma$H2, r.dec)`                                                 | `r round(s_HexEM_Alpha_rma$H2, r.dec)`                                                 | `r round(s_HexEX_Alpha_rma$H2, r.dec)`                                                 | `r round(s_HexAG_Alpha_rma$H2, r.dec)`                                                 |                                                 `r round(s_HexCO_Alpha_rma$H2, r.dec)` |   `r round(s_HexOX_Alpha_rma$H2, r.dec)` |
-| Q(`r s_HexHH_Alpha_rma$k-1`) | `r round(s_HexHH_Alpha_rma$QE, r.dec)`                                                 | `r round(s_HexEM_Alpha_rma$QE, r.dec)`                                                 | `r round(s_HexEX_Alpha_rma$QE, r.dec)`                                                 | `r round(s_HexAG_Alpha_rma$QE, r.dec)`                                                 |                                                 `r round(s_HexCO_Alpha_rma$QE, r.dec)` |     `r round(s_HexOX_Alpha_rma$QE, r.dec)` |
-| P-value QE                   | `r ifelse(s_HexHH_Alpha_rma$QEp < .001, "<.001", round(s_HexHH_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexEM_Alpha_rma$QEp < .001, "<.001", round(s_HexEM_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexEX_Alpha_rma$QEp < .001, "<.001", round(s_HexEX_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexAG_Alpha_rma$QEp < .001, "<.001", round(s_HexAG_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexCO_Alpha_rma$QEp < .001, "<.001", round(s_HexCO_Alpha_rma$QEp, r.dec))` |  `r ifelse(s_HexOX_Alpha_rma$QEp < .001, "<.001", round(s_HexOX_Alpha_rma$QEp, r.dec))` |
+| Scale                        | HH                                                                                     | EM                                                                                     | EX                                                                                     | AG                                                                                     | CO                                                                                     |                                                                                     OX |
+|-----------|-----------|-----------|-----------|-----------|-----------|----------:|
+| Meta-analytic mean estimate  | `r round(s_HexHH_Alpha_rma$b[1], r.dec)`                                               | `r round(s_HexEM_Alpha_rma$b[1], r.dec)`                                               | `r round(s_HexEX_Alpha_rma$b[1], r.dec)`                                               | `r round(s_HexAG_Alpha_rma$b[1], r.dec)`                                               | `r round(s_HexCO_Alpha_rma$b[1], r.dec)`                                               |                                               `r round(s_HexOX_Alpha_rma$b[1], r.dec)` |
+| Confidence Interval          | `r round(s_HexHH_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexHH_Alpha_rma$ci.ub, r.dec)`  | `r round(s_HexEM_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexEM_Alpha_rma$ci.ub, r.dec)`  | `r round(s_HexEX_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexEX_Alpha_rma$ci.ub, r.dec)`  | `r round(s_HexAG_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexAG_Alpha_rma$ci.ub, r.dec)`  | `r round(s_HexCO_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexCO_Alpha_rma$ci.ub, r.dec)`  |  `r round(s_HexOX_Alpha_rma$ci.lb, r.dec)` : `r round(s_HexOX_Alpha_rma$ci.ub, r.dec)` |
+| Heterogeneity tau            | `r round(sqrt(s_HexHH_Alpha_rma$tau2), r.dec)`                                         | `r round(sqrt(s_HexEM_Alpha_rma$tau2), r.dec)`                                         | `r round(sqrt(s_HexEX_Alpha_rma$tau2), r.dec)`                                         | `r round(sqrt(s_HexAG_Alpha_rma$tau2), r.dec)`                                         | `r round(sqrt(s_HexCO_Alpha_rma$tau2), r.dec)`                                         |                                         `r round(sqrt(s_HexOX_Alpha_rma$tau2), r.dec)` |
+| Heteroeneity I\^2            | `r round(s_HexHH_Alpha_rma$I2, r.dec)`                                                 | `r round(s_HexEM_Alpha_rma$I2, r.dec)`                                                 | `r round(s_HexEX_Alpha_rma$I2, r.dec)`                                                 | `r round(s_HexAG_Alpha_rma$I2, r.dec)`                                                 | `r round(s_HexCO_Alpha_rma$I2, r.dec)`                                                 |                                                 `r round(s_HexOX_Alpha_rma$I2, r.dec)` |
+| Heterogeneity H\^2           | `r round(s_HexHH_Alpha_rma$H2, r.dec)`                                                 | `r round(s_HexEM_Alpha_rma$H2, r.dec)`                                                 | `r round(s_HexEX_Alpha_rma$H2, r.dec)`                                                 | `r round(s_HexAG_Alpha_rma$H2, r.dec)`                                                 | `r round(s_HexCO_Alpha_rma$H2, r.dec)`                                                 |                                                 `r round(s_HexOX_Alpha_rma$H2, r.dec)` |
+| Q(`r s_HexHH_Alpha_rma$k-1`) | `r round(s_HexHH_Alpha_rma$QE, r.dec)`                                                 | `r round(s_HexEM_Alpha_rma$QE, r.dec)`                                                 | `r round(s_HexEX_Alpha_rma$QE, r.dec)`                                                 | `r round(s_HexAG_Alpha_rma$QE, r.dec)`                                                 | `r round(s_HexCO_Alpha_rma$QE, r.dec)`                                                 |                                                 `r round(s_HexOX_Alpha_rma$QE, r.dec)` |
+| P-value QE                   | `r ifelse(s_HexHH_Alpha_rma$QEp < .001, "<.001", round(s_HexHH_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexEM_Alpha_rma$QEp < .001, "<.001", round(s_HexEM_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexEX_Alpha_rma$QEp < .001, "<.001", round(s_HexEX_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexAG_Alpha_rma$QEp < .001, "<.001", round(s_HexAG_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexCO_Alpha_rma$QEp < .001, "<.001", round(s_HexCO_Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexOX_Alpha_rma$QEp < .001, "<.001", round(s_HexOX_Alpha_rma$QEp, r.dec))` |
 
-| Scale  | HH                                 | EM                                 | EX                                 | AG                                 |                                 CO | OX |
-|------------|------------|------------|------------|------------|-----------|-----------:|
+| Scale  | HH                                 | EM                                 | EX                                 | AG                                 | CO                                 |                                 OX |
+|-----------|-----------|-----------|-----------|-----------|-----------|----------:|
 | Min    | `r round(s_HexHH_Alpha[1], r.dec)` | `r round(s_HexEM_Alpha[1], r.dec)` | `r round(s_HexEX_Alpha[1], r.dec)` | `r round(s_HexAG_Alpha[1], r.dec)` | `r round(s_HexCO_Alpha[1], r.dec)` | `r round(s_HexOX_Alpha[1], r.dec)` |
 | Q1     | `r round(s_HexHH_Alpha[2], r.dec)` | `r round(s_HexEM_Alpha[2], r.dec)` | `r round(s_HexEX_Alpha[2], r.dec)` | `r round(s_HexAG_Alpha[2], r.dec)` | `r round(s_HexCO_Alpha[2], r.dec)` | `r round(s_HexOX_Alpha[2], r.dec)` |
 | Median | `r round(s_HexHH_Alpha[3], r.dec)` | `r round(s_HexEM_Alpha[3], r.dec)` | `r round(s_HexEX_Alpha[3], r.dec)` | `r round(s_HexAG_Alpha[3], r.dec)` | `r round(s_HexCO_Alpha[3], r.dec)` | `r round(s_HexOX_Alpha[3], r.dec)` |
@@ -506,40 +841,40 @@ In table 3 we find that, similar to the RPP-protocol, in the Revised protocol we
 
 ##### Back-transformed Bonett-estimates (meta-analytic results)
 
-| Scale                          | HH                                                                                                      | EM                                                                                                      | EX                                                                                                      | AG                                                                                                      |                                                                                                      CO | OX |
-|------------|------------|------------|------------|------------|-----------|-----------:|
-| Meta-analytic mean estimate    | `r round(1-exp(s_HexHH_B.Alpha_rma$b[1]), r.dec)`                                                       | `r round(1-exp(s_HexEM_B.Alpha_rma$b[1]), r.dec)`                                                       | `r round(1-exp(s_HexEX_B.Alpha_rma$b[1]), r.dec)`                                                       | `r round(1-exp(s_HexAG_B.Alpha_rma$b[1]), r.dec)`                                                       |                                                       `r round(1-exp(s_HexCO_B.Alpha_rma$b[1]), r.dec)` |      `r round(1-exp(s_HexOX_B.Alpha_rma$b[1]), r.dec)` |
+| Scale                          | HH                                                                                                      | EM                                                                                                      | EX                                                                                                      | AG                                                                                                      | CO                                                                                                      |                                                                                                      OX |
+|-----------|-----------|-----------|-----------|-----------|-----------|----------:|
+| Meta-analytic mean estimate    | `r round(1-exp(s_HexHH_B.Alpha_rma$b[1]), r.dec)`                                                       | `r round(1-exp(s_HexEM_B.Alpha_rma$b[1]), r.dec)`                                                       | `r round(1-exp(s_HexEX_B.Alpha_rma$b[1]), r.dec)`                                                       | `r round(1-exp(s_HexAG_B.Alpha_rma$b[1]), r.dec)`                                                       | `r round(1-exp(s_HexCO_B.Alpha_rma$b[1]), r.dec)`                                                       |                                                       `r round(1-exp(s_HexOX_B.Alpha_rma$b[1]), r.dec)` |
 | Confidence Interval            | `r round(1-exp(s_HexHH_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexHH_B.Alpha_rma$ci.lb), r.dec)` | `r round(1-exp(s_HexEM_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexEM_B.Alpha_rma$ci.lb), r.dec)` | `r round(1-exp(s_HexEX_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexEX_B.Alpha_rma$ci.lb), r.dec)` | `r round(1-exp(s_HexAG_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexAG_B.Alpha_rma$ci.lb), r.dec)` | `r round(1-exp(s_HexCO_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexCO_B.Alpha_rma$ci.lb), r.dec)` | `r round(1-exp(s_HexOX_B.Alpha_rma$ci.ub), r.dec)` : `r round(1-exp(s_HexOX_B.Alpha_rma$ci.lb), r.dec)` |
-| Heterogeneity I\^2              | `r round(s_HexHH_B.Alpha_rma$I2, r.dec)`                                                                | `r round(s_HexEM_B.Alpha_rma$I2, r.dec)`                                                                | `r round(s_HexEX_B.Alpha_rma$I2, r.dec)`                                                                | `r round(s_HexAG_B.Alpha_rma$I2, r.dec)`                                                                |                                                                `r round(s_HexCO_B.Alpha_rma$I2, r.dec)` |  `r round(s_HexOX_B.Alpha_rma$I2, r.dec)` |
-| Heterogeneity H\^2             | `r round(s_HexHH_B.Alpha_rma$H2, r.dec)`                                                                | `r round(s_HexEM_B.Alpha_rma$H2, r.dec)`                                                                | `r round(s_HexEX_B.Alpha_rma$H2, r.dec)`                                                                | `r round(s_HexAG_B.Alpha_rma$H2, r.dec)`                                                                |                                                                `r round(s_HexCO_B.Alpha_rma$H2, r.dec)` |   `r round(s_HexOX_B.Alpha_rma$H2, r.dec)` |
-| Q(`r s_HexHH_B.Alpha_rma$k-1`) | `r round(s_HexHH_B.Alpha_rma$QE, r.dec)`                                                                | `r round(s_HexEM_B.Alpha_rma$QE, r.dec)`                                                                | `r round(s_HexEX_B.Alpha_rma$QE, r.dec)`                                                                | `r round(s_HexAG_B.Alpha_rma$QE, r.dec)`                                                                |                                                                `r round(s_HexCO_B.Alpha_rma$QE, r.dec)` | `r round(s_HexOX_B.Alpha_rma$QE, r.dec)` |
-| P-value QE                     | `r ifelse(s_HexHH_B.Alpha_rma$QEp < .001, "<.001", round(s_HexHH_B.Alpha_rma$QEp, r.dec))`              | `r ifelse(s_HexEM_B.Alpha_rma$QEp < .001, "<.001", round(s_HexEM_B.Alpha_rma$QEp, r.dec))`              | `r ifelse(s_HexEX_B.Alpha_rma$QEp < .001, "<.001", round(s_HexEX_B.Alpha_rma$QEp, r.dec))`              | `r ifelse(s_HexAG_B.Alpha_rma$QEp < .001, "<.001", round(s_HexAG_B.Alpha_rma$QEp, r.dec))`              |              `r ifelse(s_HexCO_B.Alpha_rma$QEp < .001, "<.001", round(s_HexCO_B.Alpha_rma$QEp, r.dec))` |            `r ifelse(s_HexOX_B.Alpha_rma$QEp < .001, "<.001", round(s_HexOX_B.Alpha_rma$QEp, r.dec))` |
+| Heterogeneity I\^2             | `r round(s_HexHH_B.Alpha_rma$I2, r.dec)`                                                                | `r round(s_HexEM_B.Alpha_rma$I2, r.dec)`                                                                | `r round(s_HexEX_B.Alpha_rma$I2, r.dec)`                                                                | `r round(s_HexAG_B.Alpha_rma$I2, r.dec)`                                                                | `r round(s_HexCO_B.Alpha_rma$I2, r.dec)`                                                                |                                                                `r round(s_HexOX_B.Alpha_rma$I2, r.dec)` |
+| Heterogeneity H\^2             | `r round(s_HexHH_B.Alpha_rma$H2, r.dec)`                                                                | `r round(s_HexEM_B.Alpha_rma$H2, r.dec)`                                                                | `r round(s_HexEX_B.Alpha_rma$H2, r.dec)`                                                                | `r round(s_HexAG_B.Alpha_rma$H2, r.dec)`                                                                | `r round(s_HexCO_B.Alpha_rma$H2, r.dec)`                                                                |                                                                `r round(s_HexOX_B.Alpha_rma$H2, r.dec)` |
+| Q(`r s_HexHH_B.Alpha_rma$k-1`) | `r round(s_HexHH_B.Alpha_rma$QE, r.dec)`                                                                | `r round(s_HexEM_B.Alpha_rma$QE, r.dec)`                                                                | `r round(s_HexEX_B.Alpha_rma$QE, r.dec)`                                                                | `r round(s_HexAG_B.Alpha_rma$QE, r.dec)`                                                                | `r round(s_HexCO_B.Alpha_rma$QE, r.dec)`                                                                |                                                                `r round(s_HexOX_B.Alpha_rma$QE, r.dec)` |
+| P-value QE                     | `r ifelse(s_HexHH_B.Alpha_rma$QEp < .001, "<.001", round(s_HexHH_B.Alpha_rma$QEp, r.dec))`              | `r ifelse(s_HexEM_B.Alpha_rma$QEp < .001, "<.001", round(s_HexEM_B.Alpha_rma$QEp, r.dec))`              | `r ifelse(s_HexEX_B.Alpha_rma$QEp < .001, "<.001", round(s_HexEX_B.Alpha_rma$QEp, r.dec))`              | `r ifelse(s_HexAG_B.Alpha_rma$QEp < .001, "<.001", round(s_HexAG_B.Alpha_rma$QEp, r.dec))`              | `r ifelse(s_HexCO_B.Alpha_rma$QEp < .001, "<.001", round(s_HexCO_B.Alpha_rma$QEp, r.dec))`              |              `r ifelse(s_HexOX_B.Alpha_rma$QEp < .001, "<.001", round(s_HexOX_B.Alpha_rma$QEp, r.dec))` |
 
 #### True Score Variance
 
-| Scale  | HH                                | EM                                | EX                                | AG                                |                                CO | OX|
+| Scale  | HH                                | EM                                | EX                                | AG                                |                                CO |
 |------------|------------|------------|------------|------------|-----------:|
-| Min    | `r round(s_HexHH_varT[1], r.dec)` | `r round(s_HexEM_varT[1], r.dec)` | `r round(s_HexEX_varT[1], r.dec)` | `r round(s_HexAG_varT[1], r.dec)` | `r round(s_HexCO_varT[1], r.dec)` | `r round(s_HexOX_varT[1], r.dec)` |
-| Q1     | `r round(s_HexHH_varT[2], r.dec)` | `r round(s_HexEM_varT[2], r.dec)` | `r round(s_HexEX_varT[2], r.dec)` | `r round(s_HexAG_varT[2], r.dec)` | `r round(s_HexCO_varT[2], r.dec)` | `r round(s_HexOX_varT[2], r.dec)` |
-| Median | `r round(s_HexHH_varT[3], r.dec)` | `r round(s_HexEM_varT[3], r.dec)` | `r round(s_HexEX_varT[3], r.dec)` | `r round(s_HexAG_varT[3], r.dec)` | `r round(s_HexCO_varT[3], r.dec)` |  `r round(s_HexOX_varT[3], r.dec)` |
-| Q3     | `r round(s_HexHH_varT[5], r.dec)` | `r round(s_HexEM_varT[5], r.dec)` | `r round(s_HexEX_varT[5], r.dec)` | `r round(s_HexAG_varT[5], r.dec)` | `r round(s_HexCO_varT[5], r.dec)` | `r round(s_HexOX_varT[5], r.dec)` |
-| Max    | `r round(s_HexHH_varT[6], r.dec)` | `r round(s_HexEM_varT[6], r.dec)` | `r round(s_HexEX_varT[6], r.dec)` | `r round(s_HexAG_varT[6], r.dec)` | `r round(s_HexCO_varT[6], r.dec)` |  `r round(s_HexOX_varT[6], r.dec)` |
-| Mean   | `r round(s_HexHH_varT[4], r.dec)` | `r round(s_HexEM_varT[4], r.dec)` | `r round(s_HexEX_varT[4], r.dec)` | `r round(s_HexAG_varT[4], r.dec)` | `r round(s_HexCO_varT[4], r.dec)` | `r round(s_HexOX_varT[4], r.dec)` |
+| Min    | `r round(s_HexHH_varT[1], r.dec)` | `r round(s_HexEM_varT[1], r.dec)` | `r round(s_HexEX_varT[1], r.dec)` | `r round(s_HexAG_varT[1], r.dec)` | `r round(s_HexCO_varT[1], r.dec)` |
+| Q1     | `r round(s_HexHH_varT[2], r.dec)` | `r round(s_HexEM_varT[2], r.dec)` | `r round(s_HexEX_varT[2], r.dec)` | `r round(s_HexAG_varT[2], r.dec)` | `r round(s_HexCO_varT[2], r.dec)` |
+| Median | `r round(s_HexHH_varT[3], r.dec)` | `r round(s_HexEM_varT[3], r.dec)` | `r round(s_HexEX_varT[3], r.dec)` | `r round(s_HexAG_varT[3], r.dec)` | `r round(s_HexCO_varT[3], r.dec)` |
+| Q3     | `r round(s_HexHH_varT[5], r.dec)` | `r round(s_HexEM_varT[5], r.dec)` | `r round(s_HexEX_varT[5], r.dec)` | `r round(s_HexAG_varT[5], r.dec)` | `r round(s_HexCO_varT[5], r.dec)` |
+| Max    | `r round(s_HexHH_varT[6], r.dec)` | `r round(s_HexEM_varT[6], r.dec)` | `r round(s_HexEX_varT[6], r.dec)` | `r round(s_HexAG_varT[6], r.dec)` | `r round(s_HexCO_varT[6], r.dec)` |
+| Mean   | `r round(s_HexHH_varT[4], r.dec)` | `r round(s_HexEM_varT[4], r.dec)` | `r round(s_HexEX_varT[4], r.dec)` | `r round(s_HexAG_varT[4], r.dec)` | `r round(s_HexCO_varT[4], r.dec)` |
 
-| Scale                       | HH                                                                                   | EM                                                                                   | EX                                                                                   | AG                                                                                   |                                                                                   CO | OX |
-|------------|------------|------------|------------|------------|-----------|-----------:|
-| Meta-analytic mean estimate | `r round(s_HexHH_varT_rma$b[1], r.dec)`                                              | `r round(s_HexEM_varT_rma$b[1], r.dec)`                                              | `r round(s_HexEX_varT_rma$b[1], r.dec)`                                              | `r round(s_HexAG_varT_rma$b[1], r.dec)`                                              |                                              `r round(s_HexCO_varT_rma$b[1], r.dec)` | `r round(s_HexOX_varT_rma$b[1], r.dec)` |
-| Confidence Interval         | `r round(s_HexHH_varT_rma$ci.lb, r.dec)` : `r round(s_HexHH_varT_rma$ci.ub, r.dec)`  | `r round(s_HexEM_varT_rma$ci.lb, r.dec)` : `r round(s_HexEM_varT_rma$ci.ub, r.dec)`  | `r round(s_HexEX_varT_rma$ci.lb, r.dec)` : `r round(s_HexEX_varT_rma$ci.ub, r.dec)`  | `r round(s_HexAG_varT_rma$ci.lb, r.dec)` : `r round(s_HexAG_varT_rma$ci.ub, r.dec)`  |  `r round(s_HexCO_varT_rma$ci.lb, r.dec)` : `r round(s_HexCO_varT_rma$ci.ub, r.dec)` | `r round(s_HexOX_varT_rma$ci.lb, r.dec)` : `r round(s_HexOX_varT_rma$ci.ub, r.dec)` |
-| Heterogeneity tau           | `r round(sqrt(s_HexHH_varT_rma$tau2), r.dec)`                                        | `r round(sqrt(s_HexEM_varT_rma$tau2), r.dec)`                                        | `r round(sqrt(s_HexEX_varT_rma$tau2), r.dec)`                                        | `r round(sqrt(s_HexAG_varT_rma$tau2), r.dec)`                                        |                                        `r round(sqrt(s_HexCO_varT_rma$tau2), r.dec)` |   `r round(sqrt(s_HexOX_varT_rma$tau2), r.dec)` |
-| Heteroeneity I\^2           | `r round(s_HexHH_varT_rma$I2, r.dec)`                                                | `r round(s_HexEM_varT_rma$I2, r.dec)`                                                | `r round(s_HexEX_varT_rma$I2, r.dec)`                                                | `r round(s_HexAG_varT_rma$I2, r.dec)`                                                |                                                `r round(s_HexCO_varT_rma$I2, r.dec)` |   `r round(s_HexOX_varT_rma$I2, r.dec)` |
-| Heterogeneity H\^2          | `r round(s_HexHH_varT_rma$H2, r.dec)`                                                | `r round(s_HexEM_varT_rma$H2, r.dec)`                                                | `r round(s_HexEX_varT_rma$H2, r.dec)`                                                | `r round(s_HexAG_varT_rma$H2, r.dec)`                                                |                                                `r round(s_HexCO_varT_rma$H2, r.dec)` |    `r round(s_HexOX_varT_rma$H2, r.dec)` |
-| Q(`r s_HexHH_varT_rma$k-1`) | `r round(s_HexHH_varT_rma$QE, r.dec)`                                                | `r round(s_HexEM_varT_rma$QE, r.dec)`                                                | `r round(s_HexEX_varT_rma$QE, r.dec)`                                                | `r round(s_HexAG_varT_rma$QE, r.dec)`                                                |                                                `r round(s_HexCO_varT_rma$QE, r.dec)` |   `r round(s_HexOX_varT_rma$QE, r.dec)` |
+| Scale                       | HH                                                                                   | EM                                                                                   | EX                                                                                   | AG                                                                                   | CO                                                                                   |                                                                                   OX |
+|-----------|-----------|-----------|-----------|-----------|-----------|----------:|
+| Meta-analytic mean estimate | `r round(s_HexHH_varT_rma$b[1], r.dec)`                                              | `r round(s_HexEM_varT_rma$b[1], r.dec)`                                              | `r round(s_HexEX_varT_rma$b[1], r.dec)`                                              | `r round(s_HexAG_varT_rma$b[1], r.dec)`                                              | `r round(s_HexCO_varT_rma$b[1], r.dec)`                                              |                                              `r round(s_HexOX_varT_rma$b[1], r.dec)` |
+| Confidence Interval         | `r round(s_HexHH_varT_rma$ci.lb, r.dec)` : `r round(s_HexHH_varT_rma$ci.ub, r.dec)`  | `r round(s_HexEM_varT_rma$ci.lb, r.dec)` : `r round(s_HexEM_varT_rma$ci.ub, r.dec)`  | `r round(s_HexEX_varT_rma$ci.lb, r.dec)` : `r round(s_HexEX_varT_rma$ci.ub, r.dec)`  | `r round(s_HexAG_varT_rma$ci.lb, r.dec)` : `r round(s_HexAG_varT_rma$ci.ub, r.dec)`  | `r round(s_HexCO_varT_rma$ci.lb, r.dec)` : `r round(s_HexCO_varT_rma$ci.ub, r.dec)`  |  `r round(s_HexOX_varT_rma$ci.lb, r.dec)` : `r round(s_HexOX_varT_rma$ci.ub, r.dec)` |
+| Heterogeneity tau           | `r round(sqrt(s_HexHH_varT_rma$tau2), r.dec)`                                        | `r round(sqrt(s_HexEM_varT_rma$tau2), r.dec)`                                        | `r round(sqrt(s_HexEX_varT_rma$tau2), r.dec)`                                        | `r round(sqrt(s_HexAG_varT_rma$tau2), r.dec)`                                        | `r round(sqrt(s_HexCO_varT_rma$tau2), r.dec)`                                        |                                        `r round(sqrt(s_HexOX_varT_rma$tau2), r.dec)` |
+| Heteroeneity I\^2           | `r round(s_HexHH_varT_rma$I2, r.dec)`                                                | `r round(s_HexEM_varT_rma$I2, r.dec)`                                                | `r round(s_HexEX_varT_rma$I2, r.dec)`                                                | `r round(s_HexAG_varT_rma$I2, r.dec)`                                                | `r round(s_HexCO_varT_rma$I2, r.dec)`                                                |                                                `r round(s_HexOX_varT_rma$I2, r.dec)` |
+| Heterogeneity H\^2          | `r round(s_HexHH_varT_rma$H2, r.dec)`                                                | `r round(s_HexEM_varT_rma$H2, r.dec)`                                                | `r round(s_HexEX_varT_rma$H2, r.dec)`                                                | `r round(s_HexAG_varT_rma$H2, r.dec)`                                                | `r round(s_HexCO_varT_rma$H2, r.dec)`                                                |                                                `r round(s_HexOX_varT_rma$H2, r.dec)` |
+| Q(`r s_HexHH_varT_rma$k-1`) | `r round(s_HexHH_varT_rma$QE, r.dec)`                                                | `r round(s_HexEM_varT_rma$QE, r.dec)`                                                | `r round(s_HexEX_varT_rma$QE, r.dec)`                                                | `r round(s_HexAG_varT_rma$QE, r.dec)`                                                | `r round(s_HexCO_varT_rma$QE, r.dec)`                                                |                                                `r round(s_HexOX_varT_rma$QE, r.dec)` |
 | P-value QE                  | `r ifelse(s_HexHH_varT_rma$QEp < .001, "<.001", round(s_HexHH_varT_rma$QEp, r.dec))` | `r ifelse(s_HexEM_varT_rma$QEp < .001, "<.001", round(s_HexEM_varT_rma$QEp, r.dec))` | `r ifelse(s_HexEX_varT_rma$QEp < .001, "<.001", round(s_HexEX_varT_rma$QEp, r.dec))` | `r ifelse(s_HexAG_varT_rma$QEp < .001, "<.001", round(s_HexAG_varT_rma$QEp, r.dec))` | `r ifelse(s_HexCO_varT_rma$QEp < .001, "<.001", round(s_HexCO_varT_rma$QEp, r.dec))` | `r ifelse(s_HexOX_varT_rma$QEp < .001, "<.001", round(s_HexOX_varT_rma$QEp, r.dec))` |
 
 #### Error Score Variance
 
-| Scale  | HH                                | EM                                | EX                                | AG                                |                                CO | OX |
-|------------|------------|------------|------------|------------|-----------|-----------:|
+| Scale  | HH                                | EM                                | EX                                | AG                                | CO                                |                                OX |
+|-----------|-----------|-----------|-----------|-----------|-----------|----------:|
 | Min    | `r round(s_HexHH_varE[1], r.dec)` | `r round(s_HexEM_varE[1], r.dec)` | `r round(s_HexEX_varE[1], r.dec)` | `r round(s_HexAG_varE[1], r.dec)` | `r round(s_HexCO_varE[1], r.dec)` | `r round(s_HexOX_varE[1], r.dec)` |
 | Q1     | `r round(s_HexHH_varE[2], r.dec)` | `r round(s_HexEM_varE[2], r.dec)` | `r round(s_HexEX_varE[2], r.dec)` | `r round(s_HexAG_varE[2], r.dec)` | `r round(s_HexCO_varE[2], r.dec)` | `r round(s_HexOX_varE[2], r.dec)` |
 | Median | `r round(s_HexHH_varE[3], r.dec)` | `r round(s_HexEM_varE[3], r.dec)` | `r round(s_HexEX_varE[3], r.dec)` | `r round(s_HexAG_varE[3], r.dec)` | `r round(s_HexCO_varE[3], r.dec)` | `r round(s_HexOX_varE[3], r.dec)` |
@@ -547,24 +882,12 @@ In table 3 we find that, similar to the RPP-protocol, in the Revised protocol we
 | Max    | `r round(s_HexHH_varE[6], r.dec)` | `r round(s_HexEM_varE[6], r.dec)` | `r round(s_HexEX_varE[6], r.dec)` | `r round(s_HexAG_varE[6], r.dec)` | `r round(s_HexCO_varE[6], r.dec)` | `r round(s_HexOX_varE[6], r.dec)` |
 | Mean   | `r round(s_HexHH_varE[4], r.dec)` | `r round(s_HexEM_varE[4], r.dec)` | `r round(s_HexEX_varE[4], r.dec)` | `r round(s_HexAG_varE[4], r.dec)` | `r round(s_HexCO_varE[4], r.dec)` | `r round(s_HexOX_varE[4], r.dec)` |
 
-| Scale                       | HH                                                                                   | EM                                                                                   | EX                                                                                   | AG                                                                                   |                                                                                   CO | OX |
-|------------|------------|------------|------------|------------|-----------|-----------:|
-| Meta-analytic mean estimate | `r round(s_HexHH_varE_rma$b[1], r.dec)`                                              | `r round(s_HexEM_varE_rma$b[1], r.dec)`                                              | `r round(s_HexEX_varE_rma$b[1], r.dec)`                                              | `r round(s_HexAG_varE_rma$b[1], r.dec)`                                              |                                              `r round(s_HexCO_varE_rma$b[1], r.dec)` |   `r round(s_HexOX_varE_rma$b[1], r.dec)` |
-| Confidence Interval         | `r round(s_HexHH_varE_rma$ci.lb, r.dec)` : `r round(s_HexHH_varE_rma$ci.ub, r.dec)`  | `r round(s_HexEM_varE_rma$ci.lb, r.dec)` : `r round(s_HexEM_varE_rma$ci.ub, r.dec)`  | `r round(s_HexEX_varE_rma$ci.lb, r.dec)` : `r round(s_HexEX_varE_rma$ci.ub, r.dec)`  | `r round(s_HexAG_varE_rma$ci.lb, r.dec)` : `r round(s_HexAG_varE_rma$ci.ub, r.dec)`  |  `r round(s_HexCO_varE_rma$ci.lb, r.dec)` : `r round(s_HexCO_varE_rma$ci.ub, r.dec)` | `r round(s_HexOX_varE_rma$ci.lb, r.dec)` : `r round(s_HexOX_varE_rma$ci.ub, r.dec)` |
-| Heterogeneity tau           | `r round(sqrt(s_HexHH_varE_rma$tau2), r.dec)`                                        | `r round(sqrt(s_HexEM_varE_rma$tau2), r.dec)`                                        | `r round(sqrt(s_HexEX_varE_rma$tau2), r.dec)`                                        | `r round(sqrt(s_HexAG_varE_rma$tau2), r.dec)`                                        |                                        `r round(sqrt(s_HexCO_varE_rma$tau2), r.dec)` |   `r round(sqrt(s_HexOX_varE_rma$tau2), r.dec)` |
-| Heteroeneity I\^2           | `r round(s_HexHH_varE_rma$I2, r.dec)`                                                | `r round(s_HexEM_varE_rma$I2, r.dec)`                                                | `r round(s_HexEX_varE_rma$I2, r.dec)`                                                | `r round(s_HexAG_varE_rma$I2, r.dec)`                                                |                                                `r round(s_HexCO_varE_rma$I2, r.dec)` |     `r round(s_HexOX_varE_rma$I2, r.dec)` |
-| Heterogeneity H\^2          | `r round(s_HexHH_varE_rma$H2, r.dec)`                                                | `r round(s_HexEM_varE_rma$H2, r.dec)`                                                | `r round(s_HexEX_varE_rma$H2, r.dec)`                                                | `r round(s_HexAG_varE_rma$H2, r.dec)`                                                |                                                `r round(s_HexCO_varE_rma$H2, r.dec)` |   `r round(s_HexOX_varE_rma$H2, r.dec)` |
-| Q(`r s_HexHH_varE_rma$k-1`) | `r round(s_HexHH_varE_rma$QE, r.dec)`                                                | `r round(s_HexEM_varE_rma$QE, r.dec)`                                                | `r round(s_HexEX_varE_rma$QE, r.dec)`                                                | `r round(s_HexAG_varE_rma$QE, r.dec)`                                                |                                                `r round(s_HexCO_varE_rma$QE, r.dec)` | `r round(s_HexOX_varE_rma$QE, r.dec)` |
+| Scale                       | HH                                                                                   | EM                                                                                   | EX                                                                                   | AG                                                                                   | CO                                                                                   |                                                                                   OX |
+|-----------|-----------|-----------|-----------|-----------|-----------|----------:|
+| Meta-analytic mean estimate | `r round(s_HexHH_varE_rma$b[1], r.dec)`                                              | `r round(s_HexEM_varE_rma$b[1], r.dec)`                                              | `r round(s_HexEX_varE_rma$b[1], r.dec)`                                              | `r round(s_HexAG_varE_rma$b[1], r.dec)`                                              | `r round(s_HexCO_varE_rma$b[1], r.dec)`                                              |                                              `r round(s_HexOX_varE_rma$b[1], r.dec)` |
+| Confidence Interval         | `r round(s_HexHH_varE_rma$ci.lb, r.dec)` : `r round(s_HexHH_varE_rma$ci.ub, r.dec)`  | `r round(s_HexEM_varE_rma$ci.lb, r.dec)` : `r round(s_HexEM_varE_rma$ci.ub, r.dec)`  | `r round(s_HexEX_varE_rma$ci.lb, r.dec)` : `r round(s_HexEX_varE_rma$ci.ub, r.dec)`  | `r round(s_HexAG_varE_rma$ci.lb, r.dec)` : `r round(s_HexAG_varE_rma$ci.ub, r.dec)`  | `r round(s_HexCO_varE_rma$ci.lb, r.dec)` : `r round(s_HexCO_varE_rma$ci.ub, r.dec)`  |  `r round(s_HexOX_varE_rma$ci.lb, r.dec)` : `r round(s_HexOX_varE_rma$ci.ub, r.dec)` |
+| Heterogeneity tau           | `r round(sqrt(s_HexHH_varE_rma$tau2), r.dec)`                                        | `r round(sqrt(s_HexEM_varE_rma$tau2), r.dec)`                                        | `r round(sqrt(s_HexEX_varE_rma$tau2), r.dec)`                                        | `r round(sqrt(s_HexAG_varE_rma$tau2), r.dec)`                                        | `r round(sqrt(s_HexCO_varE_rma$tau2), r.dec)`                                        |                                        `r round(sqrt(s_HexOX_varE_rma$tau2), r.dec)` |
+| Heteroeneity I\^2           | `r round(s_HexHH_varE_rma$I2, r.dec)`                                                | `r round(s_HexEM_varE_rma$I2, r.dec)`                                                | `r round(s_HexEX_varE_rma$I2, r.dec)`                                                | `r round(s_HexAG_varE_rma$I2, r.dec)`                                                | `r round(s_HexCO_varE_rma$I2, r.dec)`                                                |                                                `r round(s_HexOX_varE_rma$I2, r.dec)` |
+| Heterogeneity H\^2          | `r round(s_HexHH_varE_rma$H2, r.dec)`                                                | `r round(s_HexEM_varE_rma$H2, r.dec)`                                                | `r round(s_HexEX_varE_rma$H2, r.dec)`                                                | `r round(s_HexAG_varE_rma$H2, r.dec)`                                                | `r round(s_HexCO_varE_rma$H2, r.dec)`                                                |                                                `r round(s_HexOX_varE_rma$H2, r.dec)` |
+| Q(`r s_HexHH_varE_rma$k-1`) | `r round(s_HexHH_varE_rma$QE, r.dec)`                                                | `r round(s_HexEM_varE_rma$QE, r.dec)`                                                | `r round(s_HexEX_varE_rma$QE, r.dec)`                                                | `r round(s_HexAG_varE_rma$QE, r.dec)`                                                | `r round(s_HexCO_varE_rma$QE, r.dec)`                                                |                                                `r round(s_HexOX_varE_rma$QE, r.dec)` |
 | P-value QE                  | `r ifelse(s_HexHH_varE_rma$QEp < .001, "<.001", round(s_HexHH_varE_rma$QEp, r.dec))` | `r ifelse(s_HexEM_varE_rma$QEp < .001, "<.001", round(s_HexEM_varE_rma$QEp, r.dec))` | `r ifelse(s_HexEX_varE_rma$QEp < .001, "<.001", round(s_HexEX_varE_rma$QEp, r.dec))` | `r ifelse(s_HexAG_varE_rma$QEp < .001, "<.001", round(s_HexAG_varE_rma$QEp, r.dec))` | `r ifelse(s_HexCO_varE_rma$QEp < .001, "<.001", round(s_HexCO_varE_rma$QEp, r.dec))` | `r ifelse(s_HexOX_varE_rma$QEp < .001, "<.001", round(s_HexOX_varE_rma$QEp, r.dec))` |
-
-
-
-
-
-
-
-
-
-
-
-

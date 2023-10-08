@@ -29,10 +29,18 @@ apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
 
 DF_rma <- read.csv(here("Notes/Sim80000_rma.csv"))
 
-DF_rma$tau_T2_alt <- DF_rma$tau_X^2 - DF_rma$tau_E^2
+DF_rma$tau_T2_alt <- ifelse(DF_rma$tau_X^2 - DF_rma$tau_E^2 < 0, 
+                            yes = 0,
+                            no = DF_rma$tau_X^2 - DF_rma$tau_E^2)
 DF_rma$tau_T_alt <- sqrt(DF_rma$tau_T2_alt)
 
 DF_rma$mu_T_alt <- DF_rma$mu_X - DF_rma$mu_E
+
+
+
+DF_rma$mu_Bonnett_rel_Botella_transf <- exp(DF_rma$mu_Bonnett_rel_Botella + (.5*(DF_rma$tau_Bonett_rel_Botella^2)))
+DF_rma$tau_Bonnett_rel_Botella_transf <- sqrt((DF_rma$mu_Bonnett_rel_Botella_transf^2) * (exp(DF_rma$tau_Bonett_rel_Botella^2) - 1))
+# DF_rma$tau_Bonnett_rel_Botella_transf_CVtest <- DF_rma$tau_Bonnett_rel_Botella_transf * DF_rma$mu_Bonnett_rel_Botella_transf
 
 # Formulating functions to back-transform the estimated heterogeneity in ln(1-r_xx)
 var_Bonnett_backtransformed <- function(mean_x, var_x){
@@ -137,14 +145,18 @@ df_comparison <- data.frame(df_rma,
   # compute bias for meta-analytic estimates and estimates of heterogeneity
   mutate(bias_mu_rel = mu_rel_transf - pred.mu_rel,
          bias_mu_rel_Botella = mu_rel_Botella_transf - pred.mu_rel,
+         bias_mu_Bonnett_rel_Botella_transf = mu_Bonnett_rel_Botella_transf - mu_varE,
          bias_tau_rel = tau_rel_transf - pred.tau_rel,
          bias_tau_rel_Botella = tau_rel_Botella_transf - pred.tau_rel,
+         bias_tau_Bonnett_rel_Botella_transf = tau_Bonnett_rel_Botella_transf - tau_varE,
          bias_mu_varT = mu_T - mu_varT,
          bias_mu_varT_alt = mu_T_alt - mu_varT,
          bias_mu_varE = mu_E - mu_varE,
+         bias_mu_varX = mu_X - mu_varX,
          bias_tau_varT = tau_T - tau_varT,
          bias_tau_varT_alt = tau_T_alt - tau_varT,
          bias_tau_varE = tau_E - tau_varE,
+         bias_tau_varX = tau_X - tau_varX,
          bias_est.CVT = est.CVT - CVT,
          bias_est.CVT_alt = est.CVT_alt - CVT,
          bias_est.CVE = est.CVE - CVE,

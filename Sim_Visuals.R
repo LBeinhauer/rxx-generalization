@@ -191,6 +191,20 @@ ggplot(data = df_comparison) +
        colour = "Reliability") 
 
 
+ggplot(data = df_comparison) +
+  geom_line(aes(x = rel, y = CVE/CVT), size = 2) +
+  geom_point(aes(x = rel, y = est.CVE/est.CVT_alt, colour = as.factor(rel)), alpha = .1,
+             position = position_jitter(width = .01)) +
+  facet_grid(rows = vars(CVT),
+             cols = vars(CVE)) +
+  labs(y = "ratio of coefficient of variation (CV_E / CV_T)",
+       x = "level of score reliability",
+       title = "Ratio of Coefficients of Variation",
+       subtitle = "rows = CVT, columns = CVE, y-Axis limited between 0 & 10",
+       colour = "Reliability") +
+  ylim(0, 10)
+
+
 
 dev.off()
 
@@ -234,6 +248,7 @@ ggplot(data = df_comparison_summary) +
        colour = "Score \n Reliability") 
 
 
+
 # T- mean bias tau
 ggplot(data = df_comparison_summary) +
   geom_ribbon(aes(x = mean_tau_varT, 
@@ -258,14 +273,28 @@ ggplot(data = df_comparison_summary) +
                   ymax = ll80_bias_tau_varT_alt),
               fill = "blue", alpha = .1) +
   geom_abline(intercept = 0, slope = 0) +
-  geom_point(aes(x = mean_tau_varT, y = mean_bias_tau_varT_alt, colour = as.factor(rel))) + 
+  geom_point(aes(x = mean_tau_varT, y = mean_bias_tau_varT_alt, colour = as.factor(CVT))) + 
   facet_grid(rows = vars(CVE),
-             cols = vars(CVT)) +
+             cols = vars(rel)) +
   labs(y = "mean bias in estimated heterogeneity (tau) in true score variance",
        x = "predicted heterogeneity (tau) in true score variance",
        title = "Heterogeneity in True Score Variance",
-       subtitle = "rows = CVE, columns = CVT, var(T) = var(X) - var(E)",
-       colour = "Score \n Reliability") 
+       subtitle = "rows = CVE, columns = rel, var(T) = var(X) - var(E)",
+       colour = "CVT")  
+
+
+# T alt.- mean bias tau
+ggplot(data = df_comparison_summary) +
+  geom_abline(intercept = 0, slope = 0) +
+  geom_point(aes(x = mean_tau_varT, y = sqrt(var_tau_T_alt), colour = as.factor(CVT))) + 
+  facet_grid(rows = vars(CVE),
+             cols = vars(rel)) +
+  labs(y = "sd in estimated heterogeneity (tau) in true score variance",
+       x = "predicted heterogeneity (tau) in true score variance",
+       title = "Heterogeneity in True Score Variance",
+       subtitle = "rows = CVE, columns = rel, var(T) = var(X) - var(E)",
+       colour = "CVT")  
+
 
 # T- on scale CVT
 ggplot(data = df_comparison_summary) +
@@ -381,6 +410,31 @@ ggplot(data = df_comparison_summary) +
        subtitle = "rows = CVE, columns = CVT",
        colour = "Score \n Reliability")
 
+# E- bias on scale tau
+ggplot(data = df_comparison_summary) +
+  geom_abline(intercept = 0, slope = 0) +
+  geom_point(aes(x = mean_tau_varE, y = mean_bias_tau_varE, colour = as.factor(CVE))) +
+  facet_grid(rows = vars(CVT),
+             cols = vars(rel)) +
+  labs(y = "mean bias in heterogeneity (tau) in error score variance",
+       x = "predicted heterogeneity (tau) in error score variance",
+       title = "Heterogeneity in Error Score Variance",
+       subtitle = "rows = CVT, columns = rel",
+       colour = "CVE")
+
+
+# E- var on scale tau
+ggplot(data = df_comparison_summary) +
+  geom_abline(intercept = 0, slope = 0) +
+  geom_point(aes(x = mean_tau_varE, y = sqrt(var_tau_E), colour = as.factor(CVE))) +
+  facet_grid(rows = vars(CVT),
+             cols = vars(rel)) +
+  labs(y = "sd in heterogeneity (tau) in error score variance",
+       x = "predicted heterogeneity (tau) in error score variance",
+       title = "Heterogeneity in Error Score Variance",
+       subtitle = "rows = CVT, columns = rel",
+       colour = "CVE")
+
 # E- on scale CVE
 ggplot(data = df_comparison_summary) +
   geom_ribbon(aes(x = CVE, 
@@ -430,12 +484,78 @@ ggplot(data = df_comparison_summary) +
        subtitle = "rows = CVE, columns = CVT")
 
 
+
+# rel - no back-transform
+ggplot(data = df_comparison_summary) +
+  geom_ribbon(aes(x = rel, 
+                  ymin = ul80_tau_Bonnett,
+                  ymax = ul80_tau_Bonnett), 
+              fill = "blue", alpha = .1) +
+  geom_point(aes(x = rel, y = mean_tau_Bonnett)) +
+  facet_grid(rows = vars(CVE),
+             cols = vars(CVT)) +
+  labs(y = "mean estimated heterogeneity (tau) in Bonnett",
+       x = "level of score reliability",
+       title = "Heterogeneity in Score Reliability - Bonnett - uncorrection",
+       subtitle = "rows = CVE, columns = CVT") 
+
+
+# Botella - correction of Rel
+ggplot(data = df_comparison_summary) +
+  geom_ribbon(aes(x = rel, 
+                  ymin = ul80_tau_Bonett_rel_Botella,
+                  ymax = ul80_tau_Bonett_rel_Botella), 
+              fill = "blue", alpha = .1) +
+  geom_point(aes(x = rel, y = mean_tau_Bonett_rel_Botella)) +
+  facet_grid(rows = vars(CVE),
+             cols = vars(CVT)) +
+  labs(y = "mean estimated heterogeneity (tau) in Bonnett - Botella-cor.",
+       x = "level of score reliability",
+       title = "Heterogeneity in Score Reliability- Botella correction",
+       subtitle = "rows = CVE, columns = CVT") 
+
+
+
+# Botella - correction of Rel - scale of tau
+ggplot(data = df_comparison_summary) +
+  geom_ribbon(aes(x = mean_tau_lnvarE, 
+                  ymin = ul80_tau_Bonett_rel_Botella,
+                  ymax = ul80_tau_Bonett_rel_Botella), 
+              fill = "blue", alpha = .1) +
+  geom_abline(intercept = 0, slope = 1) +
+  geom_point(aes(x = mean_tau_lnvarE, y = mean_tau_Bonett_rel_Botella)) +
+  facet_grid(rows = vars(CVT),
+             cols = vars(rel)) +
+  labs(y = "mean estimated heterogeneity (tau) in Bonnett - Botella-cor.",
+       x = "predicted heterogeneity (tau) in ln error score variance",
+       title = "Heterogeneity in Score Reliability - Botella correction",
+       subtitle = "rows = CVE, columns = CVT") 
+
+
+
+# Botella - correction of Rel back-transformed! - scale of tau
+ggplot(data = df_comparison_summary) +
+  geom_ribbon(aes(x = mean_tau_varE, 
+                  ymin = ll80_tau_Bonett_rel_Botella_transf,
+                  ymax = ul80_tau_Bonett_rel_Botella_transf), 
+              fill = "blue", alpha = .1) +
+  geom_abline(intercept = 0, slope = 1) +
+  geom_point(aes(x = mean_tau_varE, y = mean_tau_Bonett_rel_Botella_transf)) +
+  facet_grid(rows = vars(CVT),
+             cols = vars(rel)) +
+  labs(y = "mean estimated heterogeneity (tau) in Bonnett - Botella-cor.",
+       x = "predicted heterogeneity (tau) in ln error score variance",
+       title = "Heterogeneity in Score Reliability - Botella correction",
+       subtitle = "rows = CVE, columns = CVT") 
+
+
+
 # rel- scale tau
 ggplot(data = df_comparison_summary) +
-  # geom_ribbon(aes(x = mean_pred.tau_rel, 
-  #                 ymin = ul80_tau_rel_transf,
-  #                 ymax = ll80_tau_rel_transf), 
-  #             fill = "blue", alpha = .1) +
+  geom_ribbon(aes(x = mean_pred.tau_rel,
+                  ymin = ul80_tau_rel_transf,
+                  ymax = ll80_tau_rel_transf),
+              fill = "blue", alpha = .1) +
   geom_abline(intercept = 0, slope = 1) +
   geom_point(aes(x = mean_pred.tau_rel, y = mean_tau_rel_transf, colour = as.factor(rel))) +
   facet_grid(rows = vars(CVE),
@@ -445,6 +565,38 @@ ggplot(data = df_comparison_summary) +
        title = "Heterogeneity in Score Reliability",
        subtitle = "rows = CVE, columns = CVT", 
        colour = "Score \n Reliability")
+
+
+# rel- mean bias scale tau
+ggplot(data = df_comparison_summary) +
+  geom_ribbon(aes(x = mean_pred.tau_rel,
+                  ymin = ul80_bias_tau_rel,
+                  ymax = ll80_bias_tau_rel),
+              fill = "blue", alpha = .1) +
+  geom_abline(intercept = 0, slope = 0) +
+  geom_point(aes(x = mean_pred.tau_rel, y = mean_bias_tau_rel, colour = as.factor(rel))) +
+  facet_grid(rows = vars(CVE),
+             cols = vars(CVT)) +
+  labs(y = "mean bias in estimated heterogeneity (tau) in score reliability",
+       x = "predicted heterogeneity (tau) in score reliability",
+       title = "Heterogeneity in Score Reliability",
+       subtitle = "rows = CVE, columns = CVT", 
+       colour = "Score \n Reliability")
+
+
+# rel- mean variance scale tau
+ggplot(data = df_comparison_summary) +
+  geom_abline(intercept = 0, slope = 0) +
+  geom_point(aes(x = mean_pred.tau_rel, y = sqrt(var_tau_rel_transf), colour = as.factor(rel))) +
+  facet_grid(rows = vars(CVE),
+             cols = vars(CVT)) +
+  labs(y = "mean variance in estimated heterogeneity (tau) in score reliability",
+       x = "predicted heterogeneity (tau) in score reliability",
+       title = "Heterogeneity in Score Reliability",
+       subtitle = "rows = CVE, columns = CVT", 
+       colour = "Score \n Reliability")
+
+
 
 # rel- CVrel vs CVrel
 ggplot(data = df_comparison_summary) +
@@ -463,6 +615,41 @@ ggplot(data = df_comparison_summary) +
        colour = "Score \n Reliability")
 
 
+## Summaries Observed Score variance
+
+# T- on scale tau
+ggplot(data = df_comparison_summary) +
+  geom_ribbon(aes(x = mean_tau_varX, 
+                  ymin = ul80_tau_X,
+                  ymax = ll80_tau_X), 
+              fill = "blue", alpha = .1) +
+  geom_abline(intercept = 0, slope = 1) +
+  geom_point(aes(x = mean_tau_varX, y = mean_tau_X, colour = as.factor(rel))) +
+  facet_grid(rows = vars(CVE),
+             cols = vars(CVT)) +
+  labs(y = "mean estimated heterogeneity (tau) in observed score variance",
+       x = "predicted heterogeneity (tau) in observed score variance",
+       title = "Heterogeneity in Observed Score Variance",
+       subtitle = "rows = CVE, columns = CVT",
+       colour = "Score \n Reliability") 
+
+
+
+# T- mean bias tau
+ggplot(data = df_comparison_summary) +
+  geom_ribbon(aes(x = mean_tau_varX, 
+                  ymin = ul80_bias_tau_varX,
+                  ymax = ll80_bias_tau_varX),
+              fill = "blue", alpha = .1) +
+  geom_abline(intercept = 0, slope = 0) +
+  geom_point(aes(x = mean_tau_varX, y = mean_bias_tau_varX, colour = as.factor(rel))) + 
+  facet_grid(rows = vars(CVE),
+             cols = vars(CVT)) +
+  labs(y = "mean bias in estimated heterogeneity (tau) in observed score variance",
+       x = "predicted heterogeneity (tau) in observed score variance",
+       title = "Heterogeneity in Observed Score Variance",
+       subtitle = "rows = CVE, columns = CVT",
+       colour = "Score \n Reliability") 
 
 
 
