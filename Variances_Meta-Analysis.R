@@ -73,6 +73,36 @@ saveRDS(long_test_E, file = here("Notes/bootstrapped_varE.RData"))
 
 
 
+long_test_X <- lapply(data.list, FUN = function(data){
+  
+  df <- apply(as.matrix(seq_along(unique(data$source))), MARGIN = 1, FUN = function(x){
+    
+    
+    d <- data[data$source == unique(data$source)[x],-grep("source", names(data))]
+    
+    D <- na.omit(d)
+    
+    
+    varX <- var(rowMeans(D))
+    
+    return(data.frame(SE = sqrt((2/(nrow(D) - 1))), 
+                      boot.mean = varX,
+                      var.emp = log(varX)))
+    
+  })
+    
+df.formatted <- data.frame(SE = sapply(df, FUN = function(x){x$SE}),
+                           boot.mean = sapply(df, FUN = function(x){x$boot.mean}),
+                           var.est = sapply(df, FUN = function(x){x$var.emp}),
+                           source = unique(data$source))
+})
+
+saveRDS(long_test_X, file = here("Notes/bootstrapped_varX.RData"))
+
+
+
+
+
 set.seed(070622)
 
 long_test_lnT <- lapply(seq_along(data.list), FUN = function(x){
@@ -134,6 +164,23 @@ names(varE_rma.list) <- names(data.list)
 saveRDS(varE_rma.list, file = here("Notes/bootstrapped_varE_rma.RData"))
 
 
+
+
+varX_rma.list <- lapply(seq_along(long_test_X), FUN = function(x){
+  tryCatch(metafor::rma(measure = "GEN", method = "REML", 
+                        yi = long_test_E[[x]]$var.est, 
+                        sei = long_test_E[[x]]$SE),
+           error = function(e)(cat("ERROR: ", conditionMessage(e), " - ",
+                                   substr(names(data.list), 
+                                          (regexpr("Project) Data/", names(data.list)) + 14), 
+                                          (nchar(names(data.list))-4))[x], 
+                                   " - ", x, "\n")))
+  
+})
+
+names(varX_rma.list) <- names(data.list)
+
+saveRDS(varX_rma.list, file = here("Notes/bootstrapped_varx_rma.RData"))
 
 
 

@@ -1,7 +1,7 @@
 ---
 title: "Results Reliability Generalization and Variance Decomposition"
 author: "Lukas Beinhauer"
-format: html
+format: docx
 editor: visual
 ---
 
@@ -25,9 +25,11 @@ Bonett.Alpha_rma.list <- readRDS(file.path("Data/Shiny Data/Bonett.Alpha_rma.lis
 
 varT_est.list <- readRDS(file.path("Notes/bootstrapped_varT.RData"))
 varE_est.list <- readRDS(file.path("Notes/bootstrapped_varE.RData"))
+# varX_est.list <- readRDS(file.path("Notes/bootstrapped_varX.RData"))
 
 varT_rma.list <- readRDS(file.path("Notes/bootstrapped_varT_rma.RData"))
 varE_rma.list <- readRDS(file.path("Notes/bootstrapped_varE_rma.RData"))
+# varX_rma.list <- readRDS(file.path("Notes/bootstrapped_varX_rma.RData"))
 
 
 data.list <- lapply(list.files(file.path("Data/Extracted (Project) Data"), 
@@ -72,6 +74,26 @@ backtr_rma_varX.df <- data.frame(mu_X = sapply(backtr_rma_varX, FUN = function(x
                                  tau2_X = sapply(backtr_rma_varX, FUN = function(x){x$tau2_X}))
 
 backtr_rma_varX.df$tau_X <- sqrt(backtr_rma_varX.df$tau2_X)
+
+
+
+
+backtr_rma_varE <- lapply(varE_rma.list, FUN = function(x){
+  
+  mu <-  exp(x$b[1] + .5*x$tau2)
+  tau2 <- (mu^2) * (exp(x$tau2) - 1)
+  
+  return(list(mu_E = mu,
+              tau2_E = tau2))
+  
+})
+
+backtr_rma_varE.df <- data.frame(mu_E = sapply(backtr_rma_varE, FUN = function(x){x$mu_E}),
+                                 tau2_E = sapply(backtr_rma_varE, FUN = function(x){x$tau2_E}))
+
+backtr_rma_varE.df$tau_E <- sqrt(backtr_rma_varE.df$tau2_E)
+
+
 
 ```
 
@@ -231,6 +253,47 @@ varE.df <- data.frame(varE_tau2 = sapply(varE_rma.list, FUN = function(x){x$tau2
                       varE_tau = sqrt(sapply(varE_rma.list, FUN = function(x){x$tau2})),
                       muE = sapply(varE_rma.list, FUN = function(x){x$b[1]}))
 
+
+s_Caciop_B.Alpha_Botella_rma <- metafor::rma(yi = s_Caciop_B.Alpha_rma$yi,
+                                             vi = s_Caciop_B.Alpha_rma$vi,
+                                             measure = "GEN",
+                                             method = "REML",
+                                             mods = ~ varX_rma.list[[1]]$yi)
+
+mu_s_Caciop_B.Alpha_Botella_rma_backtr <-  exp(s_Caciop_B.Alpha_Botella_rma$b[1] + .5*s_Caciop_B.Alpha_Botella_rma$tau2)
+
+tau_s_Caciop_B.Alpha_Botella_rma_backtr <- (mu_s_Caciop_B.Alpha_Botella_rma_backtr^2) * (exp(s_Caciop_B.Alpha_Botella_rma$tau2) - 1)
+
+
+
+
+s_ShnabelRPP_B.Alpha_Botella_rma <- metafor::rma(yi = s_ShnabelRPP_B.Alpha_rma$yi,
+                                             vi = s_ShnabelRPP_B.Alpha_rma$vi,
+                                             measure = "GEN",
+                                             method = "REML",
+                                             mods = ~ varX_rma.list[[9]]$yi)
+
+mu_s_ShnabelRPP_B.Alpha_Botella_rma_backtr <-  exp(s_ShnabelRPP_B.Alpha_Botella_rma$b[1] + .5*s_ShnabelRPP_B.Alpha_Botella_rma$tau2)
+
+tau_s_ShnabelRPP_B.Alpha_Botella_rma_backtr <- (mu_s_ShnabelRPP_B.Alpha_Botella_rma_backtr^2) * (exp(s_ShnabelRPP_B.Alpha_Botella_rma$tau2) - 1)
+
+
+
+
+
+
+
+s_HexHH_B.Alpha_Botella_rma <- metafor::rma(yi = s_HexHH_B.Alpha_rma$yi,
+                                             vi = s_HexHH_B.Alpha_rma$vi,
+                                             measure = "GEN",
+                                             method = "REML",
+                                             mods = ~ varX_rma.list[[6]]$yi)
+
+mu_s_HexHH_B.Alpha_Botella_rma_backtr <-  exp(s_HexHH_B.Alpha_Botella_rma$b[1] + .5*s_HexHH_B.Alpha_Botella_rma$tau2)
+
+tau_s_HexHH_B.Alpha_Botella_rma_backtr <- (mu_s_HexHH_B.Alpha_Botella_rma_backtr^2) * (exp(s_HexHH_B.Alpha_Botella_rma$tau2) - 1)
+
+
 ```
 
 ```{r}
@@ -262,206 +325,6 @@ ggplot(CV_ratio.df) +
   labs(y = "Project / MASC", x = expression(CV[E] == frac(tau[E], mu[E]))) +
   labs(y = "Project / MASC", x = expression(R[CV["T"],CV["E"]] == frac(frac(tau["T"], mu["T"]), frac(tau[E], mu[E]))))
 
-
-```
-
-```{r}
-### Simulation Results
-
-# vis.df_empF <- read.csv(file.path("Notes/vis_df.csv"), sep = " ")
-# vis.df_empT <- read.csv(file.path("Notes/vis_df_empT.csv"), sep = " ")
-# 
-# vis.df_summarised_empF <- vis.df_empF %>% 
-#   group_by(CVT, CVE, rel) %>%
-#   summarise(T_m = mean(tau_T, na.rm = T),
-#             E_m = mean(tau_E, na.rm = T),
-#             T_sd = sd(tau_T, na.rm = T),
-#             E_sd = sd(tau_E, na.rm = T),
-#             T_ll = quantile(tau_T, .025, na.rm = T),
-#             T_ul = quantile(tau_T, .975, na.rm = T),
-#             E_ll = quantile(tau_E, .025, na.rm = T),
-#             E_ul = quantile(tau_E, .975, na.rm = T),
-#             VT.MAE_m = mean(varT.MAE, na.rm = T),
-#             VE.MAE_m = mean(varE.MAE, na.rm = T),
-#             VT.MAE_ll = quantile(varT.MAE, .025, na.rm = T),
-#             VT.MAE_ul = quantile(varT.MAE, .975, na.rm = T),
-#             VE.MAE_ll = quantile(varE.MAE, .025, na.rm = T),
-#             VE.MAE_ul = quantile(varE.MAE, .975, na.rm = T),
-#             VT.M_m = mean(varT.M, na.rm = T),
-#             VE.M_m = mean(varE.M, na.rm = T),
-#             VT.M_ll = quantile(varT.M, .025, na.rm = T),
-#             VT.M_ul = quantile(varT.M, .975, na.rm = T),
-#             VE.M_ll = quantile(varE.M, .025, na.rm = T),
-#             VE.M_ul = quantile(varE.M, .975, na.rm = T),
-#             rel.M_m = mean(rel.M, na.rm = T),
-#             rel.M_ll = quantile(rel.M, .025, na.rm = T),
-#             rel.M_ul = quantile(rel.M, .975, na.rm = T),
-#             rel.MAE_m = mean(rel.MAE, na.rm = T),
-#             rel.MAE_ll = quantile(rel.MAE, .025, na.rm = T),
-#             rel.MAE_ul = quantile(rel.MAE, .975, na.rm = T),
-#             tau_rel_m = mean(tau_rel, na.rm = T),
-#             tau_rel_ll = quantile(tau_rel, .025, na.rm = T),
-#             tau_rel_ul = quantile(tau_rel, .975, na.rm = T),
-#             tau_rel_cT_m = mean(tau_rel_cT, na.rm = T),
-#             tau_rel_cT_ll = quantile(tau_rel_cT, .025, na.rm = T),
-#             tau_rel_cT_ul = quantile(tau_rel_cT, .975, na.rm = T),
-#             tau_rel_cE_m = mean(tau_rel_cE, na.rm = T),
-#             tau_rel_cE_ll = quantile(tau_rel_cE, .025, na.rm = T),
-#             tau_rel_cE_ul = quantile(tau_rel_cE, .975, na.rm = T),
-#             tau_rel_cTE_m = mean(tau_rel_cTE, na.rm = T),
-#             tau_rel_cTE_ll = quantile(tau_rel_cTE, .025, na.rm = T),
-#             tau_rel_cTE_ul = quantile(tau_rel_cTE, .975, na.rm = T))
-# 
-# vis.df_summarised_empT <- vis.df_empT %>% 
-#   group_by(CVT, CVE, rel) %>%
-#   summarise(T_m = mean(tau_T, na.rm = T),
-#             E_m = mean(tau_E, na.rm = T),
-#             T_sd = sd(tau_T, na.rm = T),
-#             E_sd = sd(tau_E, na.rm = T),
-#             T_ll = quantile(tau_T, .025, na.rm = T),
-#             T_ul = quantile(tau_T, .975, na.rm = T),
-#             E_ll = quantile(tau_E, .025, na.rm = T),
-#             E_ul = quantile(tau_E, .975, na.rm = T),
-#             VT.MAE_m = mean(varT.MAE, na.rm = T),
-#             VE.MAE_m = mean(varE.MAE, na.rm = T),
-#             VT.MAE_ll = quantile(varT.MAE, .025, na.rm = T),
-#             VT.MAE_ul = quantile(varT.MAE, .975, na.rm = T),
-#             VE.MAE_ll = quantile(varE.MAE, .025, na.rm = T),
-#             VE.MAE_ul = quantile(varE.MAE, .975, na.rm = T),
-#             VT.M_m = mean(varT.M, na.rm = T),
-#             VE.M_m = mean(varE.M, na.rm = T),
-#             VT.M_ll = quantile(varT.M, .025, na.rm = T),
-#             VT.M_ul = quantile(varT.M, .975, na.rm = T),
-#             VE.M_ll = quantile(varE.M, .025, na.rm = T),
-#             VE.M_ul = quantile(varE.M, .975, na.rm = T),
-#             rel.M_m = mean(rel.M, na.rm = T),
-#             rel.M_ll = quantile(rel.M, .025, na.rm = T),
-#             rel.M_ul = quantile(rel.M, .975, na.rm = T),
-#             rel.MAE_m = mean(rel.MAE, na.rm = T),
-#             rel.MAE_ll = quantile(rel.MAE, .025, na.rm = T),
-#             rel.MAE_ul = quantile(rel.MAE, .975, na.rm = T),
-#             tau_rel_m = mean(tau_rel, na.rm = T),
-#             tau_rel_ll = quantile(tau_rel, .025, na.rm = T),
-#             tau_rel_ul = quantile(tau_rel, .975, na.rm = T),
-#             tau_rel_cT_m = mean(tau_rel_cT, na.rm = T),
-#             tau_rel_cT_ll = quantile(tau_rel_cT, .025, na.rm = T),
-#             tau_rel_cT_ul = quantile(tau_rel_cT, .975, na.rm = T),
-#             tau_rel_cE_m = mean(tau_rel_cE, na.rm = T),
-#             tau_rel_cE_ll = quantile(tau_rel_cE, .025, na.rm = T),
-#             tau_rel_cE_ul = quantile(tau_rel_cE, .975, na.rm = T),
-#             tau_rel_cTE_m = mean(tau_rel_cTE, na.rm = T),
-#             tau_rel_cTE_ll = quantile(tau_rel_cTE, .025, na.rm = T),
-#             tau_rel_cTE_ul = quantile(tau_rel_cTE, .975, na.rm = T))
-# 
-# 
-# 
-# 
-# vis.df_summarized2_empF <- vis.df_empF %>%
-#   group_by(CVT, CVE, rel) %>%
-#   summarise(bias_varT.M = mean(varT.M - rel*10, na.rm = T),
-#             bias_varT.MAE = mean(varT.MAE - rel*10, na.rm = T),
-#             bias_varE.M = mean(varE.M - (1-rel)*10, na.rm = T),
-#             bias_varE.MAE = mean(varE.MAE - (1-rel)*10, na.rm = T),
-#             bias_rel.M = mean(rel.M - rel, na.rm = T),
-#             bias_rel.MAE = mean(rel.MAE-rel, na.rm = T),
-#             bias_tauT = mean(tau_T - CVT*rel*10, na.rm = T),
-#             bias_tauE = mean(tau_E - CVE*(1-rel)*10, na.rm = T),
-#             MSE_varT.M = mean((varT.M - rel*10)^2, na.rm = T),
-#             MSE_varT.MAE = mean((varT.MAE - rel*10)^2, na.rm = T),
-#             MSE_varE.M = mean((varE.M - (1-rel)*10)^2, na.rm = T),
-#             MSE_varE.MAE = mean((varE.MAE - (1-rel)*10)^2, na.rm = T),
-#             MSE_rel.M = mean((rel.M - rel)^2, na.rm = T),
-#             MSE_rel.MAE = mean((rel.MAE-rel)^2, na.rm = T),
-#             MSE_tauT = mean((tau_T - CVT*rel*10)^2, na.rm = T),
-#             MSE_tauE = mean((tau_E - CVE*(1-rel)*10)^2, na.rm = T),
-#             RMSE_varT.M = sqrt(mean((varT.M - rel*10)^2, na.rm = T)),
-#             RMSE_varT.MAE = sqrt(mean((varT.MAE - rel*10)^2, na.rm = T)),
-#             RMSE_varE.M = sqrt(mean((varE.M - (1-rel)*10)^2, na.rm = T)),
-#             RMSE_varE.MAE = sqrt(mean((varE.MAE - (1-rel)*10)^2, na.rm = T)),
-#             RMSE_rel.M = sqrt(mean((rel.M - rel)^2, na.rm = T)),
-#             RMSE_rel.MAE = sqrt(mean((rel.MAE-rel)^2, na.rm = T)),
-#             RMSE_tauT = sqrt(mean((tau_T - CVT*rel*10)^2, na.rm = T)),
-#             RMSE_tauE = sqrt(mean((tau_E - CVE*(1-rel)*10)^2, na.rm = T)))
-# 
-# 
-# 
-# vis.df_summarized2_empT <- vis.df_empT %>%
-#   group_by(CVT, CVE, rel) %>%
-#   summarise(bias_varT.M = mean(varT.M - rel*10, na.rm = T),
-#             bias_varT.MAE = mean(varT.MAE - rel*10, na.rm = T),
-#             bias_varE.M = mean(varE.M - (1-rel)*10, na.rm = T),
-#             bias_varE.MAE = mean(varE.MAE - (1-rel)*10, na.rm = T),
-#             bias_rel.M = mean(rel.M - rel, na.rm = T),
-#             bias_rel.MAE = mean(rel.MAE-rel, na.rm = T),
-#             bias_tauT = mean(tau_T - CVT*rel*10, na.rm = T),
-#             bias_tauE = mean(tau_E - CVE*(1-rel)*10, na.rm = T),
-#             MSE_varT.M = mean((varT.M - rel*10)^2, na.rm = T),
-#             MSE_varT.MAE = mean((varT.MAE - rel*10)^2, na.rm = T),
-#             MSE_varE.M = mean((varE.M - (1-rel)*10)^2, na.rm = T),
-#             MSE_varE.MAE = mean((varE.MAE - (1-rel)*10)^2, na.rm = T),
-#             MSE_rel.M = mean((rel.M - rel)^2, na.rm = T),
-#             MSE_rel.MAE = mean((rel.MAE-rel)^2, na.rm = T),
-#             MSE_tauT = mean((tau_T - CVT*rel*10)^2, na.rm = T),
-#             MSE_tauE = mean((tau_E - CVE*(1-rel)*10), na.rm = T)^2,
-#             RMSE_varT.M = sqrt(mean((varT.M - rel*10)^2, na.rm = T)),
-#             RMSE_varT.MAE = sqrt(mean((varT.MAE - rel*10)^2, na.rm = T)),
-#             RMSE_varE.M = sqrt(mean((varE.M - (1-rel)*10)^2, na.rm = T)),
-#             RMSE_varE.MAE = sqrt(mean((varE.MAE - (1-rel)*10)^2, na.rm = T)),
-#             RMSE_rel.M = sqrt(mean((rel.M - rel)^2, na.rm = T)),
-#             RMSE_rel.MAE = sqrt(mean((rel.MAE-rel)^2, na.rm = T)),
-#             RMSE_tauT = sqrt(mean((tau_T - CVT*rel*10)^2, na.rm = T)),
-#             RMSE_tauE = sqrt(mean((tau_E - CVE*(1-rel)*10), na.rm = T)^2)
-#             )
-# 
-# 
-# vis.df2_empF <- vis.df_empF %>%
-#   mutate(bias_varT.M = (varT.M - rel*10),
-#          bias_varT.MAE = (varT.MAE - rel*10),
-#          bias_varE.M = (varE.M - (1-rel)*10),
-#          bias_varE.MAE = (varE.MAE - (1-rel)*10),
-#          bias_rel.M = (rel.M - rel),
-#          bias_rel.MAE = (rel.MAE-rel),
-#          bias_tauT = (tau_T - CVT*rel*10),
-#          bias_tauE = (tau_E - CVE*(1-rel)*10)
-#   )
-# 
-# vis.df2_empT <- vis.df_empT %>%
-#   mutate(bias_varT.M = (varT.M - rel*10),
-#          bias_varT.MAE = (varT.MAE - rel*10),
-#          bias_varE.M = (varE.M - (1-rel)*10),
-#          bias_varE.MAE = (varE.MAE - (1-rel)*10),
-#          bias_rel.M = (rel.M - rel),
-#          bias_rel.MAE = (rel.MAE-rel),
-#          bias_tauT = (tau_T - CVT*rel*10),
-#          bias_tauE = (tau_E - CVE*(1-rel)*10)
-#   )
-# 
-# 
-# 
-# colnames(vis.df_empT) <- paste0(colnames(vis.df_empF), "_empT")
-# colnames(vis.df_summarised_empT) <- paste0(colnames(vis.df_summarised_empF), "_empT")
-# colnames(vis.df_summarized2_empT) <- paste0(colnames(vis.df_summarized2_empF), "_empT")
-# colnames(vis.df2_empT) <- paste0(colnames(vis.df2_empF), "_empT")
-# 
-# # vis.df <- cbind(vis.df_empF, vis.df_empT)
-# # vis.df_summarised <- cbind(vis.df_summarised_empF, vis.df_summarised_empT)
-# # vis.df_summarized2 <- cbind(vis.df_summarized2_empF, vis.df_summarized2_empT)
-# # vis.df2 <- cbind(vis.df2_empF, vis.df2_empT)
-# vis.df2 <- vis.df2_empF
-# vis.df_summarised <- vis.df_summarised_empF
-# vis.df_summarized2 <- vis.df_summarized2_empF
-
-```
-
-```{r}
-
-
-# table_ratio_sig <- vis.df2_empF %>% 
-#   group_by(rel, CVT, CVE) %>%
-#   summarise(ratio_sig_T = mean(p_T < .05, na.rm = T)
-#             , ratio_sig_E = mean(p_E < .05, na.rm = T)
-#             , ratio_sig_rel = mean(p_rel < .05, na.rm = T))
-# 
 
 ```
 
@@ -549,7 +412,7 @@ ggplot(data = df_comparison_summary) +
 
 Figure 2 pertains to the efficiency of heterogeneity in score reliability estimates. Overall, the standard deviation of estimates within a single condition reveal a straightforward picture. Most obviously, we see that efficency of estimation in heterogeneity, in terms of standard deviation, is a function of level of score reliability. High levels of score reliability lead to higher level of efficiency, as the estimates' standard deviations are lower, while lower levels of score reliability come with lower levels of efficiency. Such findings are to be expected. As higher levels of score reliability carry smaller and more stable standard errors, estimation of heterogeneity should be less uncertain as well. Additionally we observe that efficiency of score reliability heterogeneity estimation seems to increase with higher levels of heterogeneity in either true or score variance component.
 
-The ratio of standard deviation to its mean estimate is at most `r round(max(sqrt(df_comparison_summary$var_tau_rel_transf[!df_comparison_summary$CVE == 0 & !df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_rel[!df_comparison_summary$CVE == 0 & !df_comparison_summary$CVT == 0]), 3)`, on average `r round(mean(sqrt(df_comparison_summary$var_tau_rel_transf[!df_comparison_summary$CVE == 0 & !df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_rel[!df_comparison_summary$CVE == 0 & !df_comparison_summary$CVT == 0]), 3)`, if there is any heterogeneity present.
+The ratio of standard deviation to true heterogeneity is at most `r round(max(sqrt(df_comparison_summary$var_tau_rel_transf[!df_comparison_summary$CVE == 0 & !df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_rel[!df_comparison_summary$CVE == 0 & !df_comparison_summary$CVT == 0]), 3)`, on average `r round(mean(sqrt(df_comparison_summary$var_tau_rel_transf[!df_comparison_summary$CVE == 0 & !df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_rel[!df_comparison_summary$CVE == 0 & !df_comparison_summary$CVT == 0]), 3)`, if there is any heterogeneity present.
 
 ```{r}
 ggplot(data = df_comparison_summary) +
@@ -567,7 +430,7 @@ ggplot(data = df_comparison_summary) +
 
 In figure 3, the positive bias in heterogeneity estimates of error score variance is most obvious in cases where actually no heterogeneity is present. Similarly to the case of heterogeneity in score reliability, this can easily be explained by the positive bias of selection for positive estimates of heterogeneity. However, it also becomes apparent that this bias decreases with higher levels of score reliability. While this may seem informative, this bias is a simple function of the size of mean error score variance. As score reliability increases, the absolute size of error score variance decreases. Thereby, as the scale of the estimated parameter decreases, so does the bias of its estimated heterogeneity.
 
-More interestingly, if there is heterogeneity present in the error score variance, the ratio of mean absolute bias to its mean estimate is at most `r round(max(abs(df_comparison_summary$mean_bias_tau_varE[!df_comparison_summary$CVE == 0])/df_comparison_summary$mean_tau_E[!df_comparison_summary$CVE == 0]), 3)`. On average this ratio is `r round(mean(abs(df_comparison_summary$mean_bias_tau_varE[!df_comparison_summary$CVE == 0])/df_comparison_summary$mean_tau_E[!df_comparison_summary$CVE == 0]), 3)`. From figure 2 no particularly obvious function of bias in error score variance estimates becomes apparent, concerning the parameters of induced heterogeneity or level of score reliability. However, in general it seems that the estimation of heterogeneity in error score variance, in terms of bias, is unaffected by the level of heterogeneity in true score variance.
+More interestingly, if there is heterogeneity present in the error score variance, the ratio of mean absolute bias to simulated score reliability heterogeneity is at most `r round(max(abs(df_comparison_summary$mean_bias_tau_varE[!df_comparison_summary$CVE == 0])/df_comparison_summary$mean_tau_varE[!df_comparison_summary$CVE == 0]), 3)`. On average this ratio is `r round(mean(abs(df_comparison_summary$mean_bias_tau_varE[!df_comparison_summary$CVE == 0])/df_comparison_summary$mean_tau_varE[!df_comparison_summary$CVE == 0]), 3)`. From figure 2 no particularly obvious function of bias in error score variance estimates becomes apparent, concerning the parameters of induced heterogeneity or level of score reliability. However, in general it seems that the estimation of heterogeneity in error score variance, in terms of bias, is unaffected by the level of heterogeneity in true score variance.
 
 
 ```{r}
@@ -585,7 +448,7 @@ ggplot(data = df_comparison_summary) +
 
 In figure 4, it becomes apparent that efficiency in estimation of heterogeneity in error score variances is, similarly to its bias, a function of level of score reliability. Again, as score reliability increases, error score variance decreases. The smaller scale of this parameter thereby leads to less absolute variation. Also, similarly to the bias in heterogeneity of error score variance, the efficiency of its estimation remains unaffected by the level of heterogeneity in the true score variance component.
 
-If there is heterogeneity present in error score variance, figure 4 demonstrates that efficiency in the estimation of this parameter, in terms of its standard deviation, increases almost linearly with heterogeneity induced. Interestingly, we see that, if no heterogeneity is present at all, efficiency in estimation is about the same size (very slightly smaller, but we shouldn't overinterpret this) as if little heterogeneity is present. Whenever there is true heterogeneity present, the ratio of standard deviation to its mean estimate is at most `r round(max(sqrt(df_comparison_summary$var_tau_E[!df_comparison_summary$CVE == 0])/df_comparison_summary$mean_tau_E[!df_comparison_summary$CVE == 0]), 3)`, on average `r round(mean(sqrt(df_comparison_summary$var_tau_E[!df_comparison_summary$CVE == 0])/df_comparison_summary$mean_tau_E[!df_comparison_summary$CVE == 0]), 3)`.
+If there is heterogeneity present in error score variance, figure 4 demonstrates that efficiency in the estimation of this parameter, in terms of its standard deviation, increases almost linearly with heterogeneity induced. Interestingly, we see that, if no heterogeneity is present at all, efficiency in estimation is about the same size (very slightly smaller, but we shouldn't overinterpret this) as if little heterogeneity is present. Whenever there is true heterogeneity present, the ratio of standard deviation to simulated error score variance heterogeneity is at most `r round(max(sqrt(df_comparison_summary$var_tau_E[!df_comparison_summary$CVE == 0])/df_comparison_summary$mean_tau_varE[!df_comparison_summary$CVE == 0]), 3)`, on average `r round(mean(sqrt(df_comparison_summary$var_tau_E[!df_comparison_summary$CVE == 0])/df_comparison_summary$mean_tau_varE[!df_comparison_summary$CVE == 0]), 3)`.
 
 
 
@@ -603,7 +466,7 @@ ggplot(data = df_comparison_summary) +
 ```
 
 
-Concerning the estimation of heterogeneity in true score variance, figure 5 seems to imply a similar relationship between its bias and the parameters of heterogeneity in score variance components or level of score reliability. However, most importantly it has to be noted that everything occurs on a different, much larger scale. If there is heterogeneity present, the largest ratio of absolute mean bias and mean estimate of true score variance heterogeneity is `r round(max(abs(df_comparison_summary$mean_bias_tau_varT[!df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_T[!df_comparison_summary$CVT == 0]), 3)`. On average, this ratio is `r round(mean(abs(df_comparison_summary$mean_bias_tau_varT[!df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_T[!df_comparison_summary$CVT == 0]), 3)`, the median is `r round(median(abs(df_comparison_summary$mean_bias_tau_varT[!df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_T[!df_comparison_summary$CVT == 0]), 3)` - several magnitudes larger than for estimation of heterogeneity in error score variances.
+Concerning the estimation of heterogeneity in true score variance, figure 5 seems to imply a similar relationship between its bias and the parameters of heterogeneity in score variance components or level of score reliability. However, most importantly it has to be noted that everything occurs on a different, much larger scale. If there is heterogeneity present, the largest ratio of absolute mean bias and simulated true score variance heterogeneity is `r round(max(abs(df_comparison_summary$mean_bias_tau_varT[!df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_varT[!df_comparison_summary$CVT == 0]), 3)`. On average, this ratio is `r round(mean(abs(df_comparison_summary$mean_bias_tau_varT[!df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_varT[!df_comparison_summary$CVT == 0]), 3)`, the median is `r round(median(abs(df_comparison_summary$mean_bias_tau_varT[!df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_varT[!df_comparison_summary$CVT == 0]), 3)` - several magnitudes larger than for estimation of heterogeneity in error score variances.
 
 Concerning the function of mean bias in heterogeneity of true score variance estimates, based on levels of score reliability or heterogeneity in the error score variance components, no obvious relationship is revealed in figure 5. Estimation appears unaffected by induction of heterogeneity in error score variance. More surprisingly, it appears that even levels of score reliability and different levels of true heterogeneity in true score variances have no immediately obvious impact on the bias in these estimates. Most crucially, we note that while a large bias remains, if no heterogeneity is present, a generally negative, but by magnitudes smaller, bias is noted if there is true heterogeneity present.
 
@@ -626,7 +489,7 @@ ggplot(data = df_comparison_summary) +
        colour = "CVT") 
 ```
 
-Concerning the efficiency of true score variance heterogeneity estimation figure 6 reveals that, compared to efficiency in estimation of error score variance heterogeneity, again performs magnitudes worse. If there is heteroeneity present, the ratio of standard deviation to its mean estimate is at most `r round(max(sqrt(df_comparison_summary$var_tau_T[!df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_T[!df_comparison_summary$CVT == 0]), 3)`, on average `r round(mean(sqrt(df_comparison_summary$var_tau_T[!df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_T[!df_comparison_summary$CVT == 0]), 3)`, the median is `r round(median(sqrt(df_comparison_summary$var_tau_T[!df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_T[!df_comparison_summary$CVT == 0]), 3)`.
+Concerning the efficiency of true score variance heterogeneity estimation figure 6 reveals that, compared to efficiency in estimation of error score variance heterogeneity, again performs magnitudes worse. If there is heteroeneity present, the ratio of standard deviation to simulated heterogeneity is at most `r round(max(sqrt(df_comparison_summary$var_tau_T[!df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_varT[!df_comparison_summary$CVT == 0]), 3)`, on average `r round(mean(sqrt(df_comparison_summary$var_tau_T[!df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_varT[!df_comparison_summary$CVT == 0]), 3)`, the median is `r round(median(sqrt(df_comparison_summary$var_tau_T[!df_comparison_summary$CVT == 0])/df_comparison_summary$mean_tau_varT[!df_comparison_summary$CVT == 0]), 3)`.
 
 It seems that heterogeneity in error score variance does affect the efficiency of the true score variance heterogeneity estimator. At higher levels of heterogeneity in error score variances, efficiency in estimation of true score variance is lower (standard deviations are larger). Since heterogeneity in true score variances is estimated using a prior estimate of error score variance, such a function was to be expected. Efficiency in error score variance estimation decreases, as the error score variance heterogeneity increases - therefore, efficiency of subsequent estimates is expected to suffer in the same way.
 
@@ -709,10 +572,15 @@ In figure 9, back-transformed estimates are presented on the original scale of t
 df_comparison %>% 
   group_by(CVT, CVE, rel) %>% 
   summarise(Botella_sig = mean(p_Bonett_rel_Botella < .05, na.rm = T),
-            varE_sig = mean(p_E < .05, na.rm = T)) %>% 
+            varE_sig = mean(p_E < .05, na.rm = T),
+            Bonnett_sig = mean(p_Bonett < .05, na.rm = T)) %>% 
   ggplot() +
-  geom_point(aes(x = CVE, y = Botella_sig), colour = "blue") +
-  geom_point(aes(x = CVE, y = varE_sig), colour = "red") +
+  geom_point(aes(x = CVE-.008, y = Botella_sig), colour = "blue") +
+  geom_line(aes(x = CVE-.008, y = Botella_sig), colour = "blue", linetype = "dashed") +
+  geom_point(aes(x = CVE, y = Bonnett_sig), colour = "green") +
+  geom_line(aes(x = CVE, y = Bonnett_sig), colour = "green", linetype = "dashed") +
+  geom_point(aes(x = CVE+.008, y = varE_sig), colour = "red") +
+  geom_line(aes(x = CVE+.008, y = varE_sig), colour = "red", linetype = "dashed") +
   geom_abline(intercept = .05, slope = 0) +
   facet_grid(rows = vars(CVT),
              cols = vars(rel))
@@ -722,6 +590,46 @@ df_comparison %>%
 Figure 10 demonstrates the rates of detection of statistically significant variation in error score variances, using the XXX hypothesis test. It appears that using Botella & Suero's meta-regression model, in cases of zero heterogeneity, the hypothesis test reliably flags none of the data-sets as containing error score variance heterogeneity. The hypothesis test concerning the heterogeneity in error score variance estimates model explicitly flags about .09 of all cases as statistically significant, which did not contain any heterogeneity, well above the expected rate of .05 type-I-error rate (an alpha of .05 was used to test for statistically significant heterogeneity). 
 
 As some heterogeneity is induced in the simulation, in the form of CV_E of .1, the meta-regression model still flags none of the cases as containing statistically significant heterogeneity in error score variances. The model on the decomposed variance estimates on the other hand identifies statistically significant heterogeneity in error score variance 100% of the time. As more heterogeneity is introduced, the meta-regression model identifies variation in the error score variances more often. At higher levels of score reliability, more to all cases are flagged as statistically significant. Additionally, higher levels of heterogeneity in true score variance also lead to higher rates of error score variance heterogeneity detection, implying that the model does not only pick up heterogeneity in the error score variances but also in the true score variances.
+
+Such behaviour fits our expectation, due to the analytical arguments stated above, pertaining equations X and X. Adding (log-transformed) observed score variance as a predictor can not explain all variation observed in the difference of (log-transformed) error and observed score variance. As observed and error score variance are not independent, this additional covariance between the factor, which is also defined as the heterogeneity in true score variance, can not be explained. Thereby, larger levels of heterogeneity in true score variance lead to higher levels of remaining heterogeneity. This can be observed most strongly at a low level of score reliability .5 and heterogeneity in error score variance of CVE = .2. As heterogeneity in CVT grows from 0 to .3, the significance rate grows, even though variations in error score variances should remain constant.
+
+Similarly, figure 10 demonstrates how a hypothesis test for statistically significant heterogeneity in transformed score reliability does not pertain exclusively to differences in error score variance across samples. If no heterogeneity is present in this score variance component, we do see how the test flags statistically significant heterogeneity in score reliability as the heterogeneity in true score variance is induced and grows. This result was to be expected, as heterogeneity in both score variance components necessarily lead to heterogeneity in score reliability, demonstrated in equations X, X and X.
+
+### Cacioppo
+
+Data set 1 concerned the scale of Need for Cognition (Cacioppo & Petty, 1982), consisting of 6 Likert-stye items (5-point scale). Measured across 21 labs in Ebersole et al. (2016), using Cronbach's Alpha, score reliability varied between `r round(s_Caciop_Alpha[1], r.dec)` and `r round(s_Caciop_Alpha[6], r.dec)`, with a mean value of `r round(s_Caciop_Alpha[4], r.dec)` and median value `r round(s_Caciop_Alpha[3], r.dec)`. Table 1 contains estimates and results from the application of three different meta-analytic attempts to assess differences in measuring quality of Need for Cognition in these 21 labs. It appears that the typical reliability generalization study does identify statistically significant heterogeneity in (transformed) score reliability estimates. Adding (log-transformed) observed score variance as a predictor in a meta-regression model, according to Botella & Suero (2012), leads to no concrete evidence concerning heterogeneity. The statistical test of heterogeneity in estimates of error score variance also does not identify statistically significant heterogeneity.
+
+
+| Method | Estimate of $\tau_{\sigma^2_E}$ | CVE | QE | p-value | conclusion | 
+|---------------------|---------------------|-----------------------------|---------------------|---------------------|-----------------------------|-----------------------------:|
+| RGA | -/- | -/- | `r round(s_Caciop_B.Alpha_rma$QE, r.dec)` | `r ifelse(s_Caciop_B.Alpha_rma$QEp < .001, yes = .001, no = round(s_Caciop_B.Alpha_rma$QEp, r.dec))` | `r ifelse(s_Caciop_B.Alpha_rma$QEp < .05, yes = "Differences in measuring quality", no = "no concrete evidence for differences")` |
+| RGA-Botella corr. | `r round(sqrt(tau_s_Caciop_B.Alpha_Botella_rma_backtr), r.dec)` | `r round(sqrt(tau_s_Caciop_B.Alpha_Botella_rma_backtr)/mu_s_Caciop_B.Alpha_Botella_rma_backtr, r.dec)` | `r round(s_Caciop_B.Alpha_Botella_rma$QE, r.dec)` | `r ifelse(s_Caciop_B.Alpha_Botella_rma$QEp < .001, yes = .001, no = round(s_Caciop_B.Alpha_Botella_rma$QEp, r.dec))` | `r ifelse(s_Caciop_B.Alpha_Botella_rma$QEp < .05, yes = "Differences in measuring quality", no = "no concrete evidence for differences")` |
+| Variance decomposition | `r round(sqrt(backtr_rma_varE.df$tau_E[1]), r.dec)` | `r round(sqrt(backtr_rma_varE.df$tau_E[1])/backtr_rma_varE.df$mu_E[1], r.dec)` | `r round(varE_rma.list[[1]]$QE, r.dec)` | `r ifelse(varE_rma.list[[1]]$QEp < .001, yes = .001, no = round(varE_rma.list[[1]]$QEp, r.dec))` | `r ifelse(varE_rma.list[[1]]$QEp < .05, yes = "Differences in measuring quality", no = "no concrete evidence for differences")` |
+
+Additionally, using the meta-analytic estimates of the decomposed score variance components, we can compute the ratio of true and error score variance coefficients of variation $\frac{CV_E}{CV_T}$. Concerning the Need for Cognition replications, we find a ratio of `r round((sqrt(backtr_rma_varE.df$tau_E[1])/backtr_rma_varE.df$mu_E[1])/(sqrt(backtr_rma_varX.df$tau_X[1] - backtr_rma_varE.df$tau_E[1])/(backtr_rma_varX.df$mu_X[1] - backtr_rma_varE.df$mu_E[1])), r.dec)`. Such a ratio implies, that the heterogeneity in error score variance, scaled to the coefficient of variation, is about a third of the heterogeneity in true score variance. While such a ratio may not serve as evidence alone, it might help disentangle in how far either of the true score variance components varies across samples, and thereby is responsible for differences in score reliability.
+
+Data set 2 concerned the scale of Sense of Power (Shnabel & Nadler, 2008), consisting of 3 Likert-stye items (7-point scale). Measured across 8 labs in Baranski et al. (2020), using Cronbach's Alpha, specifically for those labs following the RPP-protocol, score reliability varied between `r round(s_ShnabelRPP_Alpha[1], r.dec)` and `r round(s_ShnabelRPP_Alpha[6], r.dec)`, with a mean value of `r round(s_ShnabelRPP_Alpha[4], r.dec)` and median value `r round(s_ShnabelRPP_Alpha[3], r.dec)`. Table 2 describes estimates and results from the application of the three different methods again, concerning differences in measuring quality of Sense of Power in these 8 replications. Again, the classical reliability generalization does identify statistically significant heterogeneity, while adding (log-transformed) observed score variance as a predictor leads to no statistically significant results.  However, a meta-analysis of estimates of error score variance does imply that statistically significant differences exist in error score variance across samples.
+
+
+| Method | Estimate of $\tau_{\sigma^2_E}$ | CVE | QE | p-value | conclusion |
+|---------------------|---------------------|-----------------------------|---------------------|---------------------|-----------------------------:|
+| RGA |  -/- | -/-  | `r round(s_ShnabelRPP_B.Alpha_rma$QE, r.dec)` | `r ifelse(s_ShnabelRPP_B.Alpha_rma$QEp < .001, yes = .001, no = round(s_ShnabelRPP_B.Alpha_rma$QEp, r.dec))` | `r ifelse(s_ShnabelRPP_B.Alpha_rma$QEp < .05, yes = "Differences in measuring quality", no = "no concrete evidence for differences")` |
+| RGA-Botella corr. | `r round(sqrt(tau_s_ShnabelRPP_B.Alpha_Botella_rma_backtr), r.dec)` | `r round(sqrt(tau_s_ShnabelRPP_B.Alpha_Botella_rma_backtr)/mu_s_ShnabelRPP_B.Alpha_Botella_rma_backtr, r.dec)` | `r round(s_ShnabelRPP_B.Alpha_Botella_rma$QE, r.dec)` | `r ifelse(s_ShnabelRPP_B.Alpha_Botella_rma$QEp < .001, yes = .001, no = round(s_ShnabelRPP_B.Alpha_Botella_rma$QEp, r.dec))` | `r ifelse(s_ShnabelRPP_B.Alpha_Botella_rma$QEp < .05, yes = "Differences in measuring quality", no = "no concrete evidence for differences")` |
+| Variance decomposition | `r round(sqrt(backtr_rma_varE.df$tau_E[9]), r.dec)` | `r round(sqrt(backtr_rma_varE.df$tau_E[9])/backtr_rma_varE.df$mu_E[9], r.dec)` | `r round(varE_rma.list[[9]]$QE, r.dec)` | `r ifelse(varE_rma.list[[9]]$QEp < .001, yes = .001, no = round(varE_rma.list[[9]]$QEp, r.dec))` | `r ifelse(varE_rma.list[[9]]$QEp < .05, yes = "Differences in measuring quality", no = "no concrete evidence for differences")` |
+
+Only data stemming from replications where the RPP-protocol was used was assessed. However, analysis of replications making use of the revised protocol led to the same conclusions as those described in table 2, see appendix X. Additionally, assessing the ratio of variation coefficient in variance components, we find a ratio of `r round((sqrt(backtr_rma_varE.df$tau_E[9])/backtr_rma_varE.df$mu_E[9])/(sqrt(backtr_rma_varX.df$tau_X[9] - backtr_rma_varE.df$tau_E[9])/(backtr_rma_varX.df$mu_X[9] - backtr_rma_varE.df$mu_E[9])), r.dec)`. Concerning the measuring instrument of Need for Power, we find that scaled heterogeneity in the error score variance component is about 1.5 times of the true score variance heterogeneity.
+
+Data set 3 concerned HEXACO-60 self-report personality inventory (Ashton & Lee, 2009), assessed as a filler-instrument in the replication of Mazar et al. (2008) by Verschuere et al. (2018). Here, specifically the honesty-humility scale was assessed. This scale consisting of 10 Likert-stye items (5-point scale). Measured across 19 labs, using Cronbach's Alpha, score reliability varied between `r round(s_HexHH_Alpha[1], r.dec)` and `r round(s_HexHH_Alpha[6], r.dec)`, with a mean value of `r round(s_HexHH_Alpha[4], r.dec)` and median value `r round(s_HexHH_Alpha[3], r.dec)`. Results concerning the last empirical example can be found in table 3. Again, reliability generalization does identify heterogeneity in score reliability while adding observed score variance as a predictor removes the estimate of statistically significant heterogeneity. Directly assessing the error score variance estimates using a random-effects meta-analysis does identify statistically significant heterogeneity.
+
+
+| Method | Estimate of $\tau_{\sigma^2_E}$ | CVE | QE | p-value | conclusion |
+|---------------------|---------------------|-----------------------------|---------------------|---------------------|-----------------------------:|
+| RGA |  -/- | -/-  | `r round(s_HexHH_B.Alpha_rma$QE, r.dec)` | `r ifelse(s_HexHH_B.Alpha_rma$QEp < .001, yes = .001, no = round(s_HexHH_B.Alpha_rma$QEp, r.dec))` | `r ifelse(s_HexHH_B.Alpha_rma$QEp < .05, yes = "Differences in measuring quality", no = "no concrete evidence for differences")` |
+| RGA-Botella corr. | `r round(sqrt(tau_s_HexHH_B.Alpha_Botella_rma_backtr), r.dec)` | `r round(sqrt(tau_s_HexHH_B.Alpha_Botella_rma_backtr)/mu_s_HexHH_B.Alpha_Botella_rma_backtr, r.dec)` | `r round(s_HexHH_B.Alpha_Botella_rma$QE, r.dec)` | `r ifelse(s_HexHH_B.Alpha_Botella_rma$QEp < .001, yes = .001, no = round(s_HexHH_B.Alpha_Botella_rma$QEp, r.dec))` | `r ifelse(s_HexHH_B.Alpha_Botella_rma$QEp < .05, yes = "Differences in measuring quality", no = "no concrete evidence for differences")` |
+| Variance decomposition | `r round(sqrt(backtr_rma_varE.df$tau_E[6]), r.dec)` | `r round(sqrt(backtr_rma_varE.df$tau_E[6])/backtr_rma_varE.df$mu_E[6], r.dec)` | `r round(varE_rma.list[[6]]$QE, r.dec)` | `r ifelse(varE_rma.list[[6]]$QEp < .001, yes = .001, no = round(varE_rma.list[[6]]$QEp, r.dec))` | `r ifelse(varE_rma.list[[6]]$QEp < .05, yes = "Differences in measuring quality", no = "no concrete evidence for differences")` |
+
+While the honesty-humility scale was selected for a demonstration here, any HEXACO-60 dimension would have led to the same conclusions as those described in table 3. Concerning Honesty-Humility, we also find a ratio of coefficients of variation of `r round((sqrt(backtr_rma_varE.df$tau_E[6])/backtr_rma_varE.df$mu_E[6])/(sqrt(backtr_rma_varX.df$tau_X[6] - backtr_rma_varE.df$tau_E[6])/(backtr_rma_varX.df$mu_X[6] - backtr_rma_varE.df$mu_E[6])), r.dec)`. It would appear that heterogeneity in true and error score variance components, scaled to the coefficients of variation, are about the same size.
+
 
 
 # Old Results

@@ -229,9 +229,9 @@ apply_Bootstrap_SE_Project.specific <- function(data, var.component = c("TRUE", 
       var_est <- as.numeric(varX * (1-alpha))
     }
     
-    return(data.frame(SE = sd(bvar$t), 
-                      boot.mean = mean(bvar$t),
-                      var.emp = var_est))
+    return(data.frame(SE = sd(log(bvar$t)), 
+                      boot.mean = mean(log(bvar$t)),
+                      var.emp = log(var_est)))
   })
   )
   
