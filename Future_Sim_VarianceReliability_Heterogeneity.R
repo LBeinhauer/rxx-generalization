@@ -31,7 +31,7 @@ source(here("RG_function-library.R"))
 # CV_E 0 to .3
 CVT <- seq(from = 0, to = .3, by = .1)
 CVE <- seq(from = 0, to = .3, by = .1)
-rel <- seq(from = .1, to = .9, by = .2)
+rel <- seq(from = .5, to = .9, by = .1)
 
 # combine 4*4*5 conditions
 condition_combinations <- expand.grid(CVT, CVE, rel)
@@ -51,7 +51,7 @@ for(i in 1:1000){
 plan(multisession, workers = 7)
 
 
-
+# set seed to make results reproducible
 set.seed(040823)
 
 
@@ -74,11 +74,11 @@ system.time(
                              empirical = FALSE)
     
     # bootstrap separately for true score and error score variance
-    b.data_T <- apply_Bootstrap_SE_nonspecific(it.simdata$sim_data.L, var.component = "TRUE", R = 3000)
-    b.data_E <- apply_Bootstrap_SE_nonspecific(it.simdata$sim_data.L, var.component = "ERROR", R = 3000)
+    b.data_T <- apply_Bootstrap_SE_nonspecific(it.simdata, var.component = "TRUE", R = 3000)
+    b.data_E <- apply_Bootstrap_SE_nonspecific(it.simdata, var.component = "ERROR", R = 3000)
     
     # collect estimates of Cronbach's Alpha and corresponding standard error (ase)
-    a <- lapply(it.simdata$sim_data.L, FUN = function(x){
+    a <- lapply(it.simdata, FUN = function(x){
       al <- spsUtil::quiet(psych::alpha(x))
       
       return(data.frame(rel = al$total$raw_alpha,
@@ -87,8 +87,8 @@ system.time(
     
     # calculate sample true score variance and error score variance using
       # the earlier collected estimates of Cronbach's Alpha.
-    varT <- sapply(it.simdata$sim_data.L, FUN = function(x){var(rowMeans(x))}) * sapply(a, FUN = function(x){x$rel})
-    varE <- sapply(it.simdata$sim_data.L, FUN = function(x){var(rowMeans(x))}) * (1-sapply(a, FUN = function(x){x$rel}))
+    varT <- sapply(it.simdata, FUN = function(x){var(rowMeans(x))}) * sapply(a, FUN = function(x){x$rel})
+    varE <- sapply(it.simdata, FUN = function(x){var(rowMeans(x))}) * (1-sapply(a, FUN = function(x){x$rel}))
     
     # collect reliability and standard error from list object (in vector form)
     rel <- sapply(a, FUN = function(x){x$rel})
@@ -104,7 +104,7 @@ system.time(
                      rel = rel,
                      ase = ase)
     
-    # collect results of Bootstrapping endeavours in seperate .csv-files
+    # collect results of B  ootstrapping endeavours in seperate .csv-files
     write.csv(df, here(paste0("Simulation Data/Simulation_sub_files/sim", x, ".csv")), row.names = FALSE)
     # collect simulated data (lists) in seperate .RData-files
     saveRDS(it.simdata, here(paste0("Simulation Data/Data/", x, ".RData")))

@@ -283,7 +283,24 @@ ggplot(data = df_comparison_summary) +
        colour = "CVT")  
 
 
-# T alt.- mean bias tau
+# T alt.- mean relative bias tau
+ggplot(data = df_comparison_summary) +
+  # geom_ribbon(aes(x = mean_tau_varT, 
+  #                 ymin = ul80_bias_tau_varT_alt,
+  #                 ymax = ll80_bias_tau_varT_alt),
+  #             fill = "blue", alpha = .1) +
+  geom_abline(intercept = 0, slope = 0) +
+  geom_point(aes(x = mean_tau_varT, y = abs(mean_bias_tau_varT_alt)/mean_tau_varT, colour = as.factor(CVT))) + 
+  facet_grid(rows = vars(CVE),
+             cols = vars(rel)) +
+  labs(y = "mean bias in estimated heterogeneity (tau) in true score variance",
+       x = "predicted heterogeneity (tau) in true score variance",
+       title = "Heterogeneity in True Score Variance",
+       subtitle = "rows = CVE, columns = rel, var(T) = var(X) - var(E)",
+       colour = "CVT")  
+
+
+# T alt.- sd tau
 ggplot(data = df_comparison_summary) +
   geom_abline(intercept = 0, slope = 0) +
   geom_point(aes(x = mean_tau_varT, y = sqrt(var_tau_T_alt), colour = as.factor(CVT))) + 
@@ -294,6 +311,20 @@ ggplot(data = df_comparison_summary) +
        title = "Heterogeneity in True Score Variance",
        subtitle = "rows = CVE, columns = rel, var(T) = var(X) - var(E)",
        colour = "CVT")  
+
+
+# T alt.- relative sd tau
+ggplot(data = df_comparison_summary) +
+  geom_abline(intercept = 0, slope = 0) +
+  geom_point(aes(x = mean_tau_varT, y = sqrt(var_tau_T_alt)/mean_tau_varT, colour = as.factor(CVT))) + 
+  facet_grid(rows = vars(CVE),
+             cols = vars(rel)) +
+  labs(y = "sd in estimated heterogeneity (tau) in true score variance",
+       x = "predicted heterogeneity (tau) in true score variance",
+       title = "Heterogeneity in True Score Variance",
+       subtitle = "rows = CVE, columns = rel, var(T) = var(X) - var(E)",
+       colour = "CVT")  
+
 
 
 # T- on scale CVT

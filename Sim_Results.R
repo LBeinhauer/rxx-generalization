@@ -19,30 +19,26 @@ apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
 
 
 
-
-# DF <- read.csv(here("Notes/vis_df.csv"), sep = "")
-
-
-# Large_Sim_Data <- readRDS(file = here("Simulation Data/Sim_80000_conditions.RData"))
-
-# rma_Bonett <- readRDS(file = "Simulation Data/Sim_80000_conditions_rmaBonett.RData")
-
+# load in simulated data
 DF_rma <- read.csv(here("Notes/Sim80000_rma.csv"))
 
+# set estimates of tau_X smaller than zero to 0
 DF_rma$tau_T2_alt <- ifelse(DF_rma$tau_X^2 - DF_rma$tau_E^2 < 0, 
                             yes = 0,
                             no = DF_rma$tau_X^2 - DF_rma$tau_E^2)
 DF_rma$tau_T_alt <- sqrt(DF_rma$tau_T2_alt)
 
+# generate estimates of mean true score variance
 DF_rma$mu_T_alt <- DF_rma$mu_X - DF_rma$mu_E
 
 
 
+# transform estimates of meta-analytic estimates of mean and tau of Botella-correct RG-MA
 DF_rma$mu_Bonnett_rel_Botella_transf <- exp(DF_rma$mu_Bonnett_rel_Botella + (.5*(DF_rma$tau_Bonett_rel_Botella^2)))
 DF_rma$tau_Bonnett_rel_Botella_transf <- sqrt((DF_rma$mu_Bonnett_rel_Botella_transf^2) * (exp(DF_rma$tau_Bonett_rel_Botella^2) - 1))
 # DF_rma$tau_Bonnett_rel_Botella_transf_CVtest <- DF_rma$tau_Bonnett_rel_Botella_transf * DF_rma$mu_Bonnett_rel_Botella_transf
 
-# Formulating functions to back-transform the estimated heterogeneity in ln(1-r_xx)
+# Formulating functions to back-transform the estimated heterogeneity in ln(1-r_xx) & mean
 var_Bonnett_backtransformed <- function(mean_x, var_x){
   (((-exp(mean_x))^2) * var_x) + (.5*((-exp(mean_x))^2)*(var_x^2)) + ((-exp(mean_x)) * (-exp(mean_x)) * (var_x^2))
 }
@@ -51,7 +47,7 @@ mean_Bonnett_backtransformed <- function(mean_x, var_x){
   1 - exp(mean_x) + ((-exp(mean_x)) / 2) * var_x
 }
 
-
+# append data.frame with back-transformed estimates
 df_rma <- DF_rma %>% 
   mutate(tau_rel_transf = sqrt(var_Bonnett_backtransformed(mean_x = mu_Bonnett, 
                                                       var_x = tau_Bonnett^2)),
@@ -62,7 +58,7 @@ df_rma <- DF_rma %>%
          mu_rel_Botella_transf = mean_Bonnett_backtransformed(mean_x = mu_Bonnett_rel_Botella,
                                                               var_x = tau_Bonett_rel_Botella^2))
 
-
+# re-generate data.frame containing all conditions from the simulation
 CVT <- seq(from = 0, to = .3, by = .1)
 CVE <- seq(from = 0, to = .3, by = .1)
 rel <- seq(from = .5, to = .9, by = .1)
@@ -165,7 +161,7 @@ df_comparison <- data.frame(df_rma,
 
 
 
-
+# store comparison data.frame in a .csv-object
 write.csv(df_comparison, here("Notes/Sim80000_rma_df.csv"),
           row.names = FALSE)
 

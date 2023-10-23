@@ -418,71 +418,71 @@ my_forest_plot <- function(rma.fit, rma.data, main.title = "Forest Plot",
 }
 
 
+# function to simulate data with heterogeneity in true and/or error score variance
+#  User may change nr. of items (j), sample size (n), nr. of samples (k), reliability, mean_score,
+#  mean observed variance (mean_observed_var), heterogeneity in true score variance - CV (CV_var_T),
+#  heterogeneity in error score variance - CV (CV_var_E), alternatively (!) heterogeneity in true
+#  score variance - tau (tau_var_T), heterogeneity in error score variance - tau (tau_var_E), 
+#  whether sampled data should show the variance exactly (empirical = TRUE), or not (FALSE)
+# Heterogeneity can only be supplied EITHER in terms of tau (sd), or CV (sd/mu)!
 sim_het_VC <- function(j, n, k, reliability = 0.5, mean_score = 0, mean_observed_var = 10, 
                        CV_var_T = 0, CV_var_E = 0, tau_var_T = 0, tau_var_E = 0, 
                        empirical = FALSE){
   
+  # generate means for true and error score variance components!
   mean_var_T <- mean_observed_var * reliability
-  
   mean_var_E <- mean_observed_var - mean_var_T
   
+  # making sure heterogeneity is supplied EITHER in terms of tau OR CV 
   if(CV_var_E != 0 | CV_var_T !=0){
     if(tau_var_T != 0 | tau_var_E != 0){
       stop("Supply heterogeneity in heterogeneity either in terms of the coefficient of variation (CV) or in terms of tau - not both!")
     }
   } 
   
+  # generate estimates of tau, if CV was supplied
   if(CV_var_E != 0 | CV_var_T !=0){
     tau_var_T <- mean_var_T * CV_var_T
     tau_var_E <- mean_var_E * CV_var_E
   }
   
+  # compute heterogeneity of log-transformed score variance estimates
   tau_ln_var_T <- sqrt(log(((tau_var_T^2) / (mean_var_T^2)) + 1))
   tau_ln_var_E <- sqrt(log(((tau_var_E^2) / (mean_var_E^2)) + 1))
   
-
+  # compute mean of log-transformed score variance esitmates
   mu_ln_var_T <- log(mean_var_T) - (1/2) * tau_ln_var_T^2
   mu_ln_var_E <- log(mean_var_E) - (1/2) * tau_ln_var_E^2
   
-  
+  # sample log-trannsformed score variance estimates from normal distribution
   ln_true_var <- rnorm(n = k, mean = mu_ln_var_T, sd = tau_ln_var_T)
   ln_error_var <- rnorm(n = k, mean = mu_ln_var_E, sd = tau_ln_var_E)
   
-  # true_var <- truncnorm::rtruncnorm(n = k, mean = mean_var_T, sd = tau_var_T, a = 0)
-  # 
-  # error_var <- truncnorm::rtruncnorm(n = k, mean = mean_var_E, sd = tau_var_E, a = 0)
-  
+  # back-transform to original scale of variances
   true_var <- exp(ln_true_var)
   error_var <- exp(ln_error_var)
 
-  sim_d.L <- apply(as.matrix(1:k), MARGIN = 1, FUN = function(x){
+  # generate k samples, looped using apply-function
+  sim_d.L <- lapply(as.matrix(1:k), FUN = function(x){
     
+    # extract respective sampled true & error score variance component
     var_T1 <- true_var[x]
-    
     var_E1 <- error_var[x]*j
     
+    # construct covariance matrix to sample from multivariate normal distr.
+    # constructed according to Lord & Novick (2008)
     mat <- matrix(var_T1, nrow = j, ncol = j)
-    
     diag(mat) <- var_T1 + var_E1
     
+    # generate sample data
     obs_scores <- MASS::mvrnorm(n = n, mu = rep(mean_score, j), Sigma = mat,
                           empirical = empirical)
     
     sim_data <- obs_scores
     
-    # rel <- spsUtil::quiet(psych::alpha(sim_data, warnings = FALSE))
-    
-    return(list(# reliability = rel$total$raw_alpha,
-                # StandardError = rel$total$ase,
-                data = sim_data))
+    # return sample data
+    return(sim_data)
   })
   
-  sim_data.L <- lapply(sim_d.L, FUN = function(x){x$data})
-  
-  # sim_d.df <- data.frame(Reliability = sapply(sim_d.L, FUN = function(x){x$reliability}),
-  #                        StandardError = sapply(sim_d.L, FUN = function(x){x$StandardError}))
-  
-  return(list(sim_data.L = sim_data.L #,
-              # reliability.df = sim_d.df
-              ))
+  return(sim_d.L)
 }
