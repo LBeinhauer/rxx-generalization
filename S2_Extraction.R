@@ -175,8 +175,8 @@ df_rma <- as.data.frame(mat_rma)
 
 names(df_rma) <- names(Large_Sim_Data_RMA[[3]])
 
-write.csv(df_rma, here("Notes/Sim80000_rma.csv"),
+write.csv(df_rma, here("Simulation Data/Sim80000_rma.csv"),
           row.names = FALSE)
 
-saveRDS(Large_Sim_Data_RMA, here("Notes/Sim80000_rma.RData"))
+saveRDS(Large_Sim_Data_RMA, here("Simulation Data/Sim80000_rma.RData"))
 

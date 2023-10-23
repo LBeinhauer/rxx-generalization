@@ -18,7 +18,7 @@ apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
 
 
 
-df_comparison <- read.csv(here("Notes/Sim80000_rma_df.csv"))
+df_comparison <- read.csv(here("Simulation Data/Sim80000_rma_df.csv"))
 
 df_comparison_means <- df_comparison %>% 
   group_by(CVT, CVE, rel) %>% 

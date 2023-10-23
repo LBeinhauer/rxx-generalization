@@ -20,7 +20,7 @@ apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
 
 
 # load in simulated data
-DF_rma <- read.csv(here("Notes/Sim80000_rma.csv"))
+DF_rma <- read.csv(here("Simulation Data/Sim80000_rma.csv"))
 
 # set estimates of tau_X smaller than zero to 0
 DF_rma$tau_T2_alt <- ifelse(DF_rma$tau_X^2 - DF_rma$tau_E^2 < 0, 
@@ -162,6 +162,6 @@ df_comparison <- data.frame(df_rma,
 
 
 # store comparison data.frame in a .csv-object
-write.csv(df_comparison, here("Notes/Sim80000_rma_df.csv"),
+write.csv(df_comparison, here("Simulation Data/Sim80000_rma_df.csv"),
           row.names = FALSE)
 
