@@ -455,8 +455,14 @@ sim_het_VC <- function(j, n, k, reliability = 0.5, mean_score = 0, mean_observed
   mu_ln_var_E <- log(mean_var_E) - (1/2) * tau_ln_var_E^2
   
   # sample log-trannsformed score variance estimates from normal distribution
-  ln_true_var <- rnorm(n = k, mean = mu_ln_var_T, sd = tau_ln_var_T)
-  ln_error_var <- rnorm(n = k, mean = mu_ln_var_E, sd = tau_ln_var_E)
+  ln_true_var <- MASS::mvrnorm(n = k, 
+                               mu = mu_ln_var_T, 
+                               Sigma = tau_ln_var_T^2,
+                               empirical = empirical)
+  ln_error_var <- MASS::mvrnorm(n = k, 
+                                mu = mu_ln_var_E, 
+                                Sigma = tau_ln_var_E^2,
+                                empirical = empirical)
   
   # back-transform to original scale of variances
   true_var <- exp(ln_true_var)
@@ -476,7 +482,7 @@ sim_het_VC <- function(j, n, k, reliability = 0.5, mean_score = 0, mean_observed
     
     # generate sample data
     obs_scores <- MASS::mvrnorm(n = n, mu = rep(mean_score, j), Sigma = mat,
-                          empirical = empirical)
+                                empirical = FALSE)
     
     sim_data <- obs_scores
     

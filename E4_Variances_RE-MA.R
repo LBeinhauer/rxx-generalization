@@ -31,16 +31,18 @@ apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
   }
 })
 
+
+# load project-specific function-library from an R-script
 source(here("RG_function-library.R"))
 
 
-
+# extrac full paths containing the extracted data for separate projects
 path_data <- list.files(here("Data/Extracted (Project) Data"), full.names = TRUE)
 
-
+# extract separate project data into a single list
 data.list <- lapply(path_data, read.csv)
 
-
+# add names to list elements
 names(data.list) <- substr(list.files(here("Data/Extracted (Project) Data"), full.names = FALSE)[-7],
                            1, (nchar(list.files(here("Data/Extracted (Project) Data"), full.names = FALSE)[-7])-4))
 
@@ -48,7 +50,7 @@ names(data.list) <- substr(list.files(here("Data/Extracted (Project) Data"), ful
 
 
 
-
+# set a seed to make REML-estimation replicable
 set.seed(070622)
 
 # long_test_T <- lapply(seq_along(data.list), FUN = function(x){
@@ -60,8 +62,15 @@ set.seed(070622)
 # 
 # saveRDS(long_test_T, file = here("Data/Variance Estimates/bootstrapped_varT.RData"))
 
-long_test_E <- lapply(seq_along(data.list), FUN = function(x){
+# generate estimates of ln-error score variance and its associated standard error using bootstrapping
+varE_est.L <- lapply(seq_along(data.list), FUN = function(x){
+  
+  # sometimes calculation of SE might lead to issues, as negative variances can not be log-transformed
+  #  therefore, function is run within a tryCatch-environment, so the script does not crash
+  # apply_Bootstrap_SE_Project.specific is the project-specific function
   tryCatch(apply_Bootstrap_SE_Project.specific(data.list[[x]], var.component = "ERROR"),
+           
+           # print error to console
            error = function(e)(cat("ERROR: ", conditionMessage(e), " - ",
                                    substr(names(data.list), 
                                           (regexpr("Project) Data/", names(data.list)) + 14), 
@@ -69,13 +78,20 @@ long_test_E <- lapply(seq_along(data.list), FUN = function(x){
                                    " - ", x, "\n")))
 })
 
-saveRDS(long_test_E, file = here("Data/Variance Estimates/bootstrapped_varE.RData"))
+# save list-object of ln-error score variance estimates in sub-folder
+saveRDS(varE_est.L, file = here("Data/Variance Estimates/bootstrapped_varE.RData"))
 
 
-varE_rma.list <- lapply(seq_along(long_test_E), FUN = function(x){
+# Perform random-effects meta-analysis on estimates of ln-error score variance using metafor
+varE_rma.list <- lapply(seq_along(varE_est.L), FUN = function(x){
+  
+  # at times estimates of ln-varE & SE may be NA, as negative estimates can't be transformed
+  #  therefore, function is nested in tryCatch, so it doesn't break down with errors
   tryCatch(metafor::rma(measure = "GEN", method = "REML", 
-                        yi = long_test_E[[x]]$var.est, 
-                        sei = long_test_E[[x]]$SE),
+                        yi = varE_est.L[[x]]$var.est, 
+                        sei = varE_est.L[[x]]$SE),
+           
+           # print error to console
            error = function(e)(cat("ERROR: ", conditionMessage(e), " - ",
                                    substr(names(data.list), 
                                           (regexpr("Project) Data/", names(data.list)) + 14), 
@@ -84,45 +100,57 @@ varE_rma.list <- lapply(seq_along(long_test_E), FUN = function(x){
   
 })
 
+# add names to list-object
 names(varE_rma.list) <- names(data.list)
 
+# store list-object of results of RE-MA in separate file
 saveRDS(varE_rma.list, file = here("Data/Variance Estimates/bootstrapped_varE_rma.RData"))
 
 
-long_test_X <- lapply(data.list, FUN = function(data){
+# generate estimates of ln-observed score variance for each sample & projects
+varX_est.L <- lapply(data.list, FUN = function(data){
   
+  # apply over labs in MASC
   df <- apply(as.matrix(seq_along(unique(data$source))), MARGIN = 1, FUN = function(x){
     
-    
+    # remove source-col & omit NAs
     d <- data[data$source == unique(data$source)[x],-grep("source", names(data))]
-    
     D <- na.omit(d)
     
-    
+    # estimate observed score variance
     varX <- var(rowMeans(D))
     
+    # store SE, ln(varX) & varX
     return(data.frame(SE = sqrt((2/(nrow(D) - 1))), 
                       boot.mean = varX,
                       var.emp = log(varX)))
     
   })
     
-df.formatted <- data.frame(SE = sapply(df, FUN = function(x){x$SE}),
-                           boot.mean = sapply(df, FUN = function(x){x$boot.mean}),
-                           var.est = sapply(df, FUN = function(x){x$var.emp}),
-                           source = unique(data$source))
+  # return formatted data.frame
+  df.formatted <- data.frame(SE = sapply(df, FUN = function(x){x$SE}),
+                             boot.mean = sapply(df, FUN = function(x){x$boot.mean}),
+                             var.est = sapply(df, FUN = function(x){x$var.emp}),
+                             source = unique(data$source))
+
 })
 
-saveRDS(long_test_X, file = here("Data/Variance Estimates/bootstrapped_varX.RData"))
+# save list-object of ln-true score variance estimates in sub-folder
+saveRDS(varX_est.L, file = here("Data/Variance Estimates/bootstrapped_varX.RData"))
 
 
 
 
-
-varX_rma.list <- lapply(seq_along(long_test_X), FUN = function(x){
+# Perform random-effects meta-analysis on estimates of ln-observed score variance using metafor
+varX_rma.list <- lapply(seq_along(varX_est.L), FUN = function(x){
+  
+  # at times estimates of ln-varX & SE may be NA, as negative estimates can't be transformed
+  #  therefore, function is nested in tryCatch, so it doesn't break down with errors
   tryCatch(metafor::rma(measure = "GEN", method = "REML", 
-                        yi = long_test_E[[x]]$var.est, 
-                        sei = long_test_E[[x]]$SE),
+                        yi = varX_est.L[[x]]$var.est, 
+                        sei = varX_est.L[[x]]$SE),
+           
+           # print error to console
            error = function(e)(cat("ERROR: ", conditionMessage(e), " - ",
                                    substr(names(data.list), 
                                           (regexpr("Project) Data/", names(data.list)) + 14), 
@@ -131,6 +159,9 @@ varX_rma.list <- lapply(seq_along(long_test_X), FUN = function(x){
   
 })
 
+# add names to list-object
 names(varX_rma.list) <- names(data.list)
 
+# store list-object of results of RE-MA in separate file
 saveRDS(varX_rma.list, file = here("Data/Variance Estimates/bootstrapped_varx_rma.RData"))
+

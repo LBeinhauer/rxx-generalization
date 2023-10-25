@@ -26,9 +26,9 @@ source(here("RG_function-library.R"))
 
 # simulation scheme:
 
-# reliability .1 to .9
-# CV_T 0 to .3
-# CV_E 0 to .3
+# reliability .5 to .9 (steps of .1)
+# CV_T 0 to .3 (steps of .1)
+# CV_E 0 to .3 (steps of .1)
 CVT <- seq(from = 0, to = .3, by = .1)
 CVE <- seq(from = 0, to = .3, by = .1)
 rel <- seq(from = .5, to = .9, by = .1)
@@ -47,7 +47,7 @@ for(i in 1:1000){
 
 
 # call additional cores (make sure you have at least 1 core remaining, in case
-  # you need to terminate the sessions)
+#  you need to terminate the sessions), replace 7 by the nr. of cores you want to use
 plan(multisession, workers = 7)
 
 
@@ -56,7 +56,7 @@ set.seed(040823)
 
 
 
-# time for 20 replications at n = 100, k = 100, R = 3000 using 7 cores: 235 seconds
+# time for 20 replications at n = 100, k = 100, R = 3000 using 7 cores: ~270 seconds
 ## NOT ON POWER
 
 
@@ -71,11 +71,13 @@ system.time(
                              mean_observed_var = 10,
                              CV_var_T = all_conditions$CVT[x],
                              CV_var_E = all_conditions$CVE[x],
-                             empirical = FALSE)
+                             empirical = TRUE)
     
-    # bootstrap separately for true score and error score variance
-    b.data_T <- apply_Bootstrap_SE_nonspecific(it.simdata, var.component = "TRUE", R = 3000)
+    # bootstrap for error score variance
     b.data_E <- apply_Bootstrap_SE_nonspecific(it.simdata, var.component = "ERROR", R = 3000)
+    # bootstrap for true score variance (leads to issues in estimation! This is only for com-
+    #  parison in the appendix, not used for actual estimation in current framework!)
+    b.data_T <- apply_Bootstrap_SE_nonspecific(it.simdata, var.component = "TRUE", R = 3000)
     
     # collect estimates of Cronbach's Alpha and corresponding standard error (ase)
     a <- lapply(it.simdata, FUN = function(x){
@@ -85,22 +87,22 @@ system.time(
                         ase = al$total$ase))
     })
     
-    # calculate sample true score variance and error score variance using
+    # calculate sampled error score variance using
       # the earlier collected estimates of Cronbach's Alpha.
-    varT <- sapply(it.simdata, FUN = function(x){var(rowMeans(x))}) * sapply(a, FUN = function(x){x$rel})
     varE <- sapply(it.simdata, FUN = function(x){var(rowMeans(x))}) * (1-sapply(a, FUN = function(x){x$rel}))
+    varT <- sapply(it.simdata, FUN = function(x){var(rowMeans(x))}) * (sapply(a, FUN = function(x){x$rel}))
     
     # collect reliability and standard error from list object (in vector form)
     rel <- sapply(a, FUN = function(x){x$rel})
     ase <- sapply(a, FUN = function(x){x$ase})
     
     # prepare data frame to be returned by function
-    df <- data.frame(varT.b = b.data_T$df.formatted$boot.mean,
-                     SE_T.b = b.data_T$df.formatted$SE,
-                     varE.b = b.data_E$df.formatted$boot.mean,
+    df <- data.frame(varE.b = b.data_E$df.formatted$boot.mean,
                      SE_E.b = b.data_E$df.formatted$SE,
-                     varT = varT,
                      varE = varE,
+                     varT.b = b.data_T$df.formatted$boot.mean,
+                     SE_T.b = b.data_T$df.formatted$SE,
+                     varT = varT,
                      rel = rel,
                      ase = ase)
     
@@ -120,11 +122,15 @@ plan(sequential)
 ## The following code might help you kill the cores running simulations, if anything goes wrong
 
 # v <- listenv::listenv()
+#
+# # replace 15 by the number of cores you have selected!
 # for(ii in 1:15){
 #   v[[ii]] %<-% {
 #     Sys.getpid()
 #   }
 # }
+#
+# # replace 15 by the number of cores you have selected!
 # for(i in 1:15){
 #   system(sprintf("kill -9 %s", v[[i]]))
 # }
