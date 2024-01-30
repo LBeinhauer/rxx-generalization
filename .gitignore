@@ -1,12 +1,21 @@
-Lit/
-Data/
-*.DS_Store
-*.Rhistory
-old/
 .Rproj.user
+.Rhistory
 *.Rproj
-MGCFA-MLSEM_test.RData
-MGCFA-MLSEM_test_scaleloading.RData
-Notes/Sim_40000_conditions.RData
-Results_files
-Simulation Data/
+Data/Downloaded Data/*
+Data/Extracted (Project) Data/*
+Data/Original Data/ManyLabs3/*
+Data/Original Data/ManyLabs5/*
+Data/Original Data/RRR5/*
+Data/Original Data/RRR10/*
+Data/Reliability Estimates/*
+Data/Shiny Data/*
+Data/Variance Estimates/*
+Simulation Data/Data*
+Simulation Data/Simulation_sub_files*
+Simulation Data/Sim_80000_conditions.RData
+Simulation Data/Sim_80000_conditions_rmaBonett.RData
+Simulation Data/Sim80000_rma.csv
+Simulation Data/Sim80000_rma.RData
+Simulation Data/Sim80000_rma_df.csv
+Graphics/*
+Results.html

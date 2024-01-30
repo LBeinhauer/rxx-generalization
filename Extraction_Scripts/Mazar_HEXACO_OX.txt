@@ -6,7 +6,7 @@
 
 
 # Thankfully, for the RRR10 project, the data can be taken from a file directly, without the need of combination:
-pc_df <- as.data.frame(fread(here("Data/Original Data/RRR10/raw_data_corrected_MAA.csv")))
+pc_df <- as.data.frame(fread(here("Data/Original Data/RRR10/Meta-Analysis/Results/raw_data_corrected_MAA.csv")))
 
 # data <- data[which(data$age >= 18 & data$age <= 25),]
 # retain observations only for participants eligible for analysis

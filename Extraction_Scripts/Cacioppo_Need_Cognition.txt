@@ -2,7 +2,7 @@
 
 ## Need for Cognition
 
-ML3_dat <- fread(here("Data/Original Data/ManyLabs3/ML3AllSitesandmTurk.csv"))
+ML3_dat <- fread(here("Data/Original Data/ManyLabs3/ML3 Final Data/ML3AllSitesandmTurk.csv"))
 
 el_dat <- data.frame(NFC1 = ML3_dat$nfc_01,    
                      NFC2 = (6 - ML3_dat$nfc_02),   # recoding the nfc items

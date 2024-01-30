@@ -106,7 +106,7 @@ system.time(
                      rel = rel,
                      ase = ase)
     
-    # collect results of B  ootstrapping endeavours in seperate .csv-files
+    # collect results of Bootstrapping endeavours in seperate .csv-files
     write.csv(df, here(paste0("Simulation Data/Simulation_sub_files/sim", x, ".csv")), row.names = FALSE)
     # collect simulated data (lists) in seperate .RData-files
     saveRDS(it.simdata, here(paste0("Simulation Data/Data/", x, ".RData")))
@@ -116,7 +116,7 @@ system.time(
   })
 )
 
-
+# turn off the multi-processing - free all other cores
 plan(sequential)
 
 ## The following code might help you kill the cores running simulations, if anything goes wrong
@@ -136,7 +136,7 @@ plan(sequential)
 # }
 
 
-saveRDS(Large_Sim_Data, file = here("Notes/Sim_80000_conditions.RData"))
+saveRDS(Large_Sim_Data, file = here("Simulation Data/Sim_80000_conditions.RData"))
 
 
 
