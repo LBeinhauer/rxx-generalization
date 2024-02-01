@@ -20,6 +20,37 @@ apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
 
 df_comparison <- read.csv(here("Simulation Data/Sim80000_rma_df.csv"))
 
+
+
+full_sim <- read.csv(here("Simulation Data/Sim80000_rma_df.csv"))
+
+sim_aggregates_m <- full_sim %>% 
+  group_by(CVT, CVE, rel) %>% 
+  summarise(across(everything(), \(x) mean(x, na.rm = T)))
+
+sim_aggregates_ll <- full_sim %>%
+  group_by(CVT, CVE, rel) %>%
+  summarise(across(everything(), \(x) quantile(x, .025, na.rm = T)))
+
+names(sim_aggregates_ll) <- paste0(names(sim_aggregates_ll), "_ll")
+
+sim_aggregates_ul <- full_sim %>%
+  group_by(CVT, CVE, rel) %>%
+  summarise(across(everything(), \(x) quantile(x, .975, na.rm = T)))
+
+names(sim_aggregates_ul) <- paste0(names(sim_aggregates_ul), "_ul")
+
+
+sim_aggregates_full <- data.frame(sim_aggregates_m,
+                                  sim_aggregates_ll,
+                                  sim_aggregates_ul)
+
+
+write.csv(sim_aggregates_full, here("Data/Shiny Data/Sim80000_rma_agg_df.csv"),
+          row.names = FALSE)
+
+
+
 df_comparison_means <- df_comparison %>% 
   group_by(CVT, CVE, rel) %>% 
   summarise(across(everything(), \(x) mean(x, na.rm = T)))
