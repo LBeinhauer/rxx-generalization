@@ -10,6 +10,12 @@ Data/Original Data/RRR10/*
 Data/Reliability Estimates/*
 Data/Shiny Data/*
 Data/Variance Estimates/*
+!Data/Downloaded Data/.gitkeep
+!Data/Extracted (Project) Data/.gitkeep
+!Data/Original Data/.gitkeep
+!Data/Reliability Estimates/.gitkeep
+!Data/Shiny Data/.gitkeep
+!Data/Variance Estimates/.gitkeep
 Simulation Data/Data*
 Simulation Data/Simulation_sub_files*
 Simulation Data/Sim_80000_conditions.RData
@@ -17,5 +23,7 @@ Simulation Data/Sim_80000_conditions_rmaBonett.RData
 Simulation Data/Sim80000_rma.csv
 Simulation Data/Sim80000_rma.RData
 Simulation Data/Sim80000_rma_df.csv
+!Simulation Data/Data/.gitkeep
+!Simulation Data/Simulation_sub_files/.gitkeep
 Graphics/*
-Results.html
+!Graphics/.gitkeep
