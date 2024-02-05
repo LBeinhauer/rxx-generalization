@@ -1,6 +1,6 @@
 # Erroneous Generalization - Exploring Random Error Variance in Reliability Generalizations of Psychological Measurements
 
-This is git repository associated with the preprint located at [osf.io/ud9rb](https://osf.io/ud9rb) (PsyArXiv). The project proposes a novel approach to Reliability Generalizations which have the goal of assessing differences in measuring quality of psychological instruments across administrations. The general idea is that, under CTT, score reliability is a function of true and error score variance. As the error score variance pertains the measuring quality, differences in score reliability are not necessarily indicative for impairment of measuring quality across some administrations. Instead, we propose that Reliability Generalization studies may be enriched by explicit models of error score variance. More details can be found at osf.io/ud9rb](https://osf.io/ud9rb).
+This is git repository associated with the preprint located at [osf.io/ud9rb](https://osf.io/ud9rb) (PsyArXiv). The project proposes a novel approach to Reliability Generalizations which have the goal of assessing differences in measuring quality of psychological instruments across administrations. The general idea is that, under CTT, score reliability is a function of true and error score variance. As the error score variance pertains the measuring quality, differences in score reliability are not necessarily indicative for impairment of measuring quality across some administrations. Instead, we propose that Reliability Generalization studies may be enriched by explicit models of error score variance. More details can be found at [osf.io/ud9rb](https://osf.io/ud9rb).
 
 Within this repository, scripts for the simulation scheme and its analysis are documented and provided, enabling a reproduction of results in the preprint. Similarly, scripts to manipulate and assess the empirical data used for demonstrations are provided. Since the empirical data stems from public repositories, we do not provide any data, but scripts to fetch the data from their respective repositories.
 
@@ -37,7 +37,7 @@ Additionally, simulation results may be explored by the [shiny app](Shiny_Simula
 
 - [E4_Variances_RE-MA.R](E4_Variances_RE-MA.R) is a script to perform random-effects meta-analytic models on estimates of error score variance.
 
--[Shiny_Simulation_Exploration.R](Shiny_Simulation_Exploration.R) is a R-shiny-app, providing some visualisations to make exploration of simulation results more accessible.
+- [Shiny_Simulation_Exploration.R](Shiny_Simulation_Exploration.R) is a R-shiny-app, providing some visualisations to make exploration of simulation results more accessible.
 
 ### Prerequisites
 
