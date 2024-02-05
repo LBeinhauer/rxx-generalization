@@ -1,6 +1,23 @@
+### Reliability Generalization  ###
 
 
+# ░██████╗██████╗░
+# ██╔════╝╚════██╗
+# ╚█████╗░░█████╔╝
+# ░╚═══██╗░╚═══██╗
+# ██████╔╝██████╔╝
+# ╚═════╝░╚═════╝░
 
+###################################################################################################
+# This script is used to back-transform estimates and aggregate results from the simulated data   #
+#  file                                                                                           #
+###################################################################################################
+
+
+# library loading and installing as necessary
+
+
+# selected packages required for data manipulation
 packages <- c("dplyr", "here", "magrittr")
 
 # check, whether library already installed or not - install and load as needed:

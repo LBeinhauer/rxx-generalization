@@ -1,9 +1,11 @@
 ### Reliability Generalization - Meta-Analysis of Variance Components ###
 
-## 07/06/2022
-
-
-
+# ███████╗░░██╗██╗
+# ██╔════╝░██╔╝██║
+# █████╗░░██╔╝░██║
+# ██╔══╝░░███████║
+# ███████╗╚════██║
+# ╚══════╝░░░░░╚═╝
 
 ###################################################################################################
 # This script is used purely for breaking down sample variance into components containing either  #

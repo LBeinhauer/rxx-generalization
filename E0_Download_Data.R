@@ -1,9 +1,12 @@
 ### Reliability Generalization HEXACO ###
 
-## 02/06/2022
 
-
-
+# ███████╗░█████╗░
+# ██╔════╝██╔══██╗
+# █████╗░░██║░░██║
+# ██╔══╝░░██║░░██║
+# ███████╗╚█████╔╝
+# ╚══════╝░╚════╝░
 
 ###################################################################################################
 # This script is used purely for downloading the data from the respective OSF-repositories.       #

@@ -1,9 +1,11 @@
 ### Reliability Generalization HEXACO ###
 
-## 02/06/2022
-
-
-
+# ███████╗░░███╗░░
+# ██╔════╝░████║░░
+# █████╗░░██╔██║░░
+# ██╔══╝░░╚═╝██║░░
+# ███████╗███████╗
+# ╚══════╝╚══════╝
 
 ###################################################################################################
 # This script is used purely for data cleaning, initial manipulation and extraction to single     #

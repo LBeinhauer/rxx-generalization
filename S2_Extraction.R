@@ -1,7 +1,22 @@
-## visualising simulation data
+### Reliability Generalization  ###
+
+# ░██████╗██████╗░
+# ██╔════╝╚════██╗
+# ╚█████╗░░░███╔═╝
+# ░╚═══██╗██╔══╝░░
+# ██████╔╝███████╗
+# ╚═════╝░╚══════╝
+
+###################################################################################################
+# This script is used to manipulate and extract the relevant data from the simulation data-file.  #
+# Results are stored in .csv files                                                                #
+###################################################################################################
 
 
+# library loading and installing as necessary
 
+
+# selected packages required for data manipulation
 packages <- c("tidyverse", "here", "psych", "future.apply")
 
 # check, whether library already installed or not - install and load as needed:

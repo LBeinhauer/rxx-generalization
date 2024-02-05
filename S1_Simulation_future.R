@@ -1,8 +1,24 @@
-# Simulation - multi-core
+### Reliability Generalization  ###
+
+# ░██████╗░░███╗░░
+# ██╔════╝░████║░░
+# ╚█████╗░██╔██║░░
+# ░╚═══██╗╚═╝██║░░
+# ██████╔╝███████╗
+# ╚═════╝░╚══════╝
+
+###################################################################################################
+# This script is used to simulate data with heterogeneity in score reliability, true and error    #
+#  score variance. Simulations are done on multiple cores using the R-library (future).           #
+#                                                                                                 #
+# Warning - this can be very resource-intensive and might occupy your cores for a long time       #
+###################################################################################################
 
 
+# library loading and installing as necessary
 
-# selected packages required for analysis
+
+# selected packages required for analysis and simulation
 packages <- c("tidyverse", "here", "boot", "MASS", 
               "spsUtil", "metafor", "future.apply")
 
@@ -135,7 +151,7 @@ plan(sequential)
 #   system(sprintf("kill -9 %s", v[[i]]))
 # }
 
-
+# store list-object in .RData file
 saveRDS(Large_Sim_Data, file = here("Simulation Data/Sim_80000_conditions.RData"))
 
 
