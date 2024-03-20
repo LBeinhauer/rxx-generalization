@@ -55,14 +55,6 @@ names(data.list) <- substr(list.files(here("Data/Extracted (Project) Data"), ful
 # set a seed to make REML-estimation replicable
 set.seed(070622)
 
-# long_test_T <- lapply(seq_along(data.list), FUN = function(x){
-#   tryCatch(apply_Bootstrap_SE_Project.specific(data.list[[x]], var.component = "TRUE"),
-#            error = function(e)(cat("ERROR: ", conditionMessage(e), " - ",
-#                                    names(data.list)[x], 
-#                                    " - ", x, "\n")))
-# })
-# 
-# saveRDS(long_test_T, file = here("Data/Variance Estimates/bootstrapped_varT.RData"))
 
 # generate estimates of ln-error score variance and its associated standard error using bootstrapping
 varE_est.L <- lapply(seq_along(data.list), FUN = function(x){
