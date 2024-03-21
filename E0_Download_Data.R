@@ -49,13 +49,6 @@ unzip(here("Data/Downloaded Data/Ml3 Final Data.zip"),
       exdir = here("Data/Original Data/ManyLabs3"))
 
 
-### Many Labs 5 - Shnabel
-
-# use osfr-package to download Many Labs 5 data, replications concerning Shnabel et al.
-osfr::osf_retrieve_file("https://osf.io/da8bh") %>% 
-  osfr::osf_download(path = here("Data/Original Data/ManyLabs5/Shnabel/"))
-
-
 ### RRR5 - Finkel
 
 # use osfr-package to downlaod RRR5 data on the Finkel et al. replications

@@ -20,8 +20,8 @@ Data/Variance Estimates/*
 !Data/Original Data/ManyLabs5/Shnabel/.gitkeep
 !Data/Original Data/RRR5/.gitkeep
 !Data/Original Data/RRR10/.gitkeep
-Simulation Data/Data*
-Simulation Data/Simulation_sub_files*
+Simulation Data/Data/*
+Simulation Data/Simulation_sub_files/*
 Simulation Data/Sim_80000_conditions.RData
 Simulation Data/Sim_80000_conditions_rmaBonett.RData
 Simulation Data/Sim80000_rma.csv
