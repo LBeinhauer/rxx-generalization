@@ -167,7 +167,7 @@ parr <- ggpubr::ggarrange(p1, p2, p3, ncol = 3, common.legend = TRUE, legend = "
                           legend.grob = pleg)
 
 # Add title
-annotate_figure(parr, top = text_grob(expression("Estimation quality in explicitly modelling " ~ tau[sigma['T']^2])))
+annotate_figure(parr)
 
 # save graphic "figure 1" as .png with transparent background
 ggsave(file = here("Graphics/appendix_fig1.png"),
@@ -204,7 +204,7 @@ p4 <- df_comparison %>%
   scale_color_manual(values = cols[c(3:7)])
   
 # add title to figure
-annotate_figure(p4, top = "a) Estimates - wide")
+annotate_figure(p4)
 
 # save figure 3 as .png with transparent background
 ggsave(file =  here("Graphics/appendix_fig2.png"),
@@ -242,7 +242,7 @@ p5 <- df_comparison_summary %>%
   scale_color_manual(values = cols[c(3:7)])
 
 # add title to figure
-annotate_figure(p5, top = "b) Mean Bias - wide")
+annotate_figure(p5)
 
 # save figure 3 as .png with transparent background
 ggsave(file =  here("Graphics/appendix_fig3.png"),
@@ -276,7 +276,7 @@ p6 <- df_comparison_summary %>%
   scale_color_manual(values = cols[c(3:7)])
 
 # add title to figure
-annotate_figure(p6, top = "c) Efficiency - wide")
+annotate_figure(p6)
 
 # save figure 3 as .png with transparent background
 ggsave(file =  here("Graphics/appendix_fig4.png"),
@@ -337,7 +337,7 @@ p7 <- df_rate_vis %>%
   labs(x = "Method", y = "Type-I-Error")
 
 # add title to figure
-annotate_figure(p7, top = "Type-I-Error")
+annotate_figure(p7)
 
 # save figure 3 as .png with transparent background
 ggsave(file =  here("Graphics/appendix_fig5.png"),
@@ -373,7 +373,7 @@ p8 <- df_rate_vis %>%
   labs(x = "Method", y = "Power")
 
 # add title to figure
-annotate_figure(p8, top = "a) score reliability of .5")
+annotate_figure(p8)
 
 # save figure 3 as .png with transparent background
 ggsave(file =  here("Graphics/appendix_fig6.png"),
@@ -407,7 +407,7 @@ p9 <- df_rate_vis %>%
   labs(x = "Method", y = "Power")
 
 # add title to figure
-annotate_figure(p9, top = "b) score reliability of .6")
+annotate_figure(p9)
 
 # save figure 3 as .png with transparent background
 ggsave(file =  here("Graphics/appendix_fig7.png"),
@@ -441,7 +441,7 @@ p10 <- df_rate_vis %>%
   labs(x = "Method", y = "Power")
 
 # add title to figure
-annotate_figure(p10, top = "c) score reliability of .7")
+annotate_figure(p10)
 
 # save figure 3 as .png with transparent background
 ggsave(file =  here("Graphics/appendix_fig8.png"),
@@ -476,7 +476,7 @@ p11 <- df_rate_vis %>%
   labs(x = "Method", y = "Power")
 
 # add title to figure
-annotate_figure(p11, top = "d) score reliability of .8")
+annotate_figure(p11)
 
 # save figure 3 as .png with transparent background
 ggsave(file =  here("Graphics/appendix_fig9.png"),
@@ -511,7 +511,7 @@ p12 <- df_rate_vis %>%
   labs(x = "Method", y = "Power")
 
 # add title to figure
-annotate_figure(p12, top = "e) score reliability of .9")
+annotate_figure(p12)
 
 # save figure 3 as .png with transparent background
 ggsave(file =  here("Graphics/appendix_fig10.png"),

@@ -90,7 +90,7 @@ p1 <- df_comparison %>%
   ggplot(aes(y = tau_E, x = tau_varE, colour = as.factor(rel))) +
   geom_abline(intercept = 0, slope = 1) +
   geom_point(position = position_jitter(width = .03), 
-             alpha = .01) +
+             alpha = .1) +
   facet_wrap(vars(factor(CVE, labels = c("CV[sigma[E]^2] == 0", "CV[sigma[E]^2] == .1", "CV[sigma[E]^2] == .2", "CV[sigma[E]^2] == .3"))), 
              nrow = 4, scales = "fixed", labeller = label_parsed) +
   labs(y = expression(hat(tau)[sigma[E]^2]),
@@ -167,7 +167,7 @@ parr <- ggpubr::ggarrange(p1, p2, p3, ncol = 3, common.legend = TRUE, legend = "
                           legend.grob = pleg)
 
 # Add title
-annotate_figure(parr, top = text_grob(expression("Estimation quality in explicitly modelling " ~ tau[sigma[E]^2])))
+annotate_figure(parr)
 
 # save graphic "figure 1" as .png with transparent background
 ggsave(file = here("Graphics/figure1.png"),
@@ -259,7 +259,7 @@ pleg2 <- ggpubr::get_legend(p4)
 parr2 <- ggpubr::ggarrange(p4, p5, ncol = 1, legend = "none")
 
 # add title to figure 2
-annotate_figure(parr2, top = text_grob("Type-I-Error comparison across methods"))
+annotate_figure(parr2)
 
 # save figure 2 as .png with mostly transparent background
 ggsave(file =  here("Graphics/figure2.png"),
@@ -299,7 +299,7 @@ p6 <- df_rate_vis %>%
   labs(x = "Method", y = "Power")
 
 # add title to figure
-annotate_figure(p6, top = "Power comparison across methods")
+annotate_figure(p6)
 
 # save figure 3 as .png with transparent background
 ggsave(file =  here("Graphics/figure3.png"),
