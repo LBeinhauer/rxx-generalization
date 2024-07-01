@@ -90,7 +90,7 @@ Large_Sim_Data_RMA <- future_lapply((1:length(Large_Sim_Data)), FUN = function(i
     # perform meta-analyses on log-transformed score variance estimates
     # NOTE that tau_lnT is not actually used in the manuscript - this produces distorted estimates
     #  of heterogeneity. It is only computed here for comparison in the appendix
-    tau_lnT <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = log(varT), sei = SE_T.b)
+   # tau_lnT <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = log(varT), sei = SE_T.b)
     tau_lnE <- metafor::rma(measure = "GEN", method = "REML", data = x, yi = log(varE), sei = SE_E.b)
     
     # taurel is the analysis of score reliability estimates directly
@@ -113,7 +113,7 @@ Large_Sim_Data_RMA <- future_lapply((1:length(Large_Sim_Data)), FUN = function(i
                                            mods = ~ ln_varX)
     
     # compute estimates of mean score variance (component) back on the original scale
-    muT <- exp(tau_lnT$b[1] + (.5*tau_lnT$tau2))
+  #  muT <- exp(tau_lnT$b[1] + (.5*tau_lnT$tau2))
     muE <- exp(tau_lnE$b[1] + (.5*tau_lnE$tau2))
     muX <- exp(tau_lnX$b[1] + (.5*tau_lnX$tau2))
     
@@ -130,7 +130,7 @@ Large_Sim_Data_RMA <- future_lapply((1:length(Large_Sim_Data)), FUN = function(i
     # tauE2 <- ((exp(tau_lnE$b[1])^2) * tau_lnE$tau2) + (.5*(exp(tau_lnE$b[1])^2)*(tau_lnE$tau2^2)) + ((exp(tau_lnE$b[1])^2) * (tau_lnE$tau2^2)) 
     
     # compute estimates of heterogeneity in score variance (component) back on the original scale
-    tauT2 <- (exp(tau_lnT$tau2) - 1) * exp((2 * tau_lnT$b[1]) + tau_lnT$tau2)
+  #  tauT2 <- (exp(tau_lnT$tau2) - 1) * exp((2 * tau_lnT$b[1]) + tau_lnT$tau2)
     tauE2 <- (exp(tau_lnE$tau2) - 1) * exp((2 * tau_lnE$b[1]) + tau_lnE$tau2)
     tauX2 <- (exp(tau_lnX$tau2) - 1) * exp((2 * tau_lnX$b[1]) + tau_lnX$tau2)
     
@@ -138,8 +138,8 @@ Large_Sim_Data_RMA <- future_lapply((1:length(Large_Sim_Data)), FUN = function(i
     # store estimates of heterogeneity in terms of tau, I^2, H^2, test-statistics of heterogeneity
     #  QE and its p-value, meta-analytic estimate of the mean and nr. of samples used in estimation
     #  in a data.frame. Do so for each parameter (transformed and untransformed)
-    return(data.frame(tau_T = sqrt(tauT2),
-                      tau_lnT = sqrt(tau_lnT$tau2),
+    return(data.frame(#tau_T = sqrt(tauT2),
+                      #tau_lnT = sqrt(tau_lnT$tau2),
                       tau_E = sqrt(tauE2),
                       tau_lnE = sqrt(tau_lnE$tau2),
                       tau_X = sqrt(tauX2),
@@ -147,32 +147,32 @@ Large_Sim_Data_RMA <- future_lapply((1:length(Large_Sim_Data)), FUN = function(i
                       tau_rel = sqrt(taurel$tau2),
                       tau_Bonnett = sqrt(rma_Bonett_rel_base$tau2),
                       tau_Bonett_rel_Botella = sqrt(rma_Bonett_rel_Botella$tau2),
-                      I2_T = tau_lnT$I2,
+                      #I2_T = tau_lnT$I2,
                       I2_E = tau_lnE$I2,
                       I2_X = tau_lnX$I2,
                       I2_rel = taurel$I2,
                       I2_Bonnett = rma_Bonett_rel_base$I2,
                       I2_Bonnett_rel_Botella = rma_Bonett_rel_Botella$I2,
-                      H2_T = tau_lnT$H2,
+                      #H2_T = tau_lnT$H2,
                       H2_E = tau_lnE$H2,
                       H2_X = tau_lnX$H2,
                       H2_rel = taurel$H2,
                       H2_Bonnett = rma_Bonett_rel_base$H2,
                       H2_Bonnett_rel_Botella = rma_Bonett_rel_Botella$H2,
-                      QE_T = tau_lnT$QE,
+                      #QE_T = tau_lnT$QE,
                       QE_E = tau_lnE$QE,
                       QE_X = tau_lnX$QE,
                       QE_rel = taurel$QE,
                       QE_Bonnett = rma_Bonett_rel_base$QE,
                       QE_Bonnett_rel_Botella = rma_Bonett_rel_Botella$QE,
-                      p_T = tau_lnT$QEp,
+                      #p_T = tau_lnT$QEp,
                       p_E = tau_lnE$QEp,
                       p_X = tau_lnX$QEp,
                       p_rel = taurel$QEp,
                       p_Bonett = rma_Bonett_rel_base$QEp,
                       p_Bonett_rel_Botella = rma_Bonett_rel_Botella$QEp,
-                      mu_T = muT,
-                      mu_lnT = tau_lnT$b[1],
+                      #mu_T = muT,
+                      #mu_lnT = tau_lnT$b[1],
                       mu_E = muE,
                       mu_lnE = tau_lnE$b[1],
                       mu_X = muX,
@@ -180,7 +180,7 @@ Large_Sim_Data_RMA <- future_lapply((1:length(Large_Sim_Data)), FUN = function(i
                       mu_rel = taurel$b[1],
                       mu_Bonnett = rma_Bonett_rel_base$b[1],
                       mu_Bonnett_rel_Botella = rma_Bonett_rel_Botella$b[1],
-                      k_T = tau_lnT$k,
+                      #k_T = tau_lnT$k,
                       k_E = tau_lnE$k,
                       k_X = tau_lnX$k,
                       k_rel = taurel$k,
