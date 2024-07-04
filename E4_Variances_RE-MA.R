@@ -101,6 +101,22 @@ names(varE_rma.list) <- names(data.list)
 saveRDS(varE_rma.list, file = here("Data/Variance Estimates/bootstrapped_varE_rma.RData"))
 
 
+bt_var_m <- function(rma_obj){
+  exp(rma_obj$b[1] + (.5*rma_obj$tau2))
+}
+
+bt_var_v <- function(rma_obj){
+  (exp(rma_obj$tau2) - 1) * exp((2 * rma_obj$b[1]) + rma_obj$tau2)
+}
+
+
+mus <- sapply(varE_rma.list, bt_var_m)
+taus2 <- sapply(varE_rma.list, bt_var_v)
+
+sqrt(taus2)/mus
+
+
+
 # generate estimates of ln-observed score variance for each sample & projects
 varX_est.L <- lapply(data.list, FUN = function(data){
   

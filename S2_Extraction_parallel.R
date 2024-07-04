@@ -33,10 +33,17 @@ apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
   }
 })
 
-
+# load data.frame containing all condition-parameters + seeds
 all_conditions <- readRDS(here("Simulation Data/full_seeds.RDS"))
 
-full_df <- readRDS("C:/Users/Lukas/Downloads/OneDrive-2024-06-27/full_df.RDS")
+# load data from all simulation conditions in a list
+sim_dat_list <- lapply(list.files(here("Simulation Data/completed"), pattern = ".RDS$", full.names = TRUE),
+                       readRDS)
+
+# transform to a data.frame
+full_df <- do.call(rbind, sim_dat_list)
+
+# full_df <- readRDS("C:/Users/Lukas/Downloads/OneDrive-2024-06-27/full_df.RDS")[1:100,]
 
 full_df2 <- left_join(full_df, all_conditions[,-3], by = "seed")
 
@@ -72,6 +79,7 @@ rm(full_df, full_df2)
 # analysis of these is computationally heavy, therefore we again use parallelisation
 #  replace 7 by the nr. of cores you want to use
 plan(multisession, workers = 7)
+
 # in default, future can only use about 500 mb of working memory. You can override this
 #  using the following code. This allows for about 1000 mb of ram, which should be sufficient here
 options(future.globals.maxSize = 3000*1024^2)
@@ -132,7 +140,7 @@ system.time(
 
 full_df_1sthalf_rma_df <- do.call(rbind, full_df_1sthalf_rma_L)
 
-write.csv(full_df_1sthalf_rma_df, "C:/Users/Lukas/Downloads/OneDrive-2024-06-27/full_df_rma_halfA.csv",
+write.csv(full_df_1sthalf_rma_df, here("Simulation Data/full_df_rma_halfA.csv"),
           row.names = FALSE)
 
 plan(sequential)
@@ -200,7 +208,7 @@ system.time(
 
 full_df_2ndhalf_rma_df <- do.call(rbind, full_df_2ndhalf_rma_L)
 
-write.csv(full_df_2ndhalf_rma_df, "C:/Users/Lukas/Downloads/OneDrive-2024-06-27/full_df_rma_halfB.csv",
+write.csv(full_df_2ndhalf_rma_df, here("Simulation Data/full_df_rma_halfB.csv"),
           row.names = FALSE)
 
 plan(sequential)

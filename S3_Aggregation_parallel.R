@@ -37,10 +37,10 @@ apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
 
 
 # load in simulated data
-DF_rma1 <- read.csv("C:/Users/Lukas/Downloads/OneDrive-2024-06-27/full_df_rma_halfA.csv") %>% 
+DF_rma1 <- read.csv(here("Simulation Data/full_df_rma_halfA.csv")) %>% 
   rename(tau_rel_Bot = tau_rel.1)
 
-DF_rma2 <- read.csv("C:/Users/Lukas/Downloads/OneDrive-2024-06-27/full_df_rma_halfB.csv") %>% 
+DF_rma2 <- read.csv(here("Simulation Data/full_df_rma_halfB.csv")) %>% 
   rename(tau_rel_Bot = tau_rel.1)
 
 DF_rma <- rbind(DF_rma1, DF_rma2)

@@ -46,35 +46,11 @@ cols <- RColorBrewer::brewer.pal(7, "Blues")
 
 ### Generate figures
 
-# p1, individual estimates of error score variance heterogeneity, grouped across levels of CV_E.
-# CV_T is set to zero here
-p1 <- df_comparison %>% 
-  filter(CVT == 0) %>% 
-  ggplot(aes(y = tau_varE, x = sim_tau_varE, colour = as.factor(rel))) +
-  geom_abline(intercept = 0, slope = 1) +
-  geom_point(position = position_jitter(width = .03), 
-             alpha = .1) +
-  facet_wrap(vars(factor(CVE, labels = c("CV[sigma[E]^2] == 0", "CV[sigma[E]^2] == .01", "CV[sigma[E]^2] == .05", "CV[sigma[E]^2] == .1", "CV[sigma[E]^2] == .2", "CV[sigma[E]^2] == .3")
-                         )), 
-             nrow = 6, scales = "fixed", labeller = label_parsed) +
-  labs(y = expression(hat(tau)[sigma[E]^2]),
-       x = expression(tau[sigma[E]^2]),
-       subtitle = "a) Estimates",
-       colour = "Score\nReliability") +
-  theme(legend.position = "none", 
-        panel.background = element_rect(fill = "transparent"), 
-        plot.background = element_rect(fill = "transparent", colour = "transparent"), 
-        panel.grid.major = element_line(colour = "grey"),
-        panel.grid.minor = element_line(colour = "transparent"),
-        axis.ticks = element_line(colour = "grey"),
-        strip.background = element_rect(fill = "transparent"),
-        strip.text = element_text(size = 12)) +
-  scale_color_manual(values = cols[c(3:7)])
 
-# p2, mean bias of error score variance heterogeneity estimates, grouped across levels of CV_E.
-# CV_T is set to zero here
-p2 <- df_comparison_summary %>% 
-  filter(CVT == 0, j == 3, k == 12) %>% 
+# p1, mean bias of error score variance heterogeneity estimates, grouped across levels of CV_E.
+# CV_T is set to zero here, j to 3, k to 10, CVE restricted to 0, .05, .1 and .3
+p1 <- df_comparison_summary %>% 
+  filter(CVT == 0, j == 3, k == 12, CVE %in% c(0, .05, .1, .3)) %>% 
   mutate(sim_tau_varE = ifelse(CVE == 0, yes = (10*(1-rel)*CVE + (((rel -.7)*(-1))/4)), no = 10*(1-rel)*CVE)) %>% 
   ggplot() +
   geom_abline(intercept = 0, slope = 0) +
@@ -84,11 +60,11 @@ p2 <- df_comparison_summary %>%
                     colour = as.factor(rel)),
                 alpha = .7, width = .01, linewidth = 1) +
   geom_point(aes(x = sim_tau_varE, y = mean_bias_tau_varE, colour = as.factor(rel))) +
-  facet_wrap(vars(factor(CVE, labels = c("CV[sigma[E]^2] == 0", "CV[sigma[E]^2] == .01", "CV[sigma[E]^2] == .05", "CV[sigma[E]^2] == .1", "CV[sigma[E]^2] == .2", "CV[sigma[E]^2] == .3"))), 
+  facet_wrap(vars(factor(CVE, labels = c("CV[sigma[E]^2] == 0", "CV[sigma[E]^2] == .05", "CV[sigma[E]^2] == .1", "CV[sigma[E]^2] == .3"))), 
              nrow = 6, scales = "fixed", labeller = label_parsed) +
   labs(y = expression("mean bias in " ~ hat(tau)[sigma[E]^2]),
        x = expression(tau[sigma[E]^2]),
-       subtitle = "b) Bias",
+       subtitle = "a) Bias",
        colour = "Score\nReliability") +
   theme(legend.position = "bottom", 
         panel.background = element_rect(fill = "transparent"), 
@@ -100,17 +76,17 @@ p2 <- df_comparison_summary %>%
         strip.text = element_text(size = 12)) +
   scale_color_manual(values = cols[c(3:7)])
 
-# p3, assessment of effiency in error score variance heterogeneity estimates, grouped across levels of CV_E.
-# CV_T is set to zero here
-p3 <- df_comparison_summary %>% 
-  filter(CVT == 0, j == 3, k == 12) %>% 
+# p2, assessment of effiency in error score variance heterogeneity estimates, grouped across levels of CV_E.
+# CV_T is set to zero here, j to 3, k to 10, CVE restricted to 0, .05, .1 and .3
+p2 <- df_comparison_summary %>% 
+  filter(CVT == 0, j == 3, k == 12, CVE %in% c(0, .05, .1, .3)) %>% 
   ggplot() +
   geom_point(aes(x = 10*(1-rel)*CVE, y = sqrt(var_tau_varE), colour = as.factor(rel))) +
-  facet_wrap(vars(factor(CVE, labels = c("CV[sigma[E]^2] == 0", "CV[sigma[E]^2] == .01", "CV[sigma[E]^2] == .05", "CV[sigma[E]^2] == .1", "CV[sigma[E]^2] == .2", "CV[sigma[E]^2] == .3"))), 
+  facet_wrap(vars(factor(CVE, labels = c("CV[sigma[E]^2] == 0", "CV[sigma[E]^2] == .05", "CV[sigma[E]^2] == .1", "CV[sigma[E]^2] == .3"))), 
              nrow = 6, scales = "fixed", labeller = label_parsed) +
   labs(y = expression("efficiency in " ~ hat(tau)[sigma[E]^2]),
        x = expression(tau[sigma[E]^2]),
-       subtitle = "c) Efficiency",
+       subtitle = "b) Efficiency",
        colour = "Score\nReliability") +
   theme(legend.position = "bottom", 
         panel.background = element_rect(fill = "transparent"), 
@@ -123,11 +99,12 @@ p3 <- df_comparison_summary %>%
         strip.text = element_text(size = 12)) +
   scale_color_manual(values = cols[c(3:7)])
 
-# extract legend from figure 3, to add to the combined legend of all three graphics
-pleg <- ggpubr::get_legend(p3)
+# extract legend from figure 2, to add to the combined legend of all three graphics
+pleg <- ggpubr::get_legend(p2)
 
-# combine p1, p2 and p3.
-parr <- ggpubr::ggarrange(p1, p2, p3, ncol = 3, common.legend = TRUE, legend = "bottom", 
+
+# combine p1 and p2
+parr <- ggpubr::ggarrange(p1, p2, ncol = 2, common.legend = TRUE, legend = "bottom", 
                           legend.grob = pleg)
 
 # Add title
@@ -166,21 +143,16 @@ df_rate_vis <- data.frame(sig = c(df_c_s_rate$Botella_sig,
 cols2 <- RColorBrewer::brewer.pal(9, "Greens")
 
 
-# p4, at average score reliability of .5, estimates of type-I-error as grouped bar-charts
+# p3, at average score reliability of .5 and .9, j = 3, k = 12, estimates of type-I-error as line-plots
 # CV_E is set to zero here
-p4 <- df_rate_vis %>% 
-  filter(CVE == 0, rel == .5, k == 12, j == 3) %>% 
+p3 <- df_rate_vis %>% 
+  filter(CVE == 0, rel %in% c(.5, .9), j == 3, k == 12) %>% 
   ggplot() +
-  geom_bar(aes(x = method, y = sig, fill = method), stat = "identity", colour = "black") +
-  geom_text(aes(x = method, y = sig, label = paste0(round(sig*100, 0), "%")), vjust = -.1) +
-  scale_x_discrete(labels = c("RG-MA", "B&S", "EV-MA")) +
-  scale_fill_discrete(labels = c("RG-MA", "B&S", "EV-MA")) +
-  scale_y_continuous(labels = paste0(c(0, .25, .5, .75, 1) * 100, "%"), limits = c(0, 1.02)) +
-  facet_wrap(vars(factor(CVT, labels = c("CV[sigma[T]^2] == 0", "CV[sigma[T]^2] == .1", "CV[sigma[T]^2] == .2", "CV[sigma[T]^2] == .3"))), 
-             nrow = 1, scales = "fixed", labeller = label_parsed) +
-  scale_fill_manual(values = cols2[c(3, 6, 9)]) +
+  geom_line(aes(y = sig, x = CVT, colour = as.factor(method)),
+            linewidth = 1.5) +
+  facet_wrap(vars(factor(rel, label = c("Score Reliability = .5", "Score Reliability = .9")))) +
   theme(legend.position = "bottom", 
-        panel.background = element_rect(fill = "#EAEAEA"), 
+        panel.background = element_rect(fill = "transparent"), 
         plot.background = element_rect(fill = "transparent", colour = "transparent"), 
         panel.grid.major = element_line(colour = "grey"),
         panel.grid.minor = element_line(colour = "transparent"),
@@ -188,27 +160,60 @@ p4 <- df_rate_vis %>%
         strip.background = element_rect(fill = "transparent"),
         legend.key = element_rect(fill = "transparent"),
         axis.line = element_line(colour = "black"),
-        strip.text = element_text(size = 12))  +
-  labs(x = "Method", y = "Type-I-Error",
-       subtitle = "a) Score Reliability of .5") 
+        strip.text = element_text(size = 12),
+        axis.title = element_text(size = 12),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 12))  +
+  scale_color_discrete(labels = c("RG-MA", "B&S", "EV-MA")) +
+  labs(x = expression(CV[sigma["T"]^2]), y = "Type-I-Error", colour = "Method")
 
+# add title to figure
+annotate_figure(p3)
 
+# save figure 3 as .png with transparent background
+ggsave(file =  here("Graphics/figure2.png"),
+       plot = last_plot(), 
+       width = 10, 
+       height = 7)
 
-df_rate_vis %>% 
-  filter(CVE == 0, rel == .5) %>% 
+# p3, at average score reliability of .5 and .9, j = 5, k in 12 and 60, estimates of power as line-plots
+# CV_T is set to zero and .3, across levels of CV_E which are not zero
+p4 <- df_rate_vis %>% 
+  filter(CVT %in% c(0, .3), rel == .5, j == 5, k %in% c(12, 60), CVE != 0) %>% 
   ggplot() +
-  geom_line(aes(y = sig, x = CVT, colour = as.factor(method))) +
-  facet_grid(rows = vars(k), cols = vars(j))
+  geom_line(aes(y = sig, x = CVE, colour = as.factor(method), linetype = as.factor(CVT)),
+            linewidth = 1.5) +
+  # facet_grid(rows = vars(factor(j, labels = c("J = 3", "J = 10"))),
+  #            cols = vars(factor(k, labels = c("K = 12", "K = 60"))),
+  #            scales = "fixed") +
+  facet_wrap(vars(factor(k, labels = c("K = 12", "K = 60")))) +
+  theme(legend.position = "bottom", 
+        panel.background = element_rect(fill = "transparent"), 
+        plot.background = element_rect(fill = "transparent", colour = "transparent"), 
+        panel.grid.major = element_line(colour = "grey"),
+        panel.grid.minor = element_line(colour = "transparent"),
+        axis.ticks = element_line(colour = "grey"),
+        strip.background = element_rect(fill = "transparent"),
+        legend.key = element_rect(fill = "transparent"),
+        axis.line = element_line(colour = "black"),
+        strip.text = element_text(size = 12),
+        axis.title = element_text(size = 12),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 12))  +
+  scale_color_discrete(labels = c("RG-MA", "B&S", "EV-MA")) +
+  # guides(linetype = "none") +
+  labs(x = expression(CV[sigma[E]^2]), y = "Power", colour = "Method", linetype = expression(CV[sigma["T"]^2])) 
 
 
-df_rate_vis %>% 
-  filter(CVT == 0, rel == .5) %>% 
-  ggplot() +
-  geom_line(aes(y = sig, x = CVE, colour = as.factor(method))) +
-  facet_grid(rows = vars(j),
-             cols = vars(k),
-             scales = "fixed", labeller = label_parsed) 
-  
+# Add title
+annotate_figure(p4)
+
+# save graphic "figure 1" as .png with transparent background
+ggsave(file = here("Graphics/figure3.png"),
+       plot = last_plot(), 
+       width = 10, 
+       height = 8)
+
 
 
 
