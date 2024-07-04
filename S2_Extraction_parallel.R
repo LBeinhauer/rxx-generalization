@@ -43,6 +43,9 @@ sim_dat_list <- lapply(list.files(here("Simulation Data/completed"), pattern = "
 # transform to a data.frame
 full_df <- do.call(rbind, sim_dat_list)
 
+# save full_df as .RDS
+saveRDS(full_df, here("Simulation Data/full_df.RDS"))
+
 # full_df <- readRDS("C:/Users/Lukas/Downloads/OneDrive-2024-06-27/full_df.RDS")[1:100,]
 
 full_df2 <- left_join(full_df, all_conditions[,-3], by = "seed")
