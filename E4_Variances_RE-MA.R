@@ -175,3 +175,19 @@ names(varX_rma.list) <- names(data.list)
 # store list-object of results of RE-MA in separate file
 saveRDS(varX_rma.list, file = here("Data/Variance Estimates/bootstrapped_varx_rma.RData"))
 
+
+
+
+mus_X <- sapply(varX_rma.list, bt_var_m)
+taus2_X <- sapply(varX_rma.list, bt_var_v)
+
+sqrt(taus2_X)/mus_X
+
+taus2/taus2_X
+
+
+1-(mus/mus_X)
+
+
+sqrt(bt_var_v(varE_rma.list$Mazar_HEXACO_HH))
+sqrt(bt_var_v(varX_rma.list$Mazar_HEXACO_HH))

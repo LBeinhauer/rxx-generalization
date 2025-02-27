@@ -76,3 +76,26 @@ names(Bonett.Alpha_rma.list) <- substr(Bonett.Alpha_estimates_paths,
 # store meta-analysis results in separate .RData files
 saveRDS(Alpha_rma.list, file = here("Data/Shiny Data/Alpha_rma.list.RData"))
 saveRDS(Bonett.Alpha_rma.list, file = here("Data/Shiny Data/Bonett.Alpha_rma.list.RData"))
+
+
+var_Bonnett_backtransformed <- function(rma_obj){
+  (((-exp(rma_obj$b[1]))^2) * rma_obj$tau2) + (.5*((-exp(rma_obj$b[1]))^2)*(rma_obj$tau2^2)) + ((-exp(rma_obj$b[1])) * (-exp(rma_obj$b[1])) * (rma_obj$tau2^2))
+}
+
+mean_Bonnett_backtransformed <- function(rma_obj){
+  1 - exp(rma_obj$b[1]) + ((-exp(rma_obj$b[1])) / 2) * rma_obj$tau2
+}
+
+tau2_CNC <- var_Bonnett_backtransformed(Bonett.Alpha_rma.list[[1]])
+tau2_FEF <- var_Bonnett_backtransformed(Bonett.Alpha_rma.list[[2]])
+tau2_HHH <- var_Bonnett_backtransformed(Bonett.Alpha_rma.list[[3]])
+
+
+mu_CNC <- mean_Bonnett_backtransformed(Bonett.Alpha_rma.list[[1]])
+mu_FEF <- mean_Bonnett_backtransformed(Bonett.Alpha_rma.list[[2]])
+mu_HHH <- mean_Bonnett_backtransformed(Bonett.Alpha_rma.list[[3]])
+
+
+CV_CNC <- sqrt(tau2_CNC)/mu_CNC
+CV_FEF <- sqrt(tau2_FEF)/mu_FEF
+CV_HHH <- sqrt(tau2_HHH)/mu_HHH

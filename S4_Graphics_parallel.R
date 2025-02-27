@@ -19,7 +19,7 @@
 
 
 # selected packages required for data manipulation
-packages <- c("dplyr", "here", "magrittr", "ggplot2", "ggpubr", "RColorBrewer")
+packages <- c("dplyr", "here", "magrittr", "ggplot2", "ggpubr", "RColorBrewer", "grid")
 
 # check, whether library already installed or not - install and load as needed:
 apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
@@ -55,23 +55,23 @@ cols <- RColorBrewer::brewer.pal(7, "Blues")
 # CV_T is set to zero here, k restricted to 12 and 60, CVE restricted to 0, .05, and .3
 
 # build specific data-frame for figures 1 and 2
-df_comparison_summary_d <- df_comparison_summary %>% 
+df_comparison_summary_d1 <- df_comparison_summary %>% 
   mutate(sim_tau_varE = ifelse(CVE == 0, yes = (10*(1-rel)*CVE + (((rel -.7)*(-1))/4)), no = 10*(1-rel)*CVE)) %>% 
-  filter(CVT == 0 & CVE %in% c(0, .05, .3) & k %in% c(12, 60))
+  filter(CVT == 0 & CVE == 0 & k %in% c(12, 60))
 
 cols <- RColorBrewer::brewer.pal(7, "Blues")
 
-df_comparison_summary_d %>% 
+p1 <- df_comparison_summary_d1 %>% 
   ggplot() +
   geom_line(aes(x = sim_tau_varE, y = mean_bias_tau_varE, colour = as.factor(j))) +
   geom_point(aes(x = sim_tau_varE, y = mean_bias_tau_varE, colour = as.factor(j))) +
   facet_grid(rows = vars(factor(k, labels = c("K == 12", "K == 60"))),
-             cols = vars(factor(CVE, labels = c("CV[sigma[E]^2] == 0", "CV[sigma[E]^2] == .05", "CV[sigma[E]^2] == .3"))),
-             scales = "free", labeller = label_parsed) +
+             cols = vars(factor(CVE, labels = c("CV[sigma[E]^2] == 0"))),
+             labeller = label_parsed) +
   geom_hline(aes(yintercept = 0), linetype = "dotted") +
   labs(y = expression("mean bias in " ~ hat(tau)[sigma[E]^2]),
-       x = expression(tau[sigma[E]^2]),
-       colour = "J") +
+       x = expression("Reliability"),
+       colour = "J", subtitle = "a) no heterogeneity") +
   theme(legend.position = "bottom", 
         panel.background = element_rect(fill = "transparent"), 
         plot.background = element_rect(fill = "transparent", colour = "transparent"), 
@@ -79,16 +79,56 @@ df_comparison_summary_d %>%
         panel.grid.minor = element_line(colour = "transparent"),
         axis.ticks = element_line(colour = "grey"),
         strip.background = element_rect(fill = "transparent"),
-        strip.text = element_text(size = 12)) +
-  scale_color_manual(values = cols[c(3:7)])
+        strip.text = element_text(size = 12),
+        strip.text.y = element_blank()) +
+  scale_color_manual(values = cols[c(3:7)]) +
+  scale_x_continuous(breaks = c(-.05, -.025, 0, .025, .05), labels = c(.5, .6, .7, .8, .9)) +
+  lims(y = c(-.03, .15))
 
 
+df_comparison_summary_d2 <- df_comparison_summary %>% 
+  mutate(sim_tau_varE = ifelse(CVE == 0, yes = (10*(1-rel)*CVE + (((rel -.7)*(-1))/4)), no = 10*(1-rel)*CVE)) %>% 
+  filter(CVT == 0 & CVE %in% c(.05, .3) & k %in% c(12, 60))
+
+p2 <- df_comparison_summary_d2 %>% 
+  ggplot() +
+  geom_line(aes(x = sim_tau_varE, y = mean_bias_tau_varE, colour = as.factor(j))) +
+  geom_point(aes(x = sim_tau_varE, y = mean_bias_tau_varE, colour = as.factor(j))) +
+  facet_grid(rows = vars(factor(k, labels = c("k == 12", "k == 60"))),
+             cols = vars(factor(CVE, labels = c("CV[sigma[E]^2] == .05", "CV[sigma[E]^2] == .3"))),
+             labeller = label_parsed, scales = "free_x") +
+  geom_hline(aes(yintercept = 0), linetype = "dotted") +
+  labs(y = expression("mean bias in " ~ hat(tau)[sigma[E]^2]),
+       x = expression(tau[sigma[E]^2]),
+       colour = "J", subtitle = "b) heterogeneity present") +
+  theme(legend.position = "bottom", 
+        panel.background = element_rect(fill = "transparent"), 
+        plot.background = element_rect(fill = "transparent", colour = "transparent"), 
+        panel.grid.major = element_line(colour = "grey"),
+        panel.grid.minor = element_line(colour = "transparent"),
+        axis.ticks = element_line(colour = "grey"),
+        strip.background = element_rect(fill = "transparent"),
+        strip.text = element_text(size = 12),
+        axis.title.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank()) +
+  scale_color_manual(values = cols[c(3:7)]) +
+  lims(y = c(-.03, .15))
+
+arranged_plot1 <- ggpubr::ggarrange(p1, p2, common.legend = T, widths = c(1.2, 2), legend = "bottom")
+
+annotate_figure(
+  arranged_plot1,
+  left = linesGrob(x = unit(c(38.2, 38.2), "npc"), 
+                   y = unit(c(.1, .9), "npc"), 
+                   gp = gpar(col = "black", lwd = 2, lty = 2))
+)
 
 # save graphic "figure 1" as .png with transparent background
 ggsave(file = here("Graphics/figure1.png"),
        plot = last_plot(), 
        width = 10, 
-       height = 4)
+       height = 4.5)
 
 
 ############
@@ -98,17 +138,17 @@ ggsave(file = here("Graphics/figure1.png"),
 # efficiency of error score variance heterogeneity estimates, grouped across levels of CV_E.
 # CV_T is set to zero here, k restricted to 12 and 60, CVE restricted to 0, .05, and .3
 
-df_comparison_summary_d %>% 
+p3 <- df_comparison_summary_d1 %>% 
   ggplot() +
   geom_line(aes(x = sim_tau_varE, y = sqrt(var_bias_tau_varE), colour = as.factor(j))) +
   geom_point(aes(x = sim_tau_varE, y = sqrt(var_bias_tau_varE), colour = as.factor(j))) +
   facet_grid(rows = vars(factor(k, labels = c("K == 12", "K == 60"))),
-             cols = vars(factor(CVE, labels = c("CV[sigma[E]^2] == 0", "CV[sigma[E]^2] == .05", "CV[sigma[E]^2] == .3"))),
-             scales = "free", labeller = label_parsed) +
+             cols = vars(factor(CVE, labels = c("CV[sigma[E]^2] == 0"))),
+             scales = "free_x", labeller = label_parsed) +
   geom_hline(aes(yintercept = 0), linetype = "dotted") +
-  labs(y = expression("efficiency " ~ hat(tau)[sigma[E]^2]),
-       x = expression(tau[sigma[E]^2]),
-       colour = "J") +
+  labs(y = expression("sd (inefficiency) in " ~ hat(tau)[sigma[E]^2]),
+       x = expression("Reliability"),
+       colour = "J", subtitle = "a) no heterogeneity") +
   theme(legend.position = "bottom", 
         panel.background = element_rect(fill = "transparent"), 
         plot.background = element_rect(fill = "transparent", colour = "transparent"), 
@@ -116,15 +156,53 @@ df_comparison_summary_d %>%
         panel.grid.minor = element_line(colour = "transparent"),
         axis.ticks = element_line(colour = "grey"),
         strip.background = element_rect(fill = "transparent"),
-        strip.text = element_text(size = 12)) +
-  scale_color_manual(values = cols[c(3:7)])
+        strip.text = element_text(size = 12),
+        strip.text.y = element_blank()) +
+  scale_color_manual(values = cols[c(3:7)]) +
+  scale_x_continuous(breaks = c(-.05, -.025, 0, .025, .05), labels = c(.5, .6, .7, .8, .9)) +
+  lims(y = c(0, .2))
 
+
+
+p4 <- df_comparison_summary_d2 %>% 
+  ggplot() +
+  geom_line(aes(x = sim_tau_varE, y = sqrt(var_bias_tau_varE), colour = as.factor(j))) +
+  geom_point(aes(x = sim_tau_varE, y = sqrt(var_bias_tau_varE), colour = as.factor(j))) +
+  facet_grid(rows = vars(factor(k, labels = c("K == 12", "K == 60"))),
+             cols = vars(factor(CVE, labels = c("CV[sigma[E]^2] == .05", "CV[sigma[E]^2] == .3"))),
+             scales = "free_x", labeller = label_parsed) +
+  geom_hline(aes(yintercept = 0), linetype = "dotted") +
+  labs(y = expression("sd (inefficiency) in " ~ hat(tau)[sigma[E]^2]),
+       x = expression(tau[sigma[E]^2]),
+       colour = "J", subtitle = "b) heterogeneity present") +
+  theme(legend.position = "bottom", 
+        panel.background = element_rect(fill = "transparent"), 
+        plot.background = element_rect(fill = "transparent", colour = "transparent"), 
+        panel.grid.major = element_line(colour = "grey"),
+        panel.grid.minor = element_line(colour = "transparent"),
+        axis.ticks = element_line(colour = "grey"),
+        strip.background = element_rect(fill = "transparent"),
+        strip.text = element_text(size = 12),
+        axis.title.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank()) +
+  scale_color_manual(values = cols[c(3:7)]) +
+  lims(y = c(0, .2))
+
+arranged_plot2 <- ggpubr::ggarrange(p3, p4, common.legend = T, widths = c(1.2, 2), legend = "bottom")
+
+annotate_figure(
+  arranged_plot2,
+  left = linesGrob(x = unit(c(38.2, 38.2), "npc"), 
+                   y = unit(c(.1, .9), "npc"), 
+                   gp = gpar(col = "black", lwd = 2, lty = 2))
+)
 
 # save graphic "figure 2" as .png with transparent background
 ggsave(file = here("Graphics/figure2.png"),
        plot = last_plot(), 
        width = 10, 
-       height = 4)
+       height = 4.5)
 
 
 ############
@@ -170,6 +248,15 @@ ggsave(file = here("Graphics/figure3.png"),
        height = 4)
 
 
+# average error rate across k
+df_comparison %>% 
+  group_by(CVT, CVE, rel, k, j) %>% 
+  summarise(varE_sig = mean(p_varE < .05, na.rm = T)) %>% 
+  filter(CVE == 0, rel %in% c(.5, .6, .7, .8, .9), k %in% c(12, 33, 60)) %>% 
+  group_by(k) %>% 
+  summarise(mean_varE_sig = mean(varE_sig))
+
+
 ############
 # Figure 4 #
 ############
@@ -190,7 +277,7 @@ df_comparison %>%
              cols = vars(factor(k, labels = c("K == 12", "K == 33", "K == 60"))),
              labeller = label_parsed) +
   lims(y = c(0, 1)) +
-  geom_hline(aes(yintercept = .9), linetype = "dotted") +
+  geom_hline(aes(yintercept = .95), linetype = "dotted") +
   theme(legend.position = "bottom", 
         panel.background = element_rect(fill = "transparent"), 
         plot.background = element_rect(fill = "transparent", colour = "transparent"), 
@@ -265,7 +352,7 @@ df_rate_vis %>%
         axis.title = element_text(size = 12),
         legend.text = element_text(size = 12),
         legend.title = element_text(size = 12))  +
-  scale_color_manual(labels = c("RG-MA", "B&S"), values = cols2[c(5,7)]) +
+  scale_color_manual(labels = c("BRG-MA", "Botella's model"), values = cols2[c(5,7)]) +
   labs(x = expression(CV[sigma["T"]^2]), y = "Significance rate", colour = "Method")
 
 
